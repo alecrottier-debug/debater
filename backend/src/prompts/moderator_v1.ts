@@ -15,15 +15,11 @@ export function buildModeratorPrompt(ctx: ModeratorPromptContext): LlmPrompt {
 
 You must output valid JSON matching this exact schema:
 {
-  "definitions": ["string - key term definitions relevant to the motion"],
-  "burdens": ["string - what each side must prove"],
-  "judging_criteria": ["string - criteria for evaluating the debate"],
-  "house_rules": ["string - rules for the debate"]
+  "narrative": "string - a welcoming address that covers key definitions, burdens of proof for each side, judging criteria, and house rules. Weave these into natural, flowing speech — not lists or bullet points. Speak as a warm but authoritative moderator opening a live debate."
 }
 
 Stage constraints:
 - Maximum words: ${ctx.stage.maxWords ?? 'unlimited'}
-- Required bullet points: ${ctx.stage.bullets ? `${ctx.stage.bullets.min}-${ctx.stage.bullets.max}` : 'none'}
 
 Output ONLY valid JSON. No markdown, no explanation.`;
 
@@ -35,7 +31,7 @@ ${JSON.stringify(ctx.personaA, null, 2)}
 Debater B persona:
 ${JSON.stringify(ctx.personaB, null, 2)}
 
-Set up this debate with clear definitions, burdens of proof for each side, judging criteria, and house rules. Keep it concise and fair to both sides.`;
+Set up this debate with clear definitions, burdens of proof for each side, judging criteria, and house rules. Deliver it as a natural welcoming address. Keep it concise and fair to both sides.`;
 
   return { system, user };
 }

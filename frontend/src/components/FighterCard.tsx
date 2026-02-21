@@ -33,6 +33,16 @@ const sideConfig = {
   },
 };
 
+const speakingSway = {
+  x: [0, -3, 3, -2, 2, 0],
+  rotate: [0, -1.5, 1.5, -1, 1, 0],
+  transition: {
+    duration: 3,
+    repeat: Infinity,
+    ease: "easeInOut" as const,
+  },
+};
+
 export default function FighterCard({
   persona,
   side,
@@ -40,26 +50,38 @@ export default function FighterCard({
   compact = false,
 }: FighterCardProps) {
   const cfg = sideConfig[side];
+  const avatarUrl = (persona.personaJson as Record<string, unknown>)
+    ?.avatarUrl as string | undefined;
 
   if (compact) {
     return (
       <motion.div
-        animate={
-          isActive
-            ? { scale: 1.02 }
-            : { scale: 1 }
-        }
+        animate={isActive ? { scale: 1.02 } : { scale: 1 }}
         className={`flex-1 rounded-xl border bg-white p-3 text-center transition-shadow ${
           isActive
             ? `${cfg.borderActive} shadow-lg ${cfg.glowActive}`
             : cfg.border
         }`}
       >
-        <div
-          className={`mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br ${cfg.gradient} text-sm font-bold text-white`}
-        >
-          {side}
-        </div>
+        {avatarUrl ? (
+          <motion.div
+            className="relative mx-auto mb-2 h-12 w-12"
+            animate={isActive ? speakingSway : {}}
+          >
+            <img
+              src={avatarUrl}
+              alt={persona.name}
+              className="h-12 w-12 object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]"
+              style={{ filter: isActive ? "drop-shadow(0 6px 12px rgba(0,0,0,0.4))" : "drop-shadow(0 3px 6px rgba(0,0,0,0.25))" }}
+            />
+          </motion.div>
+        ) : (
+          <div
+            className={`mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br ${cfg.gradient} text-sm font-bold text-white`}
+          >
+            {side}
+          </div>
+        )}
         <h3 className="text-xs font-bold text-gray-900">{persona.name}</h3>
         <AnimatePresence>
           {isActive && (
@@ -79,11 +101,7 @@ export default function FighterCard({
 
   return (
     <motion.div
-      animate={
-        isActive
-          ? { scale: 1.03 }
-          : { scale: 1 }
-      }
+      animate={isActive ? { scale: 1.03 } : { scale: 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       className={`rounded-xl border bg-white p-4 text-center transition-all duration-300 ${
         isActive
@@ -93,31 +111,64 @@ export default function FighterCard({
     >
       {/* Avatar */}
       <div className="relative mx-auto mb-3">
-        <div
-          className={`flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br ${cfg.gradient} text-2xl font-bold text-white`}
-        >
-          {side}
-        </div>
-        {/* Active glow ring */}
-        <AnimatePresence>
-          {isActive && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className={`absolute inset-0 rounded-full ring-2 ${cfg.ring}`}
+        {avatarUrl ? (
+          <motion.div
+            className="relative mx-auto h-24 w-24"
+            animate={
+              isActive
+                ? {
+                    ...speakingSway,
+                    y: [0, -2, 0],
+                    scale: [1.05, 1.08, 1.05],
+                  }
+                : { scale: 1, y: 0 }
+            }
+            transition={
+              isActive
+                ? { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                : { type: "spring", stiffness: 300, damping: 25 }
+            }
+          >
+            <img
+              src={avatarUrl}
+              alt={persona.name}
+              className="h-24 w-24 object-contain transition-[filter] duration-300"
+              style={{
+                filter: isActive
+                  ? "drop-shadow(0 10px 20px rgba(0,0,0,0.4)) drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
+                  : "drop-shadow(0 4px 8px rgba(0,0,0,0.2))",
+              }}
+            />
+          </motion.div>
+        ) : (
+          <>
+            <div
+              className={`flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br ${cfg.gradient} text-2xl font-bold text-white`}
             >
-              <motion.div
-                className={`absolute inset-0 rounded-full ring-2 ${cfg.ring}`}
-                animate={{
-                  scale: [1, 1.3, 1],
-                  opacity: [0.5, 0, 0.5],
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+              {side}
+            </div>
+            {/* Active glow ring */}
+            <AnimatePresence>
+              {isActive && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className={`absolute inset-0 rounded-full ring-2 ${cfg.ring}`}
+                >
+                  <motion.div
+                    className={`absolute inset-0 rounded-full ring-2 ${cfg.ring}`}
+                    animate={{
+                      scale: [1, 1.3, 1],
+                      opacity: [0.5, 0, 0.5],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>
+        )}
       </div>
 
       {/* Name */}

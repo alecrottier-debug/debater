@@ -8,8 +8,7 @@ import {
 describe('LLM Output Schemas', () => {
   describe('DebaterOutputSchema', () => {
     const validDebater = {
-      lead: 'Main argument here.',
-      bullets: ['Point 1', 'Point 2'],
+      narrative: 'This is a flowing prose argument with rhetorical flair.',
       question: 'What about this?',
       callbacks: ['A_OPEN'],
       tags: ['economy'],
@@ -23,7 +22,6 @@ describe('LLM Output Schemas', () => {
     it('accepts empty arrays for optional array fields', () => {
       const result = DebaterOutputSchema.safeParse({
         ...validDebater,
-        bullets: [],
         callbacks: [],
         tags: [],
       });
@@ -38,30 +36,16 @@ describe('LLM Output Schemas', () => {
       expect(result.success).toBe(true);
     });
 
-    it('rejects missing lead', () => {
-      const { lead: _lead, ...noLead } = validDebater;
-      const result = DebaterOutputSchema.safeParse(noLead);
+    it('rejects missing narrative', () => {
+      const { narrative: _narrative, ...noNarrative } = validDebater;
+      const result = DebaterOutputSchema.safeParse(noNarrative);
       expect(result.success).toBe(false);
     });
 
-    it('rejects missing bullets', () => {
-      const { bullets: _b, ...noBullets } = validDebater;
-      const result = DebaterOutputSchema.safeParse(noBullets);
-      expect(result.success).toBe(false);
-    });
-
-    it('rejects non-string lead', () => {
+    it('rejects non-string narrative', () => {
       const result = DebaterOutputSchema.safeParse({
         ...validDebater,
-        lead: 123,
-      });
-      expect(result.success).toBe(false);
-    });
-
-    it('rejects bullets with non-string elements', () => {
-      const result = DebaterOutputSchema.safeParse({
-        ...validDebater,
-        bullets: [1, 2],
+        narrative: 123,
       });
       expect(result.success).toBe(false);
     });
@@ -69,10 +53,7 @@ describe('LLM Output Schemas', () => {
 
   describe('ModeratorOutputSchema', () => {
     const validModerator = {
-      definitions: ['Def 1'],
-      burdens: ['Burden 1'],
-      judging_criteria: ['Criteria 1'],
-      house_rules: ['Rule 1'],
+      narrative: 'Welcome to the debate. Here are the definitions, burdens, criteria, and rules.',
     };
 
     it('accepts valid moderator output', () => {
@@ -80,16 +61,14 @@ describe('LLM Output Schemas', () => {
       expect(result.success).toBe(true);
     });
 
-    it('rejects missing definitions', () => {
-      const { definitions: _d, ...noDefinitions } = validModerator;
-      const result = ModeratorOutputSchema.safeParse(noDefinitions);
+    it('rejects missing narrative', () => {
+      const result = ModeratorOutputSchema.safeParse({});
       expect(result.success).toBe(false);
     });
 
-    it('rejects non-array judging_criteria', () => {
+    it('rejects non-string narrative', () => {
       const result = ModeratorOutputSchema.safeParse({
-        ...validModerator,
-        judging_criteria: 'not an array',
+        narrative: 123,
       });
       expect(result.success).toBe(false);
     });

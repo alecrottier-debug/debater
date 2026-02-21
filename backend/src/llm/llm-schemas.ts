@@ -5,8 +5,7 @@ import { z } from 'zod';
  */
 
 export const DebaterOutputSchema = z.object({
-  lead: z.string(),
-  bullets: z.array(z.string()),
+  narrative: z.string(),
   question: z.string(),
   callbacks: z.array(z.string()),
   tags: z.array(z.string()),
@@ -14,10 +13,7 @@ export const DebaterOutputSchema = z.object({
 export type DebaterOutput = z.infer<typeof DebaterOutputSchema>;
 
 export const ModeratorOutputSchema = z.object({
-  definitions: z.array(z.string()),
-  burdens: z.array(z.string()),
-  judging_criteria: z.array(z.string()),
-  house_rules: z.array(z.string()),
+  narrative: z.string(),
 });
 export type ModeratorOutput = z.infer<typeof ModeratorOutputSchema>;
 

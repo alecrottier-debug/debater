@@ -11,8 +11,7 @@ describe('ValidatorService', () => {
 
   function makePayload(overrides: Partial<DebaterOutput> = {}): DebaterOutput {
     return {
-      lead: 'This is the main argument.',
-      bullets: ['Point one.', 'Point two.'],
+      narrative: 'This is the main argument presented as flowing prose.',
       question: 'What about this?',
       callbacks: [],
       tags: ['test'],
@@ -25,8 +24,8 @@ describe('ValidatorService', () => {
       id: 'A_OPEN',
       label: 'Side A Opening',
       speaker: 'A',
-      maxWords: 110,
-      bullets: { min: 2, max: 2 },
+      maxWords: 130,
+      bullets: null,
       questionRequired: false,
       questionCount: 0,
       ...overrides,
@@ -35,56 +34,26 @@ describe('ValidatorService', () => {
 
   describe('WORD_LIMIT', () => {
     it('passes when word count is within limit', () => {
-      const payload = makePayload({ lead: 'Short lead.' });
+      const payload = makePayload({ narrative: 'Short narrative.' });
       const stage = makeStage({ maxWords: 100 });
       const result = service.validateDebaterTurn(payload, stage, []);
       expect(result.violations).not.toContain('WORD_LIMIT');
     });
 
     it('flags when word count exceeds limit', () => {
-      const longLead = Array(100).fill('word').join(' ');
-      const payload = makePayload({ lead: longLead });
+      const longNarrative = Array(100).fill('word').join(' ');
+      const payload = makePayload({ narrative: longNarrative });
       const stage = makeStage({ maxWords: 50 });
       const result = service.validateDebaterTurn(payload, stage, []);
       expect(result.violations).toContain('WORD_LIMIT');
     });
 
     it('does not flag when maxWords is null', () => {
-      const longLead = Array(500).fill('word').join(' ');
-      const payload = makePayload({ lead: longLead });
+      const longNarrative = Array(500).fill('word').join(' ');
+      const payload = makePayload({ narrative: longNarrative });
       const stage = makeStage({ maxWords: null });
       const result = service.validateDebaterTurn(payload, stage, []);
       expect(result.violations).not.toContain('WORD_LIMIT');
-    });
-  });
-
-  describe('BULLET_COUNT', () => {
-    it('passes when bullet count is in range', () => {
-      const payload = makePayload({ bullets: ['A', 'B'] });
-      const stage = makeStage({ bullets: { min: 1, max: 3 } });
-      const result = service.validateDebaterTurn(payload, stage, []);
-      expect(result.violations).not.toContain('BULLET_COUNT');
-    });
-
-    it('flags when too few bullets', () => {
-      const payload = makePayload({ bullets: [] });
-      const stage = makeStage({ bullets: { min: 2, max: 3 } });
-      const result = service.validateDebaterTurn(payload, stage, []);
-      expect(result.violations).toContain('BULLET_COUNT');
-    });
-
-    it('flags when too many bullets', () => {
-      const payload = makePayload({ bullets: ['A', 'B', 'C', 'D'] });
-      const stage = makeStage({ bullets: { min: 1, max: 2 } });
-      const result = service.validateDebaterTurn(payload, stage, []);
-      expect(result.violations).toContain('BULLET_COUNT');
-    });
-
-    it('does not check when bullets config is null', () => {
-      const payload = makePayload({ bullets: ['A', 'B', 'C', 'D', 'E'] });
-      const stage = makeStage({ bullets: null });
-      const result = service.validateDebaterTurn(payload, stage, []);
-      expect(result.violations).not.toContain('BULLET_COUNT');
     });
   });
 
@@ -120,38 +89,38 @@ describe('ValidatorService', () => {
 
   describe('NEW_ARGUMENT_CLOSING', () => {
     it('flags closing that introduces many new topics', () => {
-      const priorLeads = [
+      const priorNarratives = [
         'The economy benefits from trade liberalization.',
         'Free markets drive innovation and growth.',
       ];
-      const closingLead =
+      const closingNarrative =
         'Healthcare reform, education policy, and environmental protection demand immediate attention in this congress.';
-      const payload = makePayload({ lead: closingLead });
+      const payload = makePayload({ narrative: closingNarrative });
       const stage = makeStage({ id: 'A_CLOSE', maxWords: 200 });
-      const result = service.validateDebaterTurn(payload, stage, priorLeads);
+      const result = service.validateDebaterTurn(payload, stage, priorNarratives);
       expect(result.violations).toContain('NEW_ARGUMENT_CLOSING');
     });
 
     it('does not flag closing that reuses prior topics', () => {
-      const priorLeads = [
+      const priorNarratives = [
         'The economy benefits from trade liberalization and growth.',
         'Innovation drives prosperity through technology.',
       ];
-      const closingLead =
+      const closingNarrative =
         'The economy and trade drive growth through innovation and technology.';
-      const payload = makePayload({ lead: closingLead });
+      const payload = makePayload({ narrative: closingNarrative });
       const stage = makeStage({ id: 'B_CLOSE', maxWords: 200 });
-      const result = service.validateDebaterTurn(payload, stage, priorLeads);
+      const result = service.validateDebaterTurn(payload, stage, priorNarratives);
       expect(result.violations).not.toContain('NEW_ARGUMENT_CLOSING');
     });
 
     it('does not apply to non-closing stages', () => {
-      const priorLeads: string[] = [];
-      const closingLead =
+      const priorNarratives: string[] = [];
+      const closingNarrative =
         'Healthcare reform, education policy, and environmental protection demand immediate attention.';
-      const payload = makePayload({ lead: closingLead });
+      const payload = makePayload({ narrative: closingNarrative });
       const stage = makeStage({ id: 'A_OPEN' });
-      const result = service.validateDebaterTurn(payload, stage, priorLeads);
+      const result = service.validateDebaterTurn(payload, stage, priorNarratives);
       expect(result.violations).not.toContain('NEW_ARGUMENT_CLOSING');
     });
   });
@@ -187,22 +156,19 @@ describe('ValidatorService', () => {
 
   describe('multiple violations', () => {
     it('can report multiple violations at once', () => {
-      const longLead = Array(100).fill('newword').join(' ');
+      const longNarrative = Array(100).fill('newword').join(' ');
       const payload = makePayload({
-        lead: longLead,
-        bullets: [],
+        narrative: longNarrative,
         question: '',
       });
       const stage = makeStage({
         maxWords: 50,
-        bullets: { min: 1, max: 2 },
         questionRequired: true,
       });
       const result = service.validateDebaterTurn(payload, stage, []);
       expect(result.violations).toContain('WORD_LIMIT');
-      expect(result.violations).toContain('BULLET_COUNT');
       expect(result.violations).toContain('MISSING_FIELD');
-      expect(result.details.length).toBeGreaterThanOrEqual(3);
+      expect(result.details.length).toBeGreaterThanOrEqual(2);
     });
   });
 
@@ -338,7 +304,6 @@ describe('ValidatorService', () => {
 
       const result = await svc.classifyClosingNewArguments(
         'In conclusion, the economy benefits from trade.',
-        ['Economy benefits from trade.'],
         ['The economy benefits from trade and growth.'],
       );
       expect(result).toBeNull();
@@ -353,7 +318,6 @@ describe('ValidatorService', () => {
 
       const result = await svc.classifyClosingNewArguments(
         'Healthcare is the key issue we must address.',
-        [],
         ['The economy benefits from trade.'],
       );
       expect(result).toBe('LLM classifier: Introduces healthcare as a new topic.');
@@ -365,13 +329,12 @@ describe('ValidatorService', () => {
       } as any;
       const svc = new ValidatorService(mockLlm);
 
-      // This should use heuristic fallback - with 0 prior leads, any new topic triggers
+      // This should use heuristic fallback - with 0 prior narratives, any new topic triggers
       const result = await svc.classifyClosingNewArguments(
         'Healthcare reform education policy and environmental protection demand immediate attention.',
         [],
-        [],
       );
-      // Heuristic should find new topics since priorLeads is empty
+      // Heuristic should find new topics since priorNarratives is empty
       expect(result).toContain('new topics');
     });
 
@@ -380,10 +343,9 @@ describe('ValidatorService', () => {
 
       const result = await svc.classifyClosingNewArguments(
         'The economy and trade drive growth.',
-        [],
         ['The economy benefits from trade and growth.'],
       );
-      // Should use heuristic: economy, trade, growth are all in prior leads
+      // Should use heuristic: economy, trade, growth are all in prior narratives
       expect(result).toBeNull();
     });
 
@@ -393,7 +355,7 @@ describe('ValidatorService', () => {
       } as any;
       const svc = new ValidatorService(mockLlm);
 
-      const payload = makePayload({ lead: 'Summary of prior points.' });
+      const payload = makePayload({ narrative: 'Summary of prior points.' });
       const stage = makeStage({ id: 'A_CLOSE', maxWords: 200 });
       const result = await svc.validateDebaterTurnAsync(payload, stage, [
         'Prior points were made.',
@@ -408,7 +370,7 @@ describe('ValidatorService', () => {
       } as any;
       const svc = new ValidatorService(mockLlm);
 
-      const payload = makePayload({ lead: 'New topic entirely.' });
+      const payload = makePayload({ narrative: 'New topic entirely.' });
       const stage = makeStage({ id: 'B_CLOSE', maxWords: 200 });
       const result = await svc.validateDebaterTurnAsync(payload, stage, [
         'Prior argument about economy.',

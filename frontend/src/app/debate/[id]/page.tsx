@@ -16,6 +16,7 @@ import TranscriptDrawer from "@/components/TranscriptDrawer";
 import StageProgressTracker from "@/components/StageProgressTracker";
 import MomentumMeter from "@/components/MomentumMeter";
 import ResultsView from "@/components/ResultsView";
+import { useAudio } from "@/hooks/useAudio";
 
 interface DebatePageProps {
   params: Promise<{ id: string }>;
@@ -28,6 +29,7 @@ export default function DebatePage({ params }: DebatePageProps) {
   const [loading, setLoading] = useState(true);
   const [advancing, setAdvancing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { muted, playing, playTurn, toggleMute } = useAudio();
 
   const stages = QUICK_STAGES;
 
@@ -54,22 +56,18 @@ export default function DebatePage({ params }: DebatePageProps) {
     setError(null);
 
     try {
-      const newTurn = await advanceDebate(id);
-      setTurns((prev) => [...prev, newTurn]);
-      setDebate((prev) =>
-        prev
-          ? {
-              ...prev,
-              stageIndex: prev.stageIndex + 1,
-              status:
-                prev.stageIndex + 1 >= stages.length ? "completed" : prev.status,
-            }
-          : prev
-      );
+      // advanceStage returns the full updated debate
+      await advanceDebate(id);
       // Re-fetch full state to stay in sync
       const updated = await fetchDebate(id);
       setDebate(updated);
       setTurns(updated.turns || []);
+
+      // Play audio for the latest turn if voice is on
+      if (!muted && updated.turns && updated.turns.length > 0) {
+        const latest = updated.turns[updated.turns.length - 1];
+        playTurn(latest.renderedText, latest.speaker);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to advance stage");
     } finally {
@@ -136,6 +134,25 @@ export default function DebatePage({ params }: DebatePageProps) {
         <h1 className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">
           &ldquo;{debate.motion}&rdquo;
         </h1>
+        <button
+          onClick={toggleMute}
+          className={`mx-auto mt-3 flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${
+            muted
+              ? "bg-gray-100 text-gray-500 hover:bg-gray-200"
+              : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+          }`}
+        >
+          {muted ? (
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.72-3.72a.75.75 0 0 1 1.28.53v14.88a.75.75 0 0 1-1.28.53L6.75 14.25H3.75a.75.75 0 0 1-.75-.75v-3a.75.75 0 0 1 .75-.75h3z" />
+            </svg>
+          ) : (
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-3.72a.75.75 0 0 1 1.28.53v14.88a.75.75 0 0 1-1.28.53L6.75 15.75H3.75a.75.75 0 0 1-.75-.75v-6a.75.75 0 0 1 .75-.75h3z" />
+            </svg>
+          )}
+          {muted ? "Voice Off" : playing ? "Playing..." : "Voice On"}
+        </button>
       </motion.div>
 
       {/* Stage Progress Tracker */}

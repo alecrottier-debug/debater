@@ -19,85 +19,122 @@ function PersonaCard({
   disabled,
   accentColor,
   onClick,
+  index,
 }: {
   persona: Persona;
   selected: boolean;
   disabled: boolean;
   accentColor: string;
   onClick: () => void;
+  index: number;
 }) {
   const json = persona.personaJson as {
     style?: string;
     priorities?: string[];
     tone?: string;
+    avatarUrl?: string;
   };
 
+  const hasAvatar = !!json.avatarUrl;
+
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`group relative w-full rounded-xl border p-4 text-left transition-all ${
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: index * 0.05, type: "spring", stiffness: 400, damping: 30 }}
+      whileHover={!disabled ? { scale: 1.03, y: -4 } : {}}
+      whileTap={!disabled ? { scale: 0.98 } : {}}
+      className={`group relative w-full overflow-hidden rounded-xl border text-left transition-all ${
         selected
           ? accentColor === "blue"
             ? "border-blue-500 bg-blue-50 ring-2 ring-blue-500/20"
             : "border-purple-500 bg-purple-50 ring-2 ring-purple-500/20"
           : disabled
             ? "cursor-not-allowed border-gray-100 bg-gray-50 opacity-40"
-            : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-md"
+            : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg"
       }`}
     >
-      {selected && (
-        <span
-          className={`absolute right-3 top-3 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white ${
-            accentColor === "blue" ? "bg-blue-500" : "bg-purple-500"
-          }`}
+      {/* Floating avatar */}
+      {hasAvatar && (
+        <motion.div
+          className="pointer-events-none absolute -right-2 -top-2 z-10 h-24 w-24"
+          animate={{
+            y: [0, -6, 0],
+            rotate: [0, 2, -2, 0],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
         >
-          Selected
-        </span>
+          <img
+            src={json.avatarUrl}
+            alt=""
+            className="h-full w-full object-contain"
+            style={{
+              filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.35)) drop-shadow(0 3px 6px rgba(0,0,0,0.25))",
+            }}
+          />
+        </motion.div>
       )}
 
-      <div className="mb-1.5 text-sm font-semibold text-gray-900">
-        {persona.name}
-      </div>
-      <div className="text-xs italic text-gray-500 line-clamp-2">
-        {persona.tagline}
-      </div>
-
-      {/* Expanded details on hover */}
-      <div className="mt-2 hidden space-y-1.5 group-hover:block">
-        {json.style && (
-          <div className="text-xs text-gray-600">
-            <span className={`font-semibold ${accentColor === "blue" ? "text-blue-600" : "text-purple-600"}`}>
-              Style:
-            </span>{" "}
-            {json.style.length > 80 ? json.style.slice(0, 80) + "..." : json.style}
-          </div>
+      <div className={`relative p-4 ${hasAvatar ? "pr-20" : ""}`}>
+        {selected && (
+          <span
+            className={`absolute left-3 top-3 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white ${
+              accentColor === "blue" ? "bg-blue-500" : "bg-purple-500"
+            }`}
+          >
+            Selected
+          </span>
         )}
-        {json.priorities && json.priorities.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {json.priorities.slice(0, 3).map((p, i) => (
-              <span
-                key={i}
-                className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                  accentColor === "blue"
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-purple-100 text-purple-700"
-                }`}
-              >
-                {p.length > 25 ? p.slice(0, 25) + "..." : p}
-              </span>
-            ))}
-          </div>
+
+        <div className={`${selected ? "mt-5" : ""} mb-1.5 text-sm font-semibold text-gray-900`}>
+          {persona.name}
+        </div>
+        <div className="text-xs italic text-gray-500 line-clamp-2">
+          {persona.tagline}
+        </div>
+
+        {/* Expanded details on hover */}
+        <div className="mt-2 hidden space-y-1.5 group-hover:block">
+          {json.style && (
+            <div className="text-xs text-gray-600">
+              <span className={`font-semibold ${accentColor === "blue" ? "text-blue-600" : "text-purple-600"}`}>
+                Style:
+              </span>{" "}
+              {json.style.length > 80 ? json.style.slice(0, 80) + "..." : json.style}
+            </div>
+          )}
+          {json.priorities && json.priorities.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {json.priorities.slice(0, 3).map((p, i) => (
+                <span
+                  key={i}
+                  className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                    accentColor === "blue"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-purple-100 text-purple-700"
+                  }`}
+                >
+                  {p.length > 25 ? p.slice(0, 25) + "..." : p}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {persona.isTemplate && (
+          <span className="mt-2 inline-block rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-gray-500">
+            Template
+          </span>
         )}
       </div>
-
-      {persona.isTemplate && (
-        <span className="mt-2 inline-block rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-gray-500">
-          Template
-        </span>
-      )}
-    </button>
+    </motion.button>
   );
 }
 
@@ -193,13 +230,13 @@ export default function PersonaPicker({
               className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm"
             />
 
-            {/* Panel */}
+            {/* Panel — doubled width */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed inset-x-4 top-[10vh] z-50 mx-auto max-w-lg overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl sm:inset-x-auto sm:w-full"
+              className="fixed inset-x-4 top-[5vh] z-50 mx-auto max-w-3xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl sm:inset-x-auto sm:w-full"
             >
               {/* Header */}
               <div
@@ -234,7 +271,7 @@ export default function PersonaPicker({
               </div>
 
               {/* List */}
-              <div className="max-h-[60vh] overflow-y-auto px-5 py-4">
+              <div className="max-h-[70vh] overflow-y-auto px-5 py-4">
                 {/* Templates section */}
                 {templates.length > 0 && (
                   <div className="mb-5">
@@ -246,14 +283,15 @@ export default function PersonaPicker({
                         {templates.length}
                       </span>
                     </div>
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                      {templates.map((p) => (
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {templates.map((p, i) => (
                         <PersonaCard
                           key={p.id}
                           persona={p}
                           selected={selected?.id === p.id}
                           disabled={p.id === disabledId}
                           accentColor={accentColor}
+                          index={i}
                           onClick={() => {
                             onSelect(p);
                             setIsOpen(false);
@@ -276,14 +314,15 @@ export default function PersonaPicker({
                     </span>
                   </div>
                   {custom.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                      {custom.map((p) => (
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {custom.map((p, i) => (
                         <PersonaCard
                           key={p.id}
                           persona={p}
                           selected={selected?.id === p.id}
                           disabled={p.id === disabledId}
                           accentColor={accentColor}
+                          index={templates.length + i}
                           onClick={() => {
                             onSelect(p);
                             setIsOpen(false);

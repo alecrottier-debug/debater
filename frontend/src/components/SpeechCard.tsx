@@ -114,39 +114,56 @@ export default function SpeechCard({
 
         {/* Body */}
         <div className="px-5 py-4">
-          {/* Lead text */}
-          {payload.lead && (
-            <p className="text-sm font-medium leading-relaxed text-gray-800">
-              {payload.lead}
-            </p>
+          {/* Narrative prose (new format) */}
+          {payload.narrative && (
+            <div className="space-y-3">
+              {payload.narrative.split("\n\n").map((paragraph, i) => (
+                <motion.p
+                  key={i}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: isLatest ? 0.3 + i * 0.1 : 0 }}
+                  className="text-sm leading-relaxed text-gray-800"
+                >
+                  {paragraph}
+                </motion.p>
+              ))}
+            </div>
           )}
 
-          {/* Bullets */}
-          {payload.bullets && payload.bullets.length > 0 && (
-            <ul className="mt-3 space-y-2">
-              {payload.bullets.map((bullet, i) => (
-                <motion.li
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: isLatest ? 0.4 + i * 0.1 : 0 }}
-                  className="flex items-start gap-2.5 text-sm leading-relaxed text-gray-600"
-                >
-                  <span
-                    className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${
-                      turn.speaker === "A"
-                        ? "bg-blue-400"
-                        : turn.speaker === "B"
-                        ? "bg-purple-400"
-                        : turn.speaker === "MOD"
-                        ? "bg-amber-400"
-                        : "bg-emerald-400"
-                    }`}
-                  />
-                  {bullet}
-                </motion.li>
-              ))}
-            </ul>
+          {/* Legacy: lead + bullets (backward compat for old debate data) */}
+          {!payload.narrative && payload.lead && (
+            <>
+              <p className="text-sm font-medium leading-relaxed text-gray-800">
+                {payload.lead}
+              </p>
+              {payload.bullets && payload.bullets.length > 0 && (
+                <ul className="mt-3 space-y-2">
+                  {payload.bullets.map((bullet, i) => (
+                    <motion.li
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: isLatest ? 0.4 + i * 0.1 : 0 }}
+                      className="flex items-start gap-2.5 text-sm leading-relaxed text-gray-600"
+                    >
+                      <span
+                        className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${
+                          turn.speaker === "A"
+                            ? "bg-blue-400"
+                            : turn.speaker === "B"
+                            ? "bg-purple-400"
+                            : turn.speaker === "MOD"
+                            ? "bg-amber-400"
+                            : "bg-emerald-400"
+                        }`}
+                      />
+                      {bullet}
+                    </motion.li>
+                  ))}
+                </ul>
+              )}
+            </>
           )}
 
           {/* Question block */}

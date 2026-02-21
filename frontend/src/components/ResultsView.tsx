@@ -127,7 +127,15 @@ export default function ResultsView({ debate }: ResultsViewProps) {
     winner === "A" ? debate.personaB.name : debate.personaA.name;
   const winnerColor = winner === "A" ? "blue" : "purple";
 
-  const scores = decision.scores as Record<string, { A: number; B: number }>;
+  // Scores come from DB as { A: { clarity, strength, ... }, B: { ... } }
+  // Transpose to { clarity: { A, B }, strength: { A, B }, ... } for display
+  const rawScores = decision.scores as Record<string, Record<string, number>>;
+  const scores: Record<string, { A: number; B: number }> = {};
+  if (rawScores.A && rawScores.B) {
+    for (const category of Object.keys(rawScores.A)) {
+      scores[category] = { A: rawScores.A[category] ?? 0, B: rawScores.B[category] ?? 0 };
+    }
+  }
   const ballot = decision.ballot as { stageRef: string; reason: string }[];
   const bestLines = decision.bestLines as { A: string; B: string };
 

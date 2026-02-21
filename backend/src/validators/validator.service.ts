@@ -7,7 +7,6 @@ import type { LlmAdapter } from '../llm/llm-adapter.interface.js';
 export type Violation =
   | 'WORD_LIMIT'
   | 'MISSING_FIELD'
-  | 'BULLET_COUNT'
   | 'NEW_ARGUMENT_CLOSING'
   | 'CROSSEX_QUESTION_COUNT'
   | 'CROSSEX_ANSWER_LENGTH'
@@ -32,7 +31,7 @@ export class ValidatorService {
   validateDebaterTurn(
     payload: DebaterOutput,
     stage: StageConfig,
-    priorLeads: string[],
+    priorNarratives: string[],
   ): ValidationResult {
     const violations: Violation[] = [];
     const details: string[] = [];
@@ -46,17 +45,6 @@ export class ValidatorService {
       );
     }
 
-    // Bullet count check
-    if (stage.bullets) {
-      const bulletCount = payload.bullets.length;
-      if (bulletCount < stage.bullets.min || bulletCount > stage.bullets.max) {
-        violations.push('BULLET_COUNT');
-        details.push(
-          `Bullet count ${bulletCount} out of range [${stage.bullets.min}, ${stage.bullets.max}]`,
-        );
-      }
-    }
-
     // Question required check
     if (stage.questionRequired && (!payload.question || payload.question.trim() === '')) {
       violations.push('MISSING_FIELD');
@@ -66,8 +54,8 @@ export class ValidatorService {
     // Closing new-argument heuristic (synchronous fallback)
     if (this.isClosingStage(stage.id)) {
       const newArgViolation = this.checkClosingNewArguments(
-        payload.lead,
-        priorLeads,
+        payload.narrative,
+        priorNarratives,
       );
       if (newArgViolation) {
         violations.push('NEW_ARGUMENT_CLOSING');
@@ -91,7 +79,7 @@ export class ValidatorService {
   async validateDebaterTurnAsync(
     payload: DebaterOutput,
     stage: StageConfig,
-    priorLeads: string[],
+    priorNarratives: string[],
   ): Promise<ValidationResult> {
     // Start with synchronous validation (everything except closing check)
     const violations: Violation[] = [];
@@ -106,17 +94,6 @@ export class ValidatorService {
       );
     }
 
-    // Bullet count check
-    if (stage.bullets) {
-      const bulletCount = payload.bullets.length;
-      if (bulletCount < stage.bullets.min || bulletCount > stage.bullets.max) {
-        violations.push('BULLET_COUNT');
-        details.push(
-          `Bullet count ${bulletCount} out of range [${stage.bullets.min}, ${stage.bullets.max}]`,
-        );
-      }
-    }
-
     // Question required check
     if (stage.questionRequired && (!payload.question || payload.question.trim() === '')) {
       violations.push('MISSING_FIELD');
@@ -126,9 +103,8 @@ export class ValidatorService {
     // Closing new-argument: use LLM classifier if available
     if (this.isClosingStage(stage.id)) {
       const llmResult = await this.classifyClosingNewArguments(
-        payload.lead,
-        payload.bullets,
-        priorLeads,
+        payload.narrative,
+        priorNarratives,
       );
       if (llmResult) {
         violations.push('NEW_ARGUMENT_CLOSING');
@@ -150,18 +126,16 @@ export class ValidatorService {
    * Falls back to heuristic if LLM is not available or fails.
    */
   async classifyClosingNewArguments(
-    closingLead: string,
-    closingBullets: string[],
-    priorLeads: string[],
+    closingNarrative: string,
+    priorNarratives: string[],
   ): Promise<string | null> {
     if (!this.llm) {
       // Fallback to heuristic
-      return this.checkClosingNewArguments(closingLead, priorLeads);
+      return this.checkClosingNewArguments(closingNarrative, priorNarratives);
     }
 
     try {
-      const closingText = [closingLead, ...closingBullets].join('\n');
-      const priorText = priorLeads.map((l, i) => `[Prior ${i + 1}]: ${l}`).join('\n');
+      const priorText = priorNarratives.map((l, i) => `[Prior ${i + 1}]: ${l}`).join('\n');
 
       const prompt = {
         system: `You are a debate rule classifier. Determine if a closing statement introduces genuinely NEW arguments that were not previously raised, or if it merely reframes, summarizes, or extends existing arguments.
@@ -175,7 +149,7 @@ A closing may use new *words* or *phrasing* without introducing new arguments. F
 ${priorText}
 
 Closing statement:
-${closingText}
+${closingNarrative}
 
 Is this closing introducing genuinely new arguments?`,
       };
@@ -193,7 +167,7 @@ Is this closing introducing genuinely new arguments?`,
       this.logger.warn(
         `LLM closing classifier failed, falling back to heuristic: ${(err as Error).message}`,
       );
-      return this.checkClosingNewArguments(closingLead, priorLeads);
+      return this.checkClosingNewArguments(closingNarrative, priorNarratives);
     }
   }
 
@@ -201,10 +175,7 @@ Is this closing introducing genuinely new arguments?`,
    * Render debater payload to plain text for word counting.
    */
   renderDebaterText(payload: DebaterOutput): string {
-    const parts: string[] = [payload.lead];
-    for (const b of payload.bullets) {
-      parts.push(b);
-    }
+    const parts: string[] = [payload.narrative];
     if (payload.question) {
       parts.push(payload.question);
     }
@@ -229,21 +200,21 @@ Is this closing introducing genuinely new arguments?`,
   }
 
   /**
-   * v1 heuristic (fallback): extract nouns (significant words) from prior leads,
-   * flag if closing lead introduces >2 new topics.
+   * v1 heuristic (fallback): extract nouns (significant words) from prior narratives,
+   * flag if closing narrative introduces >2 new topics.
    */
   checkClosingNewArguments(
-    closingLead: string,
-    priorLeads: string[],
+    closingNarrative: string,
+    priorNarratives: string[],
   ): string | null {
     const priorNouns = new Set<string>();
-    for (const lead of priorLeads) {
-      for (const noun of this.extractSignificantWords(lead)) {
+    for (const narrative of priorNarratives) {
+      for (const noun of this.extractSignificantWords(narrative)) {
         priorNouns.add(noun);
       }
     }
 
-    const closingNouns = this.extractSignificantWords(closingLead);
+    const closingNouns = this.extractSignificantWords(closingNarrative);
     const newNouns = closingNouns.filter((n) => !priorNouns.has(n));
 
     if (newNouns.length > 2) {

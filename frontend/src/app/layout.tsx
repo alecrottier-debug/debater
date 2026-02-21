@@ -28,6 +28,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-[#f8f9fb]`}
       >
+        {/* Fixed background illustration */}
+        <div
+          className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.07]"
+          style={{ backgroundImage: "url('/avatars/background.png')" }}
+        />
         <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-xl">
           <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
             <Link href="/" className="flex items-center gap-2">
@@ -52,7 +57,7 @@ export default function RootLayout({
             </Link>
           </div>
         </header>
-        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <main className="relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           {children}
         </main>
       </body>

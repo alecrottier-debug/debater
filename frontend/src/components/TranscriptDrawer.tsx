@@ -225,7 +225,7 @@ function DrawerContent({
                     )}
                     {isComplete && turn && (
                       <p className="mt-0.5 line-clamp-1 text-[10px] text-gray-400">
-                        {(turn.payload as { lead?: string })?.lead || turn.renderedText.slice(0, 60)}
+                        {(turn.payload as { narrative?: string; lead?: string })?.narrative?.slice(0, 60) || (turn.payload as { lead?: string })?.lead?.slice(0, 60) || turn.renderedText.slice(0, 60)}
                       </p>
                     )}
                   </div>

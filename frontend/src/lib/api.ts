@@ -27,7 +27,8 @@ export interface StagePlan {
 }
 
 export interface TurnPayload {
-  lead: string;
+  narrative?: string;
+  lead?: string;
   bullets?: string[];
   question?: string;
   questionAnswered?: string;
@@ -110,8 +111,8 @@ export async function fetchDebate(id: string): Promise<Debate> {
   return apiFetch<Debate>(`/debates/${id}`);
 }
 
-export async function advanceDebate(id: string): Promise<Turn> {
-  return apiFetch<Turn>(`/debates/${id}/next`, {
+export async function advanceDebate(id: string): Promise<Debate> {
+  return apiFetch<Debate>(`/debates/${id}/next`, {
     method: "POST",
   });
 }
@@ -171,15 +172,28 @@ export async function createPersona(data: {
   });
 }
 
+// Text-to-Speech
+export async function fetchTtsAudio(text: string, speaker: string): Promise<Blob> {
+  const res = await fetch(`${API_BASE}/tts`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, speaker }),
+  });
+  if (!res.ok) {
+    throw new Error(`TTS error ${res.status}`);
+  }
+  return res.blob();
+}
+
 // Quick stage plan for client-side reference
 export const QUICK_STAGES: StageConfig[] = [
-  { id: "MOD_SETUP", label: "Moderator Setup", speaker: "MOD", maxWords: 90, bullets: { min: 3, max: 3 }, questionRequired: false, questionCount: 0 },
-  { id: "A_OPEN", label: "Side A Opening", speaker: "A", maxWords: 110, bullets: { min: 2, max: 2 }, questionRequired: false, questionCount: 0 },
-  { id: "B_OPEN", label: "Side B Opening", speaker: "B", maxWords: 110, bullets: { min: 2, max: 2 }, questionRequired: false, questionCount: 0 },
-  { id: "A_CHALLENGE", label: "Side A Challenge", speaker: "A", maxWords: 80, bullets: { min: 1, max: 2 }, questionRequired: true, questionCount: 1 },
-  { id: "B_COUNTER", label: "Side B Counter", speaker: "B", maxWords: 90, bullets: { min: 1, max: 2 }, questionRequired: true, questionCount: 1 },
-  { id: "A_COUNTER", label: "Side A Counter", speaker: "A", maxWords: 90, bullets: { min: 1, max: 2 }, questionRequired: true, questionCount: 1 },
-  { id: "B_CLOSE", label: "Side B Closing", speaker: "B", maxWords: 70, bullets: { min: 0, max: 2 }, questionRequired: false, questionCount: 0 },
-  { id: "A_CLOSE", label: "Side A Closing", speaker: "A", maxWords: 70, bullets: { min: 0, max: 2 }, questionRequired: false, questionCount: 0 },
+  { id: "MOD_SETUP", label: "Moderator Setup", speaker: "MOD", maxWords: 110, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "A_OPEN", label: "Side A Opening", speaker: "A", maxWords: 130, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "B_OPEN", label: "Side B Opening", speaker: "B", maxWords: 130, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "A_CHALLENGE", label: "Side A Challenge", speaker: "A", maxWords: 100, bullets: null, questionRequired: true, questionCount: 1 },
+  { id: "B_COUNTER", label: "Side B Counter", speaker: "B", maxWords: 110, bullets: null, questionRequired: true, questionCount: 1 },
+  { id: "A_COUNTER", label: "Side A Counter", speaker: "A", maxWords: 110, bullets: null, questionRequired: true, questionCount: 1 },
+  { id: "B_CLOSE", label: "Side B Closing", speaker: "B", maxWords: 85, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "A_CLOSE", label: "Side A Closing", speaker: "A", maxWords: 85, bullets: null, questionRequired: false, questionCount: 0 },
   { id: "JUDGE", label: "Judge Decision", speaker: "JUDGE", maxWords: null, bullets: null, questionRequired: false, questionCount: 0 },
 ];

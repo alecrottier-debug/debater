@@ -14,23 +14,8 @@ export class MockLlmAdapter implements LlmAdapter {
   async generateModeratorTurn(_prompt: LlmPrompt): Promise<ModeratorOutput> {
     this.logger.debug('[MOCK] generateModeratorTurn called');
     return {
-      definitions: [
-        'The motion refers to the proposition as stated.',
-        'Success is measured by overall impact.',
-      ],
-      burdens: [
-        'Side A must prove the motion is beneficial.',
-        'Side B must demonstrate the motion causes harm.',
-      ],
-      judging_criteria: [
-        'Clarity of argumentation',
-        'Strength of evidence',
-        'Responsiveness to opponent',
-      ],
-      house_rules: [
-        'No ad hominem attacks.',
-        'Stay within word limits.',
-      ],
+      narrative:
+        'Welcome to today\'s debate. The motion refers to the proposition as stated, and success is measured by overall impact. Side A must prove the motion is beneficial, while Side B must demonstrate the motion causes harm. We will judge on clarity of argumentation, strength of evidence, and responsiveness to your opponent. Please refrain from ad hominem attacks and stay within word limits.',
     };
   }
 
@@ -40,11 +25,7 @@ export class MockLlmAdapter implements LlmAdapter {
   ): Promise<DebaterOutput> {
     this.logger.debug(`[MOCK] generateDebaterTurn called for speaker ${speaker}`);
     return {
-      lead: `This is the main argument for Side ${speaker}.`,
-      bullets: [
-        `First supporting point for ${speaker}.`,
-        `Second supporting point for ${speaker}.`,
-      ],
+      narrative: `This is the main argument for Side ${speaker}. The evidence clearly supports our position, and when we examine the facts carefully, we find that the first supporting point strengthens our case considerably. Furthermore, the second supporting point demonstrates the broader implications of our stance.`,
       question: `What does the opponent say about this key issue?`,
       callbacks: [],
       tags: ['economy', 'policy'],

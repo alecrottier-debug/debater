@@ -32,20 +32,17 @@ export function buildDebaterPrompt(ctx: DebaterPromptContext): LlmPrompt {
     ? 'You MUST include a question challenging your opponent.'
     : 'A question is optional for this stage.';
 
-  const bulletInstruction = ctx.stage.bullets
-    ? `Include ${ctx.stage.bullets.min}-${ctx.stage.bullets.max} supporting bullet points.`
-    : 'Bullet points are optional.';
-
   const closingInstruction = ctx.stage.id.endsWith('_CLOSE')
     ? '\nIMPORTANT: This is a CLOSING statement. Summarize and reinforce your strongest arguments. Do NOT introduce new arguments or topics.'
     : '';
 
-  const system = `You are a skilled debater arguing the ${side} the motion. Stay in character according to your persona.
+  const system = `You are a skilled debater arguing the ${side} the motion.
+
+PERSONA VOICE: Write as if you ARE this person speaking in a live debate. Use their characteristic tone, vocabulary, and rhetorical patterns. Draw on the persona's style and tone fields to shape every sentence. The audience should be able to identify who is speaking from the voice alone.
 
 You must output valid JSON matching this exact schema:
 {
-  "lead": "string - your main argument or thesis for this stage",
-  "bullets": ["string - supporting points"],
+  "narrative": "string - your argument as flowing prose. No bullet points or lists. Write naturally as this persona would speak, with rhetorical flair, transitions, and persuasive structure.",
   "question": "string - a question for your opponent (empty string if not required)",
   "callbacks": ["string - references to opponent stage IDs you are responding to"],
   "tags": ["string - topic tags for this argument"]
@@ -54,7 +51,6 @@ You must output valid JSON matching this exact schema:
 Stage: ${ctx.stage.label} (${ctx.stage.id})
 Constraints:
 - Maximum words: ${ctx.stage.maxWords ?? 'unlimited'}
-- ${bulletInstruction}
 - ${questionInstruction}${closingInstruction}
 
 Output ONLY valid JSON. No markdown, no explanation.`;

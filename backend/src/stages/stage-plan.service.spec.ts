@@ -35,10 +35,10 @@ describe('StagePlanService', () => {
   });
 
   describe('Stage config details', () => {
-    it('MOD_SETUP has 90 maxWords and 3 bullets', () => {
+    it('MOD_SETUP has 110 maxWords and no bullets', () => {
       const stage = service.getStageByIndex('quick', 0);
-      expect(stage.maxWords).toBe(90);
-      expect(stage.bullets).toEqual({ min: 3, max: 3 });
+      expect(stage.maxWords).toBe(110);
+      expect(stage.bullets).toBeNull();
       expect(stage.questionRequired).toBe(false);
     });
 
@@ -46,7 +46,7 @@ describe('StagePlanService', () => {
       const stage = service.getStageByIndex('quick', 3);
       expect(stage.questionRequired).toBe(true);
       expect(stage.questionCount).toBe(1);
-      expect(stage.maxWords).toBe(80);
+      expect(stage.maxWords).toBe(100);
     });
 
     it('JUDGE has no word limit or bullets', () => {
@@ -55,11 +55,11 @@ describe('StagePlanService', () => {
       expect(stage.bullets).toBeNull();
     });
 
-    it('closing stages allow 0-2 bullets', () => {
+    it('all stages have null bullets (narrative format)', () => {
       const bClose = service.getStageByIndex('quick', 6);
       const aClose = service.getStageByIndex('quick', 7);
-      expect(bClose.bullets).toEqual({ min: 0, max: 2 });
-      expect(aClose.bullets).toEqual({ min: 0, max: 2 });
+      expect(bClose.bullets).toBeNull();
+      expect(aClose.bullets).toBeNull();
     });
   });
 
@@ -148,11 +148,11 @@ describe('StagePlanService', () => {
       expect(crossex.bullets).toBeNull();
     });
 
-    it('rebuttal stages have 2-3 bullets', () => {
+    it('rebuttal stages have null bullets (narrative format)', () => {
       const rebuttalA = service.getStageByIndex('pro', 5);
       const rebuttalB = service.getStageByIndex('pro', 6);
-      expect(rebuttalA.bullets).toEqual({ min: 2, max: 3 });
-      expect(rebuttalB.bullets).toEqual({ min: 2, max: 3 });
+      expect(rebuttalA.bullets).toBeNull();
+      expect(rebuttalB.bullets).toBeNull();
     });
   });
 });

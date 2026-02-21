@@ -361,19 +361,19 @@ export class DebatesService {
     const renderedText = this.validator.renderDebaterText(output);
     const wordCount = this.countWords(renderedText);
 
-    // Collect prior leads for this speaker (for closing validation)
-    const priorLeads = existingTurns
+    // Collect prior narratives for this speaker (for closing validation)
+    const priorNarratives = existingTurns
       .filter((t) => t.speaker === speaker)
       .map((t) => {
         const payload = t.payload as Record<string, unknown> | null;
-        return (payload?.lead as string) ?? '';
+        return (payload?.narrative as string) ?? (payload?.lead as string) ?? '';
       })
       .filter((l) => l.length > 0);
 
     // Use async validation for closing stages (LLM classifier), sync for others
     const validation = this.validator.isClosingStage(stage.id)
-      ? await this.validator.validateDebaterTurnAsync(output, stage, priorLeads)
-      : this.validator.validateDebaterTurn(output, stage, priorLeads);
+      ? await this.validator.validateDebaterTurnAsync(output, stage, priorNarratives)
+      : this.validator.validateDebaterTurn(output, stage, priorNarratives);
 
     // Rebuttal callback validation (requires at least 2 callbacks referencing opponent stage IDs)
     if (stage.id.includes('REBUTTAL')) {
@@ -518,20 +518,7 @@ export class DebatesService {
   }
 
   private renderModeratorText(output: ModeratorOutput): string {
-    const parts: string[] = [];
-    if (output.definitions.length > 0) {
-      parts.push('Definitions: ' + output.definitions.join('; '));
-    }
-    if (output.burdens.length > 0) {
-      parts.push('Burdens: ' + output.burdens.join('; '));
-    }
-    if (output.judging_criteria.length > 0) {
-      parts.push('Judging Criteria: ' + output.judging_criteria.join('; '));
-    }
-    if (output.house_rules.length > 0) {
-      parts.push('House Rules: ' + output.house_rules.join('; '));
-    }
-    return parts.join('\n');
+    return output.narrative;
   }
 
   private renderJudgeText(output: JudgeOutput): string {
