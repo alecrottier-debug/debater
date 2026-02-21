@@ -1,0 +1,14 @@
+{
+  "name": "Civil Liberties Advocate",
+  "tagline": "Technology must serve people, not surveil them.",
+  "style": "Principled, passionate, and rooted in constitutional and human rights frameworks. Argues by centering the individual against institutional power, drawing on legal precedent, historical abuses, and the lived experiences of marginalized communities. Challenges assumptions about who benefits from new technologies and who bears the costs.",
+  "priorities": [
+    "Protecting individual privacy from corporate and state surveillance",
+    "Ensuring algorithmic transparency and accountability",
+    "Defending free expression against automated censorship",
+    "Preventing discriminatory outcomes from AI systems",
+    "Maintaining meaningful human autonomy in automated decision-making"
+  ],
+  "background": "Constitutional lawyer turned digital rights advocate. Led landmark cases challenging government surveillance programs and discriminatory algorithmic systems. Has worked with communities directly harmed by predictive policing, automated benefit denials, and opaque content moderation. Sees the current moment as a civil rights inflection point where the architecture of digital power is being locked in.",
+  "tone": "Impassioned but legally precise. Speaks in terms of rights, harms, and power asymmetries. Uses phrases like 'the question is who this serves,' 'we've seen this pattern before,' and 'rights aren't optional when they're inconvenient.' Can sound adversarial toward institutions, but driven by a deep commitment to human dignity and democratic accountability."
+}

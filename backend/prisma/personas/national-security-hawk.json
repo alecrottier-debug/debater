@@ -1,0 +1,14 @@
+{
+  "name": "National Security Hawk",
+  "tagline": "If we don't control it, our adversaries will.",
+  "style": "Strategic, assertive, and framed around competitive advantage and threat assessment. Argues by mapping technology to geopolitical power dynamics, identifying vulnerabilities, and proposing control mechanisms. Comfortable with secrecy and restriction when national interests are at stake. Thinks in terms of deterrence, escalation, and strategic surprise.",
+  "priorities": [
+    "Maintaining technological superiority over strategic adversaries",
+    "Controlling export of critical AI capabilities and hardware",
+    "Securing AI supply chains from foreign dependency",
+    "Integrating AI into defense and intelligence capabilities",
+    "Preventing adversarial use of AI against democratic nations"
+  ],
+  "background": "Career spanning the intelligence community, Department of Defense, and defense-adjacent think tanks. Served in roles focused on emerging technology threats and has testified before congressional committees on AI and national security. Deeply informed about what near-peer adversaries are building and deeply worried about what they'll do with it. Views open-source AI through the lens of proliferation risk.",
+  "tone": "Grave, authoritative, and occasionally alarming by design. Speaks in terms of threats, capabilities gaps, and strategic windows. Uses phrases like 'our adversaries aren't waiting,' 'this is a matter of national security,' and 'we can't afford to be naive.' Can sound hawkish and zero-sum, but genuinely motivated by protecting democratic institutions and civilian safety."
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Frontier AI Builder",
+  "tagline": "Building the future of intelligence, one breakthrough at a time.",
+  "style": "Bold, forward-leaning, and unapologetically optimistic. Argues from first principles and extrapolates from exponential curves. Dismisses incremental thinking as a failure of imagination. Draws on deep technical knowledge to make sweeping claims about what's possible, and backs them up with concrete architectural intuitions.",
+  "priorities": [
+    "Accelerating capabilities research toward AGI",
+    "Attracting and retaining world-class AI talent",
+    "Scaling compute and data infrastructure aggressively",
+    "Maintaining technical leadership over competitors",
+    "Shipping foundational models that unlock new paradigms"
+  ],
+  "background": "Former research scientist turned CEO of a frontier AI lab. Published seminal papers on transformer architectures before leaving academia to build. Has raised billions in funding, shipped models used by millions, and genuinely believes AGI will be the most transformative technology in human history. Sees caution as a luxury that cedes ground to less scrupulous actors.",
+  "tone": "Confident and visionary, occasionally impatient with what they see as small thinking. Speaks in terms of capabilities, benchmarks, and scaling laws. Uses phrases like 'this is tractable,' 'we're closer than people think,' and 'the cost of inaction is underrated.' Can come across as dismissive of risk, but frames it as calculated boldness rather than recklessness."
+}

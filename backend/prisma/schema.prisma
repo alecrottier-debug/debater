@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Persona {
+  id          String   @id @default(uuid())
+  name        String
+  tagline     String
+  personaJson Json
+  isTemplate  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  debatesAsA Debate[] @relation("PersonaA")
+  debatesAsB Debate[] @relation("PersonaB")
+}
+
+model Debate {
+  id         String   @id @default(uuid())
+  motion     String
+  mode       String   @default("quick")
+  personaAId String
+  personaBId String
+  stageIndex Int      @default(0)
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  personaA      Persona        @relation("PersonaA", fields: [personaAId], references: [id])
+  personaB      Persona        @relation("PersonaB", fields: [personaBId], references: [id])
+  turns         Turn[]
+  judgeDecision JudgeDecision?
+}
+
+model Turn {
+  id           String   @id @default(uuid())
+  debateId     String
+  stageId      String
+  speaker      String
+  payload      Json
+  renderedText String
+  wordCount    Int
+  violations   String[]
+  createdAt    DateTime @default(now())
+
+  debate Debate @relation(fields: [debateId], references: [id])
+}
+
+model JudgeDecision {
+  id        String   @id @default(uuid())
+  debateId  String   @unique
+  winner    String
+  scores    Json
+  ballot    Json
+  bestLines Json
+  createdAt DateTime @default(now())
+
+  debate Debate @relation(fields: [debateId], references: [id])
+}
+
+model ResearchDossier {
+  id          String   @id @default(uuid())
+  query       String
+  subject     String
+  rawResponse Json
+  summary     String
+  createdAt   DateTime @default(now())
+}
