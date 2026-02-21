@@ -21,31 +21,31 @@ const speakerStyles: Record<
   }
 > = {
   MOD: {
-    border: "border-amber-500/20",
-    bg: "bg-gradient-to-br from-amber-950/30 to-amber-900/10",
-    badge: "bg-amber-500/20",
-    badgeText: "text-amber-400",
+    border: "border-amber-200",
+    bg: "bg-gradient-to-br from-amber-50 to-orange-50/30",
+    badge: "bg-amber-100",
+    badgeText: "text-amber-700",
     accent: "border-l-amber-500",
   },
   A: {
-    border: "border-blue-500/20",
-    bg: "bg-gradient-to-br from-blue-950/20 to-blue-900/5",
-    badge: "bg-blue-500/20",
-    badgeText: "text-blue-400",
+    border: "border-blue-200",
+    bg: "bg-gradient-to-br from-blue-50 to-sky-50/30",
+    badge: "bg-blue-100",
+    badgeText: "text-blue-700",
     accent: "border-l-blue-500",
   },
   B: {
-    border: "border-purple-500/20",
-    bg: "bg-gradient-to-br from-purple-950/20 to-purple-900/5",
-    badge: "bg-purple-500/20",
-    badgeText: "text-purple-400",
+    border: "border-purple-200",
+    bg: "bg-gradient-to-br from-purple-50 to-fuchsia-50/30",
+    badge: "bg-purple-100",
+    badgeText: "text-purple-700",
     accent: "border-l-purple-500",
   },
   JUDGE: {
-    border: "border-emerald-500/20",
-    bg: "bg-gradient-to-br from-emerald-950/30 to-emerald-900/10",
-    badge: "bg-emerald-500/20",
-    badgeText: "text-emerald-400",
+    border: "border-emerald-200",
+    bg: "bg-gradient-to-br from-emerald-50 to-teal-50/30",
+    badge: "bg-emerald-100",
+    badgeText: "text-emerald-700",
     accent: "border-l-emerald-500",
   },
 };
@@ -95,18 +95,18 @@ export default function SpeechCard({
       className={`${alignment}`}
     >
       <div
-        className={`overflow-hidden rounded-xl border border-l-4 ${style.border} ${style.bg} ${style.accent} shadow-lg shadow-black/10`}
+        className={`overflow-hidden rounded-xl border border-l-4 ${style.border} ${style.bg} ${style.accent} shadow-sm`}
       >
         {/* Header */}
-        <div className="flex items-center gap-3 border-b border-white/5 px-5 py-3">
+        <div className="flex items-center gap-3 border-b border-gray-100 px-5 py-3">
           <span
             className={`rounded-full px-3 py-1 text-xs font-bold ${style.badge} ${style.badgeText}`}
           >
             {speakerName}
           </span>
-          <span className="text-xs font-medium text-slate-500">{stageLabel}</span>
+          <span className="text-xs font-medium text-gray-400">{stageLabel}</span>
           {turn.violations.length > 0 && (
-            <span className="ml-auto rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-medium text-red-400">
+            <span className="ml-auto rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-500">
               {turn.violations.length} violation{turn.violations.length > 1 ? "s" : ""}
             </span>
           )}
@@ -116,7 +116,7 @@ export default function SpeechCard({
         <div className="px-5 py-4">
           {/* Lead text */}
           {payload.lead && (
-            <p className="text-sm font-medium leading-relaxed text-slate-200">
+            <p className="text-sm font-medium leading-relaxed text-gray-800">
               {payload.lead}
             </p>
           )}
@@ -130,7 +130,7 @@ export default function SpeechCard({
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: isLatest ? 0.4 + i * 0.1 : 0 }}
-                  className="flex items-start gap-2.5 text-sm leading-relaxed text-slate-300"
+                  className="flex items-start gap-2.5 text-sm leading-relaxed text-gray-600"
                 >
                   <span
                     className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${
@@ -155,12 +155,12 @@ export default function SpeechCard({
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: isLatest ? 0.6 : 0 }}
-              className="mt-4 rounded-lg border border-white/5 bg-white/[0.03] px-4 py-3"
+              className="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3"
             >
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
                 Question
               </p>
-              <p className="mt-1 text-sm italic text-slate-300">
+              <p className="mt-1 text-sm italic text-gray-700">
                 &ldquo;{payload.question}&rdquo;
               </p>
             </motion.div>
@@ -172,12 +172,12 @@ export default function SpeechCard({
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: isLatest ? 0.5 : 0 }}
-              className="mt-3 rounded-lg border border-white/5 bg-white/[0.03] px-4 py-3"
+              className="mt-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3"
             >
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
                 Answering
               </p>
-              <p className="mt-1 text-sm text-slate-300">
+              <p className="mt-1 text-sm text-gray-700">
                 {payload.questionAnswered}
               </p>
             </motion.div>
@@ -187,7 +187,7 @@ export default function SpeechCard({
           {turn.violations.length > 0 && (
             <div className="mt-3 space-y-1">
               {turn.violations.map((v, i) => (
-                <p key={i} className="text-xs text-red-400/70">
+                <p key={i} className="text-xs text-red-500/70">
                   * {v}
                 </p>
               ))}
@@ -196,8 +196,8 @@ export default function SpeechCard({
         </div>
 
         {/* Footer - word count */}
-        <div className="border-t border-white/5 px-5 py-2">
-          <span className="text-[10px] text-slate-600">
+        <div className="border-t border-gray-100 px-5 py-2">
+          <span className="text-[10px] text-gray-400">
             {turn.wordCount} words
           </span>
         </div>

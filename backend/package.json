@@ -13,6 +13,7 @@
     "start:dev": "nest start --watch",
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "npx ts-node prisma/seed.ts",
+    "persona:create": "npx ts-node scripts/create-persona.ts",
     "db:studio": "npx prisma studio",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",

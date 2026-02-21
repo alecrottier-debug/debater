@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchPersonas, createDebate, type Persona } from "@/lib/api";
+import PersonaPicker from "@/components/PersonaPicker";
+import PersonaPreview from "@/components/PersonaPreview";
 
 export default function SetupPage() {
   const router = useRouter();
@@ -83,10 +85,10 @@ export default function SetupPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl font-bold tracking-tight text-white sm:text-5xl"
+            className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl"
           >
             Set Up Your{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
               Debate
             </span>
           </motion.h1>
@@ -94,7 +96,7 @@ export default function SetupPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="mt-3 text-lg text-slate-400"
+            className="mt-3 text-lg text-gray-500"
           >
             Choose a motion, pick your debaters, and let the arguments fly.
           </motion.p>
@@ -106,13 +108,13 @@ export default function SetupPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           onSubmit={handleSubmit}
-          className="rounded-2xl border border-white/5 bg-[#111827] p-6 shadow-2xl shadow-blue-500/5 sm:p-8"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg shadow-gray-200/50 sm:p-8"
         >
           {/* Motion Input */}
           <div className="mb-6">
             <label
               htmlFor="motion"
-              className="mb-2 block text-sm font-semibold uppercase tracking-wider text-slate-300"
+              className="mb-2 block text-sm font-semibold uppercase tracking-wider text-gray-500"
             >
               Motion
             </label>
@@ -122,83 +124,45 @@ export default function SetupPage() {
               placeholder='e.g. "This house believes that AI will create more jobs than it destroys"'
               value={motionText}
               onChange={(e) => setMotionText(e.target.value)}
-              className="w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-slate-500 transition-colors focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 transition-colors focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
             />
           </div>
 
           {/* Persona Pickers */}
-          <div className="mb-6 grid gap-4 sm:grid-cols-2">
+          <div className="mb-6 grid gap-6 sm:grid-cols-2">
+            {/* Side A */}
             <div>
-              <label
-                htmlFor="personaA"
-                className="mb-2 block text-sm font-semibold uppercase tracking-wider text-blue-400"
-              >
+              <label className="mb-2 block text-sm font-semibold uppercase tracking-wider text-blue-500">
                 Side A
               </label>
-              <select
-                id="personaA"
-                value={personaAId}
-                onChange={(e) => setPersonaAId(e.target.value)}
-                disabled={loading}
-                className="w-full cursor-pointer rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white transition-colors focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <option value="" className="bg-gray-900">
-                  {loading ? "Loading..." : "Select debater..."}
-                </option>
-                {personas.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-gray-900">
-                    {p.name}
-                  </option>
-                ))}
-              </select>
+              <PersonaPicker
+                personas={personas}
+                selected={selectedA}
+                onSelect={(p) => setPersonaAId(p.id)}
+                side="A"
+                disabledId={personaBId}
+                loading={loading}
+              />
               <AnimatePresence>
-                {selectedA && (
-                  <motion.p
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-2 text-sm italic text-slate-400"
-                  >
-                    {selectedA.tagline}
-                  </motion.p>
-                )}
+                {selectedA && <PersonaPreview persona={selectedA} side="A" />}
               </AnimatePresence>
             </div>
 
+            {/* Side B */}
             <div>
-              <label
-                htmlFor="personaB"
-                className="mb-2 block text-sm font-semibold uppercase tracking-wider text-purple-400"
-              >
+              <label className="mb-2 block text-sm font-semibold uppercase tracking-wider text-purple-500">
                 Side B
               </label>
-              <select
-                id="personaB"
-                value={personaBId}
-                onChange={(e) => setPersonaBId(e.target.value)}
-                disabled={loading}
-                className="w-full cursor-pointer rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white transition-colors focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <option value="" className="bg-gray-900">
-                  {loading ? "Loading..." : "Select debater..."}
-                </option>
-                {personas.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-gray-900">
-                    {p.name}
-                  </option>
-                ))}
-              </select>
+              <PersonaPicker
+                personas={personas}
+                selected={selectedB}
+                onSelect={(p) => setPersonaBId(p.id)}
+                side="B"
+                disabledId={personaAId}
+                loading={loading}
+              />
               <AnimatePresence>
-                {selectedB && (
-                  <motion.p
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-2 text-sm italic text-slate-400"
-                  >
-                    {selectedB.tagline}
-                  </motion.p>
-                )}
+                {selectedB && <PersonaPreview persona={selectedB} side="B" />}
               </AnimatePresence>
             </div>
           </div>
@@ -207,7 +171,7 @@ export default function SetupPage() {
           <div className="mb-6 flex justify-center">
             <Link
               href="/personas/create"
-              className="inline-flex items-center gap-2 rounded-lg border border-dashed border-white/20 px-4 py-2 text-sm text-slate-400 transition-all hover:border-blue-500/40 hover:text-blue-400"
+              className="inline-flex items-center gap-2 rounded-lg border border-dashed border-gray-300 px-4 py-2 text-sm text-gray-500 transition-all hover:border-blue-400 hover:text-blue-500"
             >
               <svg
                 className="h-4 w-4"
@@ -233,7 +197,7 @@ export default function SetupPage() {
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -5 }}
-                className="mb-4 text-sm text-red-400"
+                className="mb-4 text-sm text-red-500"
               >
                 {validationMessage}
               </motion.p>
@@ -242,7 +206,7 @@ export default function SetupPage() {
 
           {/* Mode Selector */}
           <div className="mb-8">
-            <label className="mb-2 block text-sm font-semibold uppercase tracking-wider text-slate-300">
+            <label className="mb-2 block text-sm font-semibold uppercase tracking-wider text-gray-500">
               Mode
             </label>
             <div className="flex gap-3">
@@ -251,8 +215,8 @@ export default function SetupPage() {
                 onClick={() => setMode("quick")}
                 className={`flex-1 rounded-xl border px-4 py-3 text-sm font-medium transition-all ${
                   mode === "quick"
-                    ? "border-blue-500/50 bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/30"
-                    : "border-white/10 bg-white/5 text-slate-400 hover:border-white/20"
+                    ? "border-blue-400 bg-blue-50 text-blue-600 ring-1 ring-blue-200"
+                    : "border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300"
                 }`}
               >
                 <div className="text-base font-semibold">Quick</div>
@@ -261,7 +225,7 @@ export default function SetupPage() {
               <button
                 type="button"
                 disabled
-                className="flex-1 cursor-not-allowed rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3 text-sm font-medium text-slate-600"
+                className="flex-1 cursor-not-allowed rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-300"
               >
                 <div className="text-base font-semibold">Pro</div>
                 <div className="mt-0.5 text-xs opacity-70">Coming soon</div>
@@ -276,7 +240,7 @@ export default function SetupPage() {
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -5 }}
-                className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400"
+                className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
               >
                 {error}
               </motion.div>

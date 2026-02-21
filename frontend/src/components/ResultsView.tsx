@@ -91,7 +91,6 @@ export default function ResultsView({ debate }: ResultsViewProps) {
     setExportLoading(true);
     try {
       const markdown = await exportDebate(debate.id);
-      // Try to download as file
       const blob = new Blob([markdown], { type: "text/markdown" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -133,7 +132,6 @@ export default function ResultsView({ debate }: ResultsViewProps) {
   const bestLines = decision.bestLines as { A: string; B: string };
 
   function scrollToStage(stageRef: string) {
-    // Try to find matching stage element
     const el = document.getElementById(`stage-${stageRef}`);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -161,26 +159,17 @@ export default function ResultsView({ debate }: ResultsViewProps) {
         transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
         className={`relative overflow-hidden rounded-2xl border p-8 text-center ${
           winnerColor === "blue"
-            ? "border-blue-500/30 bg-gradient-to-br from-blue-950/50 via-blue-900/20 to-transparent"
-            : "border-purple-500/30 bg-gradient-to-br from-purple-950/50 via-purple-900/20 to-transparent"
+            ? "border-blue-200 bg-gradient-to-br from-blue-50 via-sky-50/50 to-white"
+            : "border-purple-200 bg-gradient-to-br from-purple-50 via-fuchsia-50/50 to-white"
         }`}
       >
-        {/* Glow background */}
-        <div
-          className={`absolute inset-0 opacity-20 ${
-            winnerColor === "blue"
-              ? "bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-500 to-transparent"
-              : "bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-500 to-transparent"
-          }`}
-        />
-
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.7 }}
           className="relative"
         >
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
             Winner
           </p>
 
@@ -189,7 +178,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.9, type: "spring", stiffness: 300 }}
-            className="mx-auto mt-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-amber-600 shadow-2xl shadow-amber-500/30"
+            className="mx-auto mt-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-amber-600 shadow-2xl shadow-amber-200/50"
           >
             <svg className="h-10 w-10 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M5 3h14c.6 0 1 .4 1 1v2c0 3.3-2.2 6.2-5.3 7.1A3 3 0 0 1 12 16a3 3 0 0 1-2.7-2.9C6.2 12.2 4 9.3 4 6V4c0-.6.4-1 1-1Zm4 17h6v1c0 .6-.4 1-1 1H10c-.6 0-1-.4-1-1v-1Z" />
@@ -201,7 +190,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.1 }}
             className={`mt-4 text-3xl font-bold ${
-              winnerColor === "blue" ? "text-blue-400" : "text-purple-400"
+              winnerColor === "blue" ? "text-blue-600" : "text-purple-600"
             }`}
           >
             {winnerName}
@@ -210,7 +199,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.3 }}
-            className="mt-1 text-sm text-slate-400"
+            className="mt-1 text-sm text-gray-500"
           >
             defeats {loserName}
           </motion.p>
@@ -222,19 +211,19 @@ export default function ResultsView({ debate }: ResultsViewProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.5 }}
-        className="rounded-2xl border border-white/5 bg-[#111827] p-6"
+        className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
       >
-        <h3 className="mb-4 text-center text-sm font-bold uppercase tracking-wider text-slate-300">
+        <h3 className="mb-4 text-center text-sm font-bold uppercase tracking-wider text-gray-500">
           Scorecard
         </h3>
 
         {/* Column headers */}
         <div className="mb-2 flex items-center px-2">
           <div className="flex-1" />
-          <div className="w-20 text-center text-xs font-bold text-blue-400">
+          <div className="w-20 text-center text-xs font-bold text-blue-600">
             {debate.personaA.name}
           </div>
-          <div className="w-20 text-center text-xs font-bold text-purple-400">
+          <div className="w-20 text-center text-xs font-bold text-purple-600">
             {debate.personaB.name}
           </div>
         </div>
@@ -253,21 +242,21 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.6 + idx * 0.1 }}
-                className="flex items-center rounded-lg bg-white/[0.02] px-3 py-2.5"
+                className="flex items-center rounded-lg bg-gray-50 px-3 py-2.5"
               >
-                <div className="flex-1 text-sm text-slate-300">
+                <div className="flex-1 text-sm text-gray-700">
                   {scoreLabels[category] || category}
                 </div>
                 <div
                   className={`w-20 text-center text-sm font-bold ${
-                    isAHigher ? "text-blue-400" : "text-slate-500"
+                    isAHigher ? "text-blue-600" : "text-gray-400"
                   }`}
                 >
                   {aScore}
                 </div>
                 <div
                   className={`w-20 text-center text-sm font-bold ${
-                    isBHigher ? "text-purple-400" : "text-slate-500"
+                    isBHigher ? "text-purple-600" : "text-gray-400"
                   }`}
                 >
                   {bScore}
@@ -277,12 +266,12 @@ export default function ResultsView({ debate }: ResultsViewProps) {
           })}
 
           {/* Totals */}
-          <div className="mt-2 flex items-center border-t border-white/5 px-3 pt-3">
-            <div className="flex-1 text-sm font-bold text-white">Total</div>
-            <div className="w-20 text-center text-sm font-bold text-blue-400">
+          <div className="mt-2 flex items-center border-t border-gray-200 px-3 pt-3">
+            <div className="flex-1 text-sm font-bold text-gray-900">Total</div>
+            <div className="w-20 text-center text-sm font-bold text-blue-600">
               {Object.values(scores).reduce((sum, v) => sum + v.A, 0)}
             </div>
-            <div className="w-20 text-center text-sm font-bold text-purple-400">
+            <div className="w-20 text-center text-sm font-bold text-purple-600">
               {Object.values(scores).reduce((sum, v) => sum + v.B, 0)}
             </div>
           </div>
@@ -295,9 +284,9 @@ export default function ResultsView({ debate }: ResultsViewProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 2.0 }}
-          className="rounded-2xl border border-white/5 bg-[#111827] p-6"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
         >
-          <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-slate-300">
+          <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-gray-500">
             Ballot Reasons
           </h3>
           <div className="space-y-3">
@@ -307,15 +296,15 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 2.1 + idx * 0.1 }}
-                className="flex items-start gap-3 rounded-lg bg-white/[0.02] px-4 py-3"
+                className="flex items-start gap-3 rounded-lg bg-gray-50 px-4 py-3"
               >
                 <button
                   onClick={() => scrollToStage(item.stageRef)}
-                  className="mt-0.5 shrink-0 rounded bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400 transition-colors hover:bg-emerald-500/20"
+                  className="mt-0.5 shrink-0 rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-600 transition-colors hover:bg-emerald-100"
                 >
                   {item.stageRef}
                 </button>
-                <p className="text-sm leading-relaxed text-slate-300">
+                <p className="text-sm leading-relaxed text-gray-600">
                   {item.reason}
                 </p>
               </motion.div>
@@ -378,11 +367,11 @@ export default function ResultsView({ debate }: ResultsViewProps) {
           disabled={exportLoading}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-6 py-3 font-medium text-slate-300 transition-all hover:border-white/20 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {exportLoading ? (
             <>
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-transparent" />
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
               Exporting...
             </>
           ) : (
@@ -400,14 +389,14 @@ export default function ResultsView({ debate }: ResultsViewProps) {
           onClick={handleCopyExport}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-6 py-3 font-medium text-slate-300 transition-all hover:border-white/20 hover:bg-white/10"
+          className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50"
         >
           {copied ? (
             <>
-              <svg className="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <svg className="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
               </svg>
-              <span className="text-emerald-400">Copied!</span>
+              <span className="text-emerald-600">Copied!</span>
             </>
           ) : (
             <>

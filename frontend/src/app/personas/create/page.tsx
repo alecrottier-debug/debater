@@ -38,27 +38,27 @@ export default function CreatePersonaPage() {
       <div className="mb-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-1 text-sm text-slate-400 transition-colors hover:text-white"
+          className="inline-flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-gray-700"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
           Back to Setup
         </Link>
-        <h1 className="mt-4 text-3xl font-bold text-white">Create New Persona</h1>
-        <p className="mt-2 text-slate-400">
+        <h1 className="mt-4 text-3xl font-bold text-gray-900">Create New Persona</h1>
+        <p className="mt-2 text-gray-500">
           Build a custom debater persona using AI research or manual entry.
         </p>
       </div>
 
       {/* Tab Switcher */}
-      <div className="mb-8 flex rounded-lg border border-white/10 bg-[#111827] p-1">
+      <div className="mb-8 flex rounded-lg border border-gray-200 bg-gray-50 p-1">
         <button
           onClick={() => setTab("ai")}
           className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
             tab === "ai"
               ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
-              : "text-slate-400 hover:text-white"
+              : "text-gray-500 hover:text-gray-700"
           }`}
         >
           AI-Assisted (Recommended)
@@ -68,7 +68,7 @@ export default function CreatePersonaPage() {
           className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
             tab === "manual"
               ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
-              : "text-slate-400 hover:text-white"
+              : "text-gray-500 hover:text-gray-700"
           }`}
         >
           Manual Entry
@@ -162,7 +162,7 @@ function AiWizard() {
   return (
     <div>
       {error && (
-        <div className="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
           {error}
         </div>
       )}
@@ -184,20 +184,20 @@ function AiWizard() {
             <div key={label} className="flex items-center gap-2">
               {i > 0 && (
                 <div
-                  className={`h-px w-8 ${isActive ? "bg-blue-500" : "bg-white/10"}`}
+                  className={`h-px w-8 ${isActive ? "bg-blue-500" : "bg-gray-200"}`}
                 />
               )}
               <div
                 className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
                   isActive
                     ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
-                    : "border border-white/20 text-slate-500"
+                    : "border border-gray-300 text-gray-400"
                 }`}
               >
                 {i + 1}
               </div>
               <span
-                className={`text-sm ${isActive ? "text-white" : "text-slate-500"}`}
+                className={`text-sm ${isActive ? "text-gray-900" : "text-gray-400"}`}
               >
                 {label}
               </span>
@@ -210,7 +210,7 @@ function AiWizard() {
       {(step === "input" || step === "researching") && (
         <div className="space-y-4">
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-700">
               Subject *
             </label>
             <input
@@ -218,12 +218,12 @@ function AiWizard() {
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder='e.g. "Elon Musk on AI regulation" or "a veteran labor union organizer"'
-              className="w-full rounded-lg border border-white/10 bg-[#0b0d17] px-4 py-3 text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
               disabled={step === "researching"}
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-700">
               Additional Context (optional)
             </label>
             <textarea
@@ -231,7 +231,7 @@ function AiWizard() {
               onChange={(e) => setContext(e.target.value)}
               placeholder="Any additional context to guide the research..."
               rows={3}
-              className="w-full rounded-lg border border-white/10 bg-[#0b0d17] px-4 py-3 text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
               disabled={step === "researching"}
             />
           </div>
@@ -260,16 +260,16 @@ function AiWizard() {
       {/* Step: Dossier */}
       {(step === "dossier" || step === "synthesizing") && (
         <div className="space-y-4">
-          <div className="rounded-xl border border-white/10 bg-[#111827] p-6">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="mb-3 flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20">
-                <svg className="h-3.5 w-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100">
+                <svg className="h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                 </svg>
               </div>
-              <h3 className="font-semibold text-white">Research Complete</h3>
+              <h3 className="font-semibold text-gray-900">Research Complete</h3>
             </div>
-            <div className="max-h-64 overflow-y-auto whitespace-pre-wrap text-sm text-slate-300">
+            <div className="max-h-64 overflow-y-auto whitespace-pre-wrap text-sm text-gray-600">
               {summary}
             </div>
           </div>
@@ -298,13 +298,13 @@ function AiWizard() {
       {/* Step: Preview & Edit */}
       {step === "preview" && (
         <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-white">Preview & Edit</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Preview & Edit</h3>
           <PersonaEditForm
             fields={editFields}
             onChange={setEditFields}
           />
           <div>
-            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-400">
+            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-400">
               Preview
             </h4>
             <PersonaCard persona={editFields} />
@@ -318,7 +318,7 @@ function AiWizard() {
             </button>
             <button
               onClick={() => setStep("dossier")}
-              className="rounded-lg border border-white/10 px-6 py-3 font-medium text-slate-300 transition-colors hover:border-white/20 hover:text-white"
+              className="rounded-lg border border-gray-200 px-6 py-3 font-medium text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-50"
             >
               Re-generate
             </button>
@@ -329,15 +329,15 @@ function AiWizard() {
       {/* Step: Saved */}
       {step === "saved" && savedPersona && (
         <div className="space-y-6 text-center">
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20">
-            <svg className="h-8 w-8 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+            <svg className="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
             </svg>
           </div>
-          <h3 className="text-2xl font-bold text-white">Persona Created!</h3>
-          <p className="text-slate-400">
-            <strong className="text-white">{savedPersona.name}</strong> is now
-            available in your persona dropdown pickers.
+          <h3 className="text-2xl font-bold text-gray-900">Persona Created!</h3>
+          <p className="text-gray-500">
+            <strong className="text-gray-900">{savedPersona.name}</strong> is now
+            available in your persona pickers.
           </p>
           <PersonaCard
             persona={savedPersona.personaJson as unknown as PersonaFields}
@@ -361,7 +361,7 @@ function AiWizard() {
                 setSavedPersona(null);
                 setError("");
               }}
-              className="rounded-lg border border-white/10 px-6 py-3 font-medium text-slate-300 transition-colors hover:border-white/20 hover:text-white"
+              className="rounded-lg border border-gray-200 px-6 py-3 font-medium text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-50"
             >
               Create Another
             </button>
@@ -426,15 +426,15 @@ function ManualWizard() {
   if (saved) {
     return (
       <div className="space-y-6 text-center">
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20">
-          <svg className="h-8 w-8 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+        <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+          <svg className="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
           </svg>
         </div>
-        <h3 className="text-2xl font-bold text-white">Persona Created!</h3>
-        <p className="text-slate-400">
-          <strong className="text-white">{saved.name}</strong> is now available
-          in your persona dropdown pickers.
+        <h3 className="text-2xl font-bold text-gray-900">Persona Created!</h3>
+        <p className="text-gray-500">
+          <strong className="text-gray-900">{saved.name}</strong> is now available
+          in your persona pickers.
         </p>
         <PersonaCard persona={saved.personaJson as unknown as PersonaFields} />
         <div className="flex justify-center gap-3">
@@ -451,7 +451,7 @@ function ManualWizard() {
               setError("");
               setValidationErrors({});
             }}
-            className="rounded-lg border border-white/10 px-6 py-3 font-medium text-slate-300 transition-colors hover:border-white/20 hover:text-white"
+            className="rounded-lg border border-gray-200 px-6 py-3 font-medium text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-50"
           >
             Create Another
           </button>
@@ -463,7 +463,7 @@ function ManualWizard() {
   return (
     <div className="space-y-6">
       {error && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
           {error}
         </div>
       )}
@@ -475,7 +475,7 @@ function ManualWizard() {
       />
 
       <div>
-        <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-400">
+        <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-400">
           Preview
         </h4>
         <PersonaCard persona={fields} />
@@ -576,11 +576,11 @@ function PersonaEditForm({
 
       {/* Priorities */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-slate-300">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
           Priorities *
         </label>
         {errors.priorities && (
-          <p className="mb-2 text-xs text-red-400">{errors.priorities}</p>
+          <p className="mb-2 text-xs text-red-500">{errors.priorities}</p>
         )}
         <div className="space-y-2">
           {fields.priorities.map((p, i) => (
@@ -590,12 +590,12 @@ function PersonaEditForm({
                 value={p}
                 onChange={(e) => updatePriority(i, e.target.value)}
                 placeholder={`Priority ${i + 1}`}
-                className="flex-1 rounded-lg border border-white/10 bg-[#0b0d17] px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
               />
               {fields.priorities.length > 1 && (
                 <button
                   onClick={() => removePriority(i)}
-                  className="rounded-lg border border-white/10 px-3 text-slate-400 transition-colors hover:border-red-500/30 hover:text-red-400"
+                  className="rounded-lg border border-gray-200 px-3 text-gray-400 transition-colors hover:border-red-300 hover:text-red-500"
                   title="Remove priority"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -608,7 +608,7 @@ function PersonaEditForm({
           {fields.priorities.length < 8 && (
             <button
               onClick={addPriority}
-              className="inline-flex items-center gap-1 text-sm text-blue-400 transition-colors hover:text-blue-300"
+              className="inline-flex items-center gap-1 text-sm text-blue-500 transition-colors hover:text-blue-600"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -639,7 +639,7 @@ function FormField({
 }) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium text-slate-300">
+      <label className="mb-2 block text-sm font-medium text-gray-700">
         {label} {required && "*"}
       </label>
       <input
@@ -647,13 +647,13 @@ function FormField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full rounded-lg border bg-[#0b0d17] px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 ${
+        className={`w-full rounded-lg border bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 ${
           error
-            ? "border-red-500/50 focus:border-red-500 focus:ring-red-500"
-            : "border-white/10 focus:border-blue-500 focus:ring-blue-500"
+            ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+            : "border-gray-200 focus:border-blue-400 focus:ring-blue-100"
         }`}
       />
-      {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>
   );
 }
@@ -675,7 +675,7 @@ function FormTextarea({
 }) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium text-slate-300">
+      <label className="mb-2 block text-sm font-medium text-gray-700">
         {label} {required && "*"}
       </label>
       <textarea
@@ -683,13 +683,13 @@ function FormTextarea({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={3}
-        className={`w-full rounded-lg border bg-[#0b0d17] px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 ${
+        className={`w-full rounded-lg border bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 ${
           error
-            ? "border-red-500/50 focus:border-red-500 focus:ring-red-500"
-            : "border-white/10 focus:border-blue-500 focus:ring-blue-500"
+            ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+            : "border-gray-200 focus:border-blue-400 focus:ring-blue-100"
         }`}
       />
-      {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>
   );
 }

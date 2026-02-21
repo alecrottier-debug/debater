@@ -1,22 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SynthesizedPersonaSchema, SynthesizedPersona } from './persona-synth.schema.js';
+import { synthesizePersona, type SynthesizedPersona } from './lib/synthesis-client.js';
 
-interface OpenAiResponse {
-  id: string;
-  choices: {
-    index: number;
-    message: { role: string; content: string };
-    finish_reason: string;
-  }[];
-  usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
-}
+export type { SynthesizedPersona };
 
 @Injectable()
 export class PersonaSynthesisService {
   private readonly logger = new Logger(PersonaSynthesisService.name);
   private readonly apiKey: string;
-  private readonly baseUrl = 'https://api.openai.com/v1/chat/completions';
   private readonly maxRetries = 2;
 
   constructor(private readonly config: ConfigService) {
@@ -28,129 +19,15 @@ export class PersonaSynthesisService {
     subject: string,
     nameOverride?: string,
   ): Promise<SynthesizedPersona> {
-    let lastError: Error | null = null;
+    this.logger.log(`Synthesizing persona for "${subject}"`);
 
-    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
-      try {
-        if (attempt > 0) {
-          this.logger.warn(
-            `Retry attempt ${attempt}/${this.maxRetries} for persona synthesis of "${subject}"`,
-          );
-        }
-
-        const raw = await this.callOpenAi(dossierSummary, subject, nameOverride);
-        const parsed = this.parseAndValidate(raw);
-        this.logger.log(`Successfully synthesized persona for "${subject}"`);
-        return parsed;
-      } catch (err) {
-        lastError = err instanceof Error ? err : new Error(String(err));
-        this.logger.error(
-          `Synthesis attempt ${attempt + 1} failed: ${lastError.message}`,
-        );
-      }
-    }
-
-    throw new Error(
-      `Failed to synthesize persona after ${this.maxRetries + 1} attempts: ${lastError?.message}`,
-    );
-  }
-
-  private async callOpenAi(
-    dossierSummary: string,
-    subject: string,
-    nameOverride?: string,
-  ): Promise<string> {
-    const prompt = this.buildPrompt(dossierSummary, subject, nameOverride);
-
-    const response = await fetch(this.baseUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-5-mini',
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are an expert at creating debate personas. ' +
-              'You output ONLY valid JSON, with no markdown fences or extra text.',
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.7,
-        response_format: { type: 'json_object' },
-      }),
+    const result = await synthesizePersona(dossierSummary, subject, nameOverride, {
+      apiKey: this.apiKey,
+      maxRetries: this.maxRetries,
     });
 
-    if (!response.ok) {
-      const errorBody = await response.text();
-      this.logger.error(
-        `OpenAI API error: ${response.status} ${response.statusText} - ${errorBody}`,
-      );
-      throw new Error(
-        `OpenAI API request failed: ${response.status} ${response.statusText}`,
-      );
-    }
+    this.logger.log(`Successfully synthesized persona for "${subject}"`);
 
-    const data = (await response.json()) as OpenAiResponse;
-    const content = data.choices?.[0]?.message?.content;
-
-    if (!content) {
-      throw new Error('OpenAI returned empty content');
-    }
-
-    this.logger.log(
-      `OpenAI response received (${data.usage?.total_tokens ?? 0} tokens)`,
-    );
-
-    return content;
-  }
-
-  private parseAndValidate(raw: string): SynthesizedPersona {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      throw new Error(`Invalid JSON from OpenAI: ${raw.slice(0, 200)}`);
-    }
-
-    const result = SynthesizedPersonaSchema.safeParse(parsed);
-
-    if (!result.success) {
-      const issues = result.error.issues
-        .map((i) => `${i.path.join('.')}: ${i.message}`)
-        .join('; ');
-      throw new Error(`Persona validation failed: ${issues}`);
-    }
-
-    return result.data;
-  }
-
-  private buildPrompt(
-    dossierSummary: string,
-    subject: string,
-    nameOverride?: string,
-  ): string {
-    return `Based on the following research dossier about "${subject}", create a debate persona JSON object.
-
-${nameOverride ? `Use the name: "${nameOverride}"` : 'Choose an appropriate name for the persona.'}
-
-The JSON must have exactly these fields:
-- "name": string - the persona's display name
-- "tagline": string - one compelling line that captures their essence
-- "style": string - a description of their debate style (e.g., "aggressive cross-examiner", "calm evidence-based reasoner")
-- "priorities": string[] - an array of 3-5 things they care about most
-- "background": string - a brief background description (2-3 sentences)
-- "tone": string - how they speak and argue (e.g., "direct and confrontational", "measured with dry wit")
-
-Research dossier:
-${dossierSummary}
-
-Respond with ONLY the JSON object, no other text.`;
+    return result;
   }
 }

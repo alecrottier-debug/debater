@@ -83,13 +83,11 @@ export default function DebatePage({ params }: DebatePageProps) {
   // Determine active speaker from stage plan
   const getActiveSpeaker = (): Speaker | null => {
     if (isCompleted || !advancing) {
-      // When not advancing, the "next" stage speaker is active
       if (currentStageIndex < stages.length && !isCompleted) {
         return stages[currentStageIndex].speaker;
       }
       return null;
     }
-    // While advancing, the current generating stage is active
     if (currentStageIndex < stages.length) {
       return stages[currentStageIndex].speaker;
     }
@@ -107,7 +105,7 @@ export default function DebatePage({ params }: DebatePageProps) {
           className="flex flex-col items-center gap-4"
         >
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-          <p className="text-slate-400">Loading debate...</p>
+          <p className="text-gray-500">Loading debate...</p>
         </motion.div>
       </div>
     );
@@ -117,8 +115,8 @@ export default function DebatePage({ params }: DebatePageProps) {
     return (
       <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-red-400">Debate not found</p>
-          {error && <p className="mt-2 text-sm text-slate-500">{error}</p>}
+          <p className="text-xl text-red-500">Debate not found</p>
+          {error && <p className="mt-2 text-sm text-gray-500">{error}</p>}
         </div>
       </div>
     );
@@ -132,10 +130,10 @@ export default function DebatePage({ params }: DebatePageProps) {
         animate={{ opacity: 1, y: 0 }}
         className="text-center"
       >
-        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+        <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
           Motion
         </p>
-        <h1 className="mt-1 text-xl font-bold text-white sm:text-2xl">
+        <h1 className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">
           &ldquo;{debate.motion}&rdquo;
         </h1>
       </motion.div>
@@ -210,10 +208,10 @@ export default function DebatePage({ params }: DebatePageProps) {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="flex items-center justify-center gap-3 rounded-xl border border-white/5 bg-[#111827] p-8"
+                  className="flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
                 >
                   <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-                  <span className="text-sm text-slate-400">
+                  <span className="text-sm text-gray-500">
                     {currentStageIndex < stages.length
                       ? `Generating ${stages[currentStageIndex]?.label}...`
                       : "Generating..."}
@@ -256,7 +254,7 @@ export default function DebatePage({ params }: DebatePageProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="mt-4 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400"
+                className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
               >
                 {error}
               </motion.div>

@@ -13,23 +13,23 @@ interface FighterCardProps {
 const sideConfig = {
   A: {
     gradient: "from-blue-500 to-blue-700",
-    border: "border-blue-500/20",
-    borderActive: "border-blue-500/60",
-    glow: "shadow-blue-500/30",
-    glowActive: "shadow-blue-500/50",
-    text: "text-blue-400",
-    bg: "bg-blue-500/5",
-    ring: "ring-blue-500/40",
+    border: "border-blue-200",
+    borderActive: "border-blue-500",
+    glow: "shadow-blue-200/50",
+    glowActive: "shadow-blue-500/30",
+    text: "text-blue-500",
+    bg: "bg-blue-50",
+    ring: "ring-blue-400/40",
   },
   B: {
     gradient: "from-purple-500 to-purple-700",
-    border: "border-purple-500/20",
-    borderActive: "border-purple-500/60",
-    glow: "shadow-purple-500/30",
-    glowActive: "shadow-purple-500/50",
-    text: "text-purple-400",
-    bg: "bg-purple-500/5",
-    ring: "ring-purple-500/40",
+    border: "border-purple-200",
+    borderActive: "border-purple-500",
+    glow: "shadow-purple-200/50",
+    glowActive: "shadow-purple-500/30",
+    text: "text-purple-500",
+    bg: "bg-purple-50",
+    ring: "ring-purple-400/40",
   },
 };
 
@@ -46,10 +46,10 @@ export default function FighterCard({
       <motion.div
         animate={
           isActive
-            ? { scale: 1.02, borderColor: "rgba(96,165,250,0.6)" }
-            : { scale: 1, borderColor: "rgba(96,165,250,0.2)" }
+            ? { scale: 1.02 }
+            : { scale: 1 }
         }
-        className={`flex-1 rounded-xl border bg-[#111827] p-3 text-center transition-shadow ${
+        className={`flex-1 rounded-xl border bg-white p-3 text-center transition-shadow ${
           isActive
             ? `${cfg.borderActive} shadow-lg ${cfg.glowActive}`
             : cfg.border
@@ -60,7 +60,7 @@ export default function FighterCard({
         >
           {side}
         </div>
-        <h3 className="text-xs font-bold text-white">{persona.name}</h3>
+        <h3 className="text-xs font-bold text-gray-900">{persona.name}</h3>
         <AnimatePresence>
           {isActive && (
             <motion.div
@@ -85,10 +85,10 @@ export default function FighterCard({
           : { scale: 1 }
       }
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className={`rounded-xl border bg-[#111827] p-4 text-center transition-all duration-300 ${
+      className={`rounded-xl border bg-white p-4 text-center transition-all duration-300 ${
         isActive
           ? `${cfg.borderActive} shadow-xl ${cfg.glowActive} ring-1 ${cfg.ring}`
-          : `${cfg.border} shadow-md shadow-black/20`
+          : `${cfg.border} shadow-sm`
       }`}
     >
       {/* Avatar */}
@@ -121,8 +121,8 @@ export default function FighterCard({
       </div>
 
       {/* Name */}
-      <h3 className="text-sm font-bold text-white">{persona.name}</h3>
-      <p className="mt-1 text-xs leading-snug text-slate-400">
+      <h3 className="text-sm font-bold text-gray-900">{persona.name}</h3>
+      <p className="mt-1 text-xs leading-snug text-gray-500">
         {persona.tagline}
       </p>
 
@@ -153,12 +153,12 @@ export function ModJudgeCard({ role, isActive }: ModJudgeCardProps) {
     role === "MOD"
       ? {
           gradient: "from-amber-500 to-orange-600",
-          border: "border-amber-500/20",
-          borderActive: "border-amber-500/60",
-          glow: "shadow-amber-500/30",
-          text: "text-amber-400",
-          bg: "bg-amber-500/5",
-          ring: "ring-amber-500/40",
+          border: "border-amber-200",
+          borderActive: "border-amber-500",
+          glow: "shadow-amber-200/50",
+          text: "text-amber-600",
+          bg: "bg-amber-50",
+          ring: "ring-amber-400/40",
           label: "Moderator",
           icon: (
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -168,12 +168,12 @@ export function ModJudgeCard({ role, isActive }: ModJudgeCardProps) {
         }
       : {
           gradient: "from-emerald-500 to-teal-600",
-          border: "border-emerald-500/20",
-          borderActive: "border-emerald-500/60",
-          glow: "shadow-emerald-500/30",
-          text: "text-emerald-400",
-          bg: "bg-emerald-500/5",
-          ring: "ring-emerald-500/40",
+          border: "border-emerald-200",
+          borderActive: "border-emerald-500",
+          glow: "shadow-emerald-200/50",
+          text: "text-emerald-600",
+          bg: "bg-emerald-50",
+          ring: "ring-emerald-400/40",
           label: "Judge",
           icon: (
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -186,7 +186,7 @@ export function ModJudgeCard({ role, isActive }: ModJudgeCardProps) {
     <motion.div
       animate={isActive ? { scale: 1.03 } : { scale: 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className={`mx-auto max-w-[160px] rounded-xl border bg-[#111827] p-3 text-center transition-all duration-300 ${
+      className={`mx-auto max-w-[160px] rounded-xl border bg-white p-3 text-center transition-all duration-300 ${
         isActive
           ? `${cfg.borderActive} shadow-xl ${cfg.glow} ring-1 ${cfg.ring}`
           : `${cfg.border}`
@@ -197,7 +197,7 @@ export function ModJudgeCard({ role, isActive }: ModJudgeCardProps) {
       >
         {cfg.icon}
       </div>
-      <h3 className="mt-2 text-xs font-bold text-white">{cfg.label}</h3>
+      <h3 className="mt-2 text-xs font-bold text-gray-900">{cfg.label}</h3>
       <AnimatePresence>
         {isActive && (
           <motion.div

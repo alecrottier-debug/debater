@@ -11,22 +11,22 @@ interface BestMomentCardProps {
 
 const sideStyles = {
   A: {
-    borderGradient: "from-blue-500 via-cyan-400 to-blue-600",
-    bgGradient: "from-blue-950/40 via-blue-900/10 to-transparent",
-    textColor: "text-blue-300",
-    labelColor: "text-blue-400",
-    quoteColor: "text-blue-500/10",
-    glowColor: "shadow-blue-500/10",
-    dotColor: "bg-blue-400",
+    borderGradient: "from-blue-400 via-cyan-300 to-blue-500",
+    bgGradient: "from-blue-50 via-sky-50/50 to-transparent",
+    textColor: "text-blue-700",
+    labelColor: "text-blue-600",
+    quoteColor: "text-blue-200",
+    glowColor: "shadow-blue-100",
+    dotColor: "bg-blue-500",
   },
   B: {
-    borderGradient: "from-purple-500 via-pink-400 to-purple-600",
-    bgGradient: "from-purple-950/40 via-purple-900/10 to-transparent",
-    textColor: "text-purple-300",
-    labelColor: "text-purple-400",
-    quoteColor: "text-purple-500/10",
-    glowColor: "shadow-purple-500/10",
-    dotColor: "bg-purple-400",
+    borderGradient: "from-purple-400 via-pink-300 to-purple-500",
+    bgGradient: "from-purple-50 via-fuchsia-50/50 to-transparent",
+    textColor: "text-purple-700",
+    labelColor: "text-purple-600",
+    quoteColor: "text-purple-200",
+    glowColor: "shadow-purple-100",
+    dotColor: "bg-purple-500",
   },
 };
 
@@ -58,7 +58,7 @@ export default function BestMomentCard({
 
       {/* Card body */}
       <div
-        className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${styles.bgGradient} border border-white/5 p-6 shadow-xl ${styles.glowColor}`}
+        className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${styles.bgGradient} border border-gray-200 p-6 shadow-lg ${styles.glowColor}`}
       >
         {/* Background quote mark */}
         <div
@@ -95,14 +95,14 @@ export default function BestMomentCard({
         </p>
 
         {/* Attribution */}
-        <div className="mt-4 flex items-center gap-2 border-t border-white/5 pt-3">
+        <div className="mt-4 flex items-center gap-2 border-t border-gray-200 pt-3">
           <div
             className={`h-1 w-6 rounded-full ${styles.dotColor} opacity-50`}
           />
-          <span className="text-xs font-semibold text-slate-400">
+          <span className="text-xs font-semibold text-gray-500">
             {speakerName}
           </span>
-          <span className="text-xs text-slate-600">
+          <span className="text-xs text-gray-400">
             Side {side}
           </span>
         </div>

@@ -17,18 +17,11 @@ const speakerColors: Record<Speaker, string> = {
   JUDGE: "from-emerald-500 to-teal-400",
 };
 
-const speakerDotColors: Record<Speaker, string> = {
-  MOD: "bg-amber-400",
-  A: "bg-blue-400",
-  B: "bg-purple-400",
-  JUDGE: "bg-emerald-400",
-};
-
 const speakerTextColors: Record<Speaker, string> = {
-  MOD: "text-amber-400",
-  A: "text-blue-400",
-  B: "text-purple-400",
-  JUDGE: "text-emerald-400",
+  MOD: "text-amber-600",
+  A: "text-blue-600",
+  B: "text-purple-600",
+  JUDGE: "text-emerald-600",
 };
 
 export default function StageProgressTracker({
@@ -47,11 +40,11 @@ export default function StageProgressTracker({
       initial={{ opacity: 0, y: -5 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="rounded-xl border border-white/5 bg-[#111827] p-4 sm:p-5"
+      className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5"
     >
       {/* Progress bar */}
       <div className="relative mb-4">
-        <div className="h-2 w-full overflow-hidden rounded-full bg-white/5">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progressPercent}%` }}
@@ -61,14 +54,14 @@ export default function StageProgressTracker({
         </div>
         {/* Completion text */}
         <div className="mt-2 flex items-center justify-between">
-          <span className="text-[10px] font-medium text-slate-500">
+          <span className="text-[10px] font-medium text-gray-400">
             {completedCount}/{totalStages} stages
           </span>
           {isCompleted && (
             <motion.span
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400"
+              className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-600"
             >
               Complete
             </motion.span>
@@ -94,7 +87,7 @@ export default function StageProgressTracker({
               {idx > 0 && (
                 <div
                   className={`absolute right-1/2 top-[14px] h-0.5 w-full -translate-y-1/2 ${
-                    isComplete ? "bg-gradient-to-r from-blue-500/50 to-purple-500/50" : "bg-white/5"
+                    isComplete ? "bg-gradient-to-r from-blue-300 to-purple-300" : "bg-gray-100"
                   }`}
                   style={{ left: "-50%" }}
                 />
@@ -105,10 +98,10 @@ export default function StageProgressTracker({
                 whileHover={{ scale: 1.2 }}
                 className={`relative z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-[10px] font-bold transition-all sm:h-8 sm:w-8 sm:text-xs ${
                   isComplete
-                    ? `bg-gradient-to-br ${speakerColors[stage.speaker]} text-white shadow-lg`
+                    ? `bg-gradient-to-br ${speakerColors[stage.speaker]} text-white shadow-md`
                     : isCurrent
-                    ? "border-2 border-blue-500 bg-blue-500/10 text-blue-400"
-                    : "border border-white/10 bg-white/5 text-slate-600"
+                    ? "border-2 border-blue-500 bg-blue-50 text-blue-600"
+                    : "border border-gray-200 bg-gray-50 text-gray-400"
                 }`}
               >
                 {isComplete ? (
@@ -145,7 +138,7 @@ export default function StageProgressTracker({
               {/* Label (desktop only) */}
               <span
                 className={`mt-1.5 hidden text-center text-[9px] leading-tight sm:block ${
-                  isComplete || isCurrent ? "text-slate-300" : "text-slate-600"
+                  isComplete || isCurrent ? "text-gray-600" : "text-gray-300"
                 }`}
               >
                 {stage.id.replace("_", "\n")}
@@ -159,9 +152,9 @@ export default function StageProgressTracker({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 5, scale: 0.95 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute -top-16 z-20 whitespace-nowrap rounded-lg border border-white/10 bg-[#1a1f2e] px-3 py-2 shadow-xl"
+                    className="absolute -top-16 z-20 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-lg"
                   >
-                    <p className="text-xs font-bold text-white">{stage.label}</p>
+                    <p className="text-xs font-bold text-gray-900">{stage.label}</p>
                     <p className={`text-[10px] ${speakerTextColors[stage.speaker]}`}>
                       {stage.speaker === "A"
                         ? "Side A"
@@ -171,7 +164,7 @@ export default function StageProgressTracker({
                       {stage.maxWords ? ` - ${stage.maxWords} max words` : ""}
                     </p>
                     <div className="absolute left-1/2 top-full -translate-x-1/2">
-                      <div className="h-0 w-0 border-x-4 border-t-4 border-x-transparent border-t-[#1a1f2e]" />
+                      <div className="h-0 w-0 border-x-4 border-t-4 border-x-transparent border-t-white" />
                     </div>
                   </motion.div>
                 )}
