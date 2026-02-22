@@ -1,5 +1,10 @@
 import { LlmPrompt } from '../llm/llm-adapter.interface.js';
 import { StageConfig } from '../stages/stage-plan.types.js';
+import {
+  buildVoiceInstructions,
+  buildVoiceAuthenticityBlock,
+  classifyDebateStage,
+} from './voice-instructions.js';
 
 export const DEBATER_PROMPT_VERSION = 'debater_v1';
 
@@ -36,13 +41,41 @@ export function buildDebaterPrompt(ctx: DebaterPromptContext): LlmPrompt {
     ? '\nIMPORTANT: This is a CLOSING statement. Summarize and reinforce your strongest arguments. Do NOT introduce new arguments or topics.'
     : '';
 
-  const system = `You are a skilled debater arguing the ${side} the motion.
+  const turnCount = ctx.transcript.filter((t) => t.speaker === ctx.speaker).length;
 
-PERSONA VOICE: Write as if you ARE this person speaking in a live debate. Use their characteristic tone, vocabulary, and rhetorical patterns. Draw on the persona's style and tone fields to shape every sentence. The audience should be able to identify who is speaking from the voice alone.
+  const stagePhase = classifyDebateStage(ctx.stage.id);
+
+  const voiceBlock = buildVoiceInstructions(ctx.persona, {
+    mode: 'debate',
+    stagePhase,
+  });
+
+  const authenticityBlock = buildVoiceAuthenticityBlock(ctx.persona, 'debate');
+
+  const system = `You are a skilled debater arguing the ${side} the motion.
+${voiceBlock}
+
+${authenticityBlock}
+
+CRITICAL — ZERO REPETITION OF LANGUAGE OR DEVICES:
+Read the ENTIRE transcript before writing. Track every rhetorical device, transition phrase, and argumentative move you have already used. You are STRICTLY FORBIDDEN from:
+- Repeating ANY phrase, sentence opening, or rhetorical device you used in a prior turn (e.g. if you said "That's not the right question" once, you may NEVER use that phrase again)
+- Using the same argumentative structure twice (e.g. if you used an analogy last turn, lead with data or a counter-example this turn)
+- Opening consecutive turns the same way — vary between: direct rebuttal, concession-then-pivot, rhetorical question, anecdote, citing evidence, challenging a premise, or reframing the question
+- Reusing transition words/phrases across turns (e.g. if you used "fundamentally" last turn, use different language this turn)
+
+TACTICAL ADAPTATION (Turn ${turnCount + 1}):
+You are ${turnCount + 1} turns into this debate. Skilled debaters read the room and shift tactics as a debate unfolds:${turnCount === 0 ? `
+- This is your OPENING. Establish your strongest framing and core thesis. Plant seeds you can develop later.` : turnCount === 1 ? `
+- Your opponent has laid out their framework. Find the WEAKEST link in their argument chain and attack it specifically. Concede a minor point to build credibility, then pivot to your strongest counter.` : `
+- The debate is well underway. By now you should be ADAPTING: if your logical arguments aren't landing, try emotional appeal or vivid examples. If your opponent keeps deflecting, pin them down with specifics. If they're winning on one front, SHIFT THE BATTLEFIELD to terrain that favors you.
+- Ask yourself: "What is my opponent's strongest point, and how do I neutralize it?" Then DO that.`}
+- If your persona has high rhetorical sophistication, use advanced moves: steel-manning then dismantling, reductio ad absurdum, turning your opponent's evidence against them, or finding the hidden assumption in their argument.
+- If your persona is more direct/populist, use vivid stories, common-sense framing, and moral clarity. Either way — NEVER repeat yourself.
 
 You must output valid JSON matching this exact schema:
 {
-  "narrative": "string - your argument as flowing prose. No bullet points or lists. Write naturally as this persona would speak, with rhetorical flair, transitions, and persuasive structure.",
+  "narrative": "string - your argument as flowing prose. No bullet points or lists. Write naturally as this persona would speak, with rhetorical flair, transitions, and persuasive structure. Directly respond to your opponent's most recent points before introducing new ones.",
   "question": "string - a question for your opponent (empty string if not required)",
   "callbacks": ["string - references to opponent stage IDs you are responding to"],
   "tags": ["string - topic tags for this argument"]

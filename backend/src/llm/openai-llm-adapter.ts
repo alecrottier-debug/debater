@@ -11,6 +11,8 @@ import {
   JudgeOutputSchema,
   CrossExOutput,
   CrossExOutputSchema,
+  DiscussionWrapOutput,
+  DiscussionWrapOutputSchema,
 } from './llm-schemas.js';
 
 const MAX_RETRIES = 2;
@@ -53,6 +55,10 @@ export class OpenAiLlmAdapter implements LlmAdapter {
     return this.callWithSchema(prompt, CrossExOutputSchema, `crossex-${speaker}`);
   }
 
+  async generateDiscussionWrap(prompt: LlmPrompt): Promise<DiscussionWrapOutput> {
+    return this.callWithSchema(prompt, DiscussionWrapOutputSchema, 'discussion-wrap');
+  }
+
   async generateText(prompt: LlmPrompt): Promise<string> {
     const body = {
       model: this.model,
@@ -60,7 +66,6 @@ export class OpenAiLlmAdapter implements LlmAdapter {
         { role: 'system', content: prompt.system },
         { role: 'user', content: prompt.user },
       ],
-      temperature: 0.7,
     };
 
     const res = await fetch(`${this.baseUrl}/chat/completions`, {

@@ -8,7 +8,6 @@ import { StagesModule } from './stages/stages.module.js';
 import { LlmModule } from './llm/llm.module.js';
 import { ValidatorsModule } from './validators/validators.module.js';
 import { DebatesModule } from './debates/debates.module.js';
-import { TtsModule } from './tts/tts.module.js';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { TtsModule } from './tts/tts.module.js';
     LlmModule,
     ValidatorsModule,
     DebatesModule,
-    TtsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

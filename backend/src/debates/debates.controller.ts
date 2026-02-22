@@ -15,6 +15,11 @@ import type { CreateDebateDto } from './debates.service.js';
 export class DebatesController {
   constructor(private readonly debatesService: DebatesService) {}
 
+  @Get()
+  findAll() {
+    return this.debatesService.findAll();
+  }
+
   @Post()
   create(@Body() dto: CreateDebateDto) {
     return this.debatesService.create(dto);

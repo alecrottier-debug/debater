@@ -11,6 +11,7 @@ interface PersonaPickerProps {
   side: "A" | "B";
   disabledId?: string;
   loading?: boolean;
+  pickerLabel?: string;
 }
 
 function PersonaCard({
@@ -28,14 +29,17 @@ function PersonaCard({
   onClick: () => void;
   index: number;
 }) {
-  const json = persona.personaJson as {
-    style?: string;
-    priorities?: string[];
-    tone?: string;
-    avatarUrl?: string;
-  };
+  const raw = persona.personaJson as Record<string, unknown>;
+  // v2 compat: read from nested structure with fallback to flat
+  const identity = raw.identity as Record<string, unknown> | undefined;
+  const rhetoric = raw.rhetoric as Record<string, unknown> | undefined;
+  const positions = raw.positions as Record<string, unknown> | undefined;
 
-  const hasAvatar = !!json.avatarUrl;
+  const avatarUrl = (identity?.avatarUrl ?? raw.avatarUrl) as string | undefined;
+  const biography = identity?.biography as Record<string, unknown> | undefined;
+  const summary = (biography?.summary ?? raw.background) as string | undefined;
+
+  const hasAvatar = !!avatarUrl;
 
   return (
     <motion.button
@@ -57,82 +61,51 @@ function PersonaCard({
             : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg"
       }`}
     >
-      {/* Floating avatar */}
-      {hasAvatar && (
-        <motion.div
-          className="pointer-events-none absolute -right-2 -top-2 z-10 h-24 w-24"
-          animate={{
-            y: [0, -6, 0],
-            rotate: [0, 2, -2, 0],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
-          <img
-            src={json.avatarUrl}
-            alt=""
-            className="h-full w-full object-contain"
-            style={{
-              filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.35)) drop-shadow(0 3px 6px rgba(0,0,0,0.25))",
+      <div className="flex items-start gap-3 p-3">
+        {/* Avatar pinned left */}
+        {hasAvatar && (
+          <motion.img
+            src={avatarUrl}
+            alt={persona.name}
+            className="h-[68px] w-[68px] shrink-0 rounded-xl border border-gray-200 bg-gray-100 object-cover shadow-sm"
+            animate={{
+              y: [0, -3, 0],
+              rotate: [0, 1, -1, 0],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: index * 0.3,
             }}
           />
-        </motion.div>
-      )}
-
-      <div className={`relative p-4 ${hasAvatar ? "pr-20" : ""}`}>
-        {selected && (
-          <span
-            className={`absolute left-3 top-3 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white ${
-              accentColor === "blue" ? "bg-blue-500" : "bg-purple-500"
-            }`}
-          >
-            Selected
-          </span>
         )}
 
-        <div className={`${selected ? "mt-5" : ""} mb-1.5 text-sm font-semibold text-gray-900`}>
-          {persona.name}
-        </div>
-        <div className="text-xs italic text-gray-500 line-clamp-2">
-          {persona.tagline}
-        </div>
-
-        {/* Expanded details on hover */}
-        <div className="mt-2 hidden space-y-1.5 group-hover:block">
-          {json.style && (
-            <div className="text-xs text-gray-600">
-              <span className={`font-semibold ${accentColor === "blue" ? "text-blue-600" : "text-purple-600"}`}>
-                Style:
-              </span>{" "}
-              {json.style.length > 80 ? json.style.slice(0, 80) + "..." : json.style}
-            </div>
-          )}
-          {json.priorities && json.priorities.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {json.priorities.slice(0, 3).map((p, i) => (
-                <span
-                  key={i}
-                  className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                    accentColor === "blue"
-                      ? "bg-blue-100 text-blue-700"
-                      : "bg-purple-100 text-purple-700"
-                  }`}
-                >
-                  {p.length > 25 ? p.slice(0, 25) + "..." : p}
-                </span>
-              ))}
+        {/* Text content */}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-gray-900">
+              {persona.name}
+            </span>
+            {selected && (
+              <span
+                className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white ${
+                  accentColor === "blue" ? "bg-blue-500" : "bg-purple-500"
+                }`}
+              >
+                Selected
+              </span>
+            )}
+          </div>
+          <div className="mt-0.5 text-xs italic text-gray-500 line-clamp-1">
+            {persona.tagline}
+          </div>
+          {summary && (
+            <div className="mt-1 text-[11px] leading-snug text-gray-400 line-clamp-2">
+              {summary}
             </div>
           )}
         </div>
-
-        {persona.isTemplate && (
-          <span className="mt-2 inline-block rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-gray-500">
-            Template
-          </span>
-        )}
       </div>
     </motion.button>
   );
@@ -145,6 +118,7 @@ export default function PersonaPicker({
   side,
   disabledId,
   loading,
+  pickerLabel = "debater",
 }: PersonaPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -182,8 +156,20 @@ export default function PersonaPicker({
         {loading ? (
           <span className="text-sm text-gray-400">Loading...</span>
         ) : selected ? (
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center gap-3">
+            {(() => {
+              const raw = selected.personaJson as Record<string, unknown>;
+              const identity = raw.identity as Record<string, unknown> | undefined;
+              const avatarUrl = (identity?.avatarUrl ?? raw.avatarUrl) as string | undefined;
+              return avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={selected.name}
+                  className="h-10 w-10 shrink-0 rounded-lg border border-gray-200 object-cover"
+                />
+              ) : null;
+            })()}
+            <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold text-gray-900">
                 {selected.name}
               </div>
@@ -192,7 +178,7 @@ export default function PersonaPicker({
               </div>
             </div>
             <svg
-              className="h-4 w-4 text-gray-400"
+              className="h-4 w-4 shrink-0 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={2}
@@ -203,7 +189,7 @@ export default function PersonaPicker({
           </div>
         ) : (
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-400">Select debater...</span>
+            <span className="text-sm text-gray-400">Select {pickerLabel}...</span>
             <svg
               className="h-4 w-4 text-gray-400"
               fill="none"
@@ -236,7 +222,7 @@ export default function PersonaPicker({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed inset-x-4 top-[5vh] z-50 mx-auto max-w-3xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl sm:inset-x-auto sm:w-full"
+              className="fixed left-1/2 top-1/2 z-50 w-[90vw] max-w-7xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl"
             >
               {/* Header */}
               <div
@@ -245,7 +231,7 @@ export default function PersonaPicker({
                 }`}
               >
                 <h3 className="text-base font-bold text-gray-900">
-                  Choose Side {side} Debater
+                  Choose {pickerLabel === "guest" ? `Guest ${side === "A" ? "1" : "2"}` : `Side ${side} Debater`}
                 </h3>
                 <button
                   type="button"
@@ -283,7 +269,7 @@ export default function PersonaPicker({
                         {templates.length}
                       </span>
                     </div>
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                       {templates.map((p, i) => (
                         <PersonaCard
                           key={p.id}
@@ -314,7 +300,7 @@ export default function PersonaPicker({
                     </span>
                   </div>
                   {custom.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                       {custom.map((p, i) => (
                         <PersonaCard
                           key={p.id}

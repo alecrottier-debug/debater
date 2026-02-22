@@ -1,22 +1,343 @@
 "use client";
 
-import { useState, useEffect, useCallback, use } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, use } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   fetchDebate,
   advanceDebate,
-  QUICK_STAGES,
+  getStagesForMode,
   type Debate,
   type Turn,
   type Speaker,
+  type StageConfig,
+  type TurnPayload,
+  type Persona,
 } from "@/lib/api";
-import FighterCard, { ModJudgeCard } from "@/components/FighterCard";
+import { ModJudgeCard } from "@/components/FighterCard";
 import SpeechCard from "@/components/SpeechCard";
 import TranscriptDrawer from "@/components/TranscriptDrawer";
-import StageProgressTracker from "@/components/StageProgressTracker";
-import MomentumMeter from "@/components/MomentumMeter";
 import ResultsView from "@/components/ResultsView";
-import { useAudio } from "@/hooks/useAudio";
+import DiscussionSummaryView from "@/components/DiscussionSummaryView";
+/* ─── Momentum helpers (inlined from MomentumMeter) ─── */
+
+function computeMomentum(turns: Turn[], stages: StageConfig[]) {
+  const score = { A: 0, B: 0 };
+  turns.forEach((turn, idx) => {
+    if (turn.speaker !== "A" && turn.speaker !== "B") return;
+    const side = turn.speaker as "A" | "B";
+    const cfg = stages[idx];
+    if (!cfg) return;
+    const payload = turn.payload as TurnPayload;
+    if (cfg.maxWords && turn.wordCount / cfg.maxWords <= 0.85) score[side] += 1;
+    if (payload.questionAnswered) score[side] += 1;
+    if (turn.violations.length === 0) score[side] += 1;
+    if (payload.bullets && payload.bullets.length > 0) score[side] += 0.5;
+    if (cfg.questionRequired && payload.question) score[side] += 0.5;
+  });
+  return score;
+}
+
+function getAvatarUrl(persona: Persona): string | undefined {
+  const raw = persona.personaJson as Record<string, unknown>;
+  const identity = raw.identity as Record<string, unknown> | undefined;
+  return (identity?.avatarUrl ?? raw.avatarUrl) as string | undefined;
+}
+
+/* Continuous talking sway animation for avatars */
+const avatarTalkingSway = {
+  opacity: 1,
+  scale: 1,
+  x: [0, -3, 3, -2, 2, 0],
+  rotate: [0, -1.5, 1.5, -1, 1, 0],
+  y: [0, -2, 0],
+  transition: {
+    opacity: { duration: 0.4 },
+    scale: { type: "spring" as const, stiffness: 260, damping: 20 },
+    x: { duration: 3, repeat: Infinity, ease: "easeInOut" as const },
+    rotate: { duration: 3, repeat: Infinity, ease: "easeInOut" as const },
+    y: { duration: 3, repeat: Infinity, ease: "easeInOut" as const },
+  },
+};
+
+function getBioSummary(persona: Persona): string | undefined {
+  const raw = persona.personaJson as Record<string, unknown>;
+  const identity = raw.identity as Record<string, unknown> | undefined;
+  const bio = identity?.biography as Record<string, unknown> | undefined;
+  return bio?.summary as string | undefined;
+}
+
+/* ─── Sticky Subheader ─── */
+
+function DebateSubheader({
+  debate,
+  turns,
+  stages,
+  isCompleted,
+  isDiscussion,
+}: {
+  debate: Debate;
+  turns: Turn[];
+  stages: StageConfig[];
+  isCompleted: boolean;
+  isDiscussion: boolean;
+}) {
+  const score = useMemo(() => computeMomentum(turns, stages), [turns, stages]);
+  const total = score.A + score.B;
+  const aPercent = total === 0 ? 50 : (score.A / total) * 100;
+
+  const leader =
+    Math.abs(score.A - score.B) < 0.5
+      ? "Tied"
+      : score.A > score.B
+      ? "A leads"
+      : "B leads";
+
+  const avatarA = getAvatarUrl(debate.personaA);
+  const avatarB = getAvatarUrl(debate.personaB);
+  const bioA = getBioSummary(debate.personaA);
+  const bioB = getBioSummary(debate.personaB);
+  const modAvatar = debate.moderatorPersona
+    ? getAvatarUrl(debate.moderatorPersona)
+    : undefined;
+
+  return (
+    <div className="sticky top-16 z-30 border-b border-gray-200/60 bg-white/92 backdrop-blur-xl">
+      {/* Gradient accent line */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-30" />
+
+      {/* ── Desktop layout ── */}
+      <div className="mx-auto hidden max-w-6xl items-stretch gap-6 px-6 sm:flex">
+        {/* Left: Debater A */}
+        <div className="flex min-w-[220px] max-w-[280px] items-center gap-3 py-2">
+          {avatarA ? (
+            <motion.img
+              src={avatarA}
+              alt={debate.personaA.name}
+              className="h-full max-h-[88px] w-auto shrink-0 object-contain"
+              initial={{ opacity: 0, scale: 0.8, y: 8 }}
+              animate={avatarTalkingSway}
+            />
+          ) : (
+            <motion.div
+              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-lg font-bold text-white"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
+            >
+              A
+            </motion.div>
+          )}
+          <div className="min-w-0">
+            <div className="text-base font-bold leading-tight text-gray-900">
+              {debate.personaA.name}
+            </div>
+            <div className="mt-0.5 text-xs italic text-gray-500">
+              {debate.personaA.tagline}
+            </div>
+            {bioA && (
+              <div className="mt-1 text-[11px] leading-snug text-gray-400 line-clamp-2">
+                {bioA}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Center: Motion + Progress + Momentum */}
+        <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1.5 py-2">
+          {/* Moderator badge */}
+          {modAvatar && debate.moderatorPersona && (
+            <div className="flex items-center gap-2">
+              <img
+                src={modAvatar}
+                alt={debate.moderatorPersona.name}
+                className="h-6 w-6 rounded-full border border-amber-200 object-cover"
+              />
+              <span className="text-[10px] font-semibold text-amber-600">
+                {debate.moderatorPersona.name}
+              </span>
+              {debate.confrontationLevel && (
+                <span className="rounded px-1 py-0.5 text-[9px] font-bold bg-amber-100 text-amber-700">
+                  {debate.confrontationLevel}/5
+                </span>
+              )}
+            </div>
+          )}
+
+          <div className="max-w-[500px] text-center font-[var(--font-playfair)] text-[17px] font-extrabold leading-snug tracking-tight text-gray-900 line-clamp-2">
+            &ldquo;{debate.motion}&rdquo;
+          </div>
+
+          <div className="flex w-full max-w-[500px] items-center gap-3">
+            {/* Mini progress dots */}
+            <div className="flex items-center gap-1">
+              {stages.map((stage, i) => (
+                <div
+                  key={stage.id}
+                  className={`h-2.5 w-2.5 rounded-full ${
+                    i < turns.length
+                      ? "bg-gradient-to-br from-blue-500 to-purple-500"
+                      : "bg-gray-200"
+                  }`}
+                  title={stage.label}
+                />
+              ))}
+            </div>
+
+            {/* Mini momentum bar — hidden for discussions */}
+            {!isDiscussion && (
+              <>
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-500"
+                    style={{ width: `${aPercent}%` }}
+                  />
+                </div>
+                <span className="whitespace-nowrap text-xs font-medium text-gray-400">
+                  {leader}
+                </span>
+              </>
+            )}
+
+            {/* Status badge */}
+            {isCompleted && (
+              <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-wider text-emerald-500">
+                ✓ Complete
+              </span>
+            )}
+
+          </div>
+        </div>
+
+        {/* Right: Debater B */}
+        <div className="flex min-w-[220px] max-w-[280px] flex-row-reverse items-center gap-3 py-2 text-right">
+          {avatarB ? (
+            <motion.img
+              src={avatarB}
+              alt={debate.personaB.name}
+              className="h-full max-h-[88px] w-auto shrink-0 object-contain"
+              initial={{ opacity: 0, scale: 0.8, y: 8 }}
+              animate={avatarTalkingSway}
+            />
+          ) : (
+            <motion.div
+              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-purple-700 text-lg font-bold text-white"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.2 }}
+            >
+              B
+            </motion.div>
+          )}
+          <div className="min-w-0">
+            <div className="text-base font-bold leading-tight text-gray-900">
+              {debate.personaB.name}
+            </div>
+            <div className="mt-0.5 text-xs italic text-gray-500">
+              {debate.personaB.tagline}
+            </div>
+            {bioB && (
+              <div className="mt-1 text-[11px] leading-snug text-gray-400 line-clamp-2">
+                {bioB}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Mobile layout ── */}
+      <div className="flex flex-col gap-2 px-4 py-2.5 sm:hidden">
+        {/* Debaters row */}
+        <div className="flex w-full items-start justify-between gap-2">
+          <div className="flex items-center gap-2">
+            {avatarA ? (
+              <motion.img
+                src={avatarA}
+                alt={debate.personaA.name}
+                className="h-11 w-11 shrink-0 object-contain"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={avatarTalkingSway}
+              />
+            ) : (
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
+                A
+              </div>
+            )}
+            <div>
+              <span className="text-sm font-bold text-gray-900">
+                {debate.personaA.name}
+              </span>
+              <div className="text-[10px] italic text-gray-400 line-clamp-1">
+                {debate.personaA.tagline}
+              </div>
+            </div>
+          </div>
+          <span className="mt-3 shrink-0 text-xs font-extrabold text-gray-300">
+            {isDiscussion ? "&" : "VS"}
+          </span>
+          <div className="flex flex-row-reverse items-center gap-2 text-right">
+            {avatarB ? (
+              <motion.img
+                src={avatarB}
+                alt={debate.personaB.name}
+                className="h-11 w-11 shrink-0 object-contain"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={avatarTalkingSway}
+              />
+            ) : (
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-purple-500 text-xs font-bold text-white">
+                B
+              </div>
+            )}
+            <div>
+              <span className="text-sm font-bold text-gray-900">
+                {debate.personaB.name}
+              </span>
+              <div className="text-[10px] italic text-gray-400 line-clamp-1">
+                {debate.personaB.tagline}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Motion + progress row */}
+        <div className="text-center">
+          <div className="font-[var(--font-playfair)] text-[15px] font-extrabold tracking-tight text-gray-900 line-clamp-1">
+            &ldquo;{debate.motion}&rdquo;
+          </div>
+          <div className="mt-1 flex items-center justify-center gap-2">
+            <div className="flex items-center gap-0.5">
+              {stages.map((stage, i) => (
+                <div
+                  key={stage.id}
+                  className={`h-2 w-2 rounded-full ${
+                    i < turns.length
+                      ? "bg-gradient-to-br from-blue-500 to-purple-500"
+                      : "bg-gray-200"
+                  }`}
+                />
+              ))}
+            </div>
+            {!isDiscussion && (
+              <div className="h-1.5 w-20 overflow-hidden rounded-full bg-gray-100">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
+                  style={{ width: `${aPercent}%` }}
+                />
+              </div>
+            )}
+            {isCompleted && (
+              <span className="text-[9px] font-bold uppercase text-emerald-500">
+                ✓ Done
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Main Page ─── */
 
 interface DebatePageProps {
   params: Promise<{ id: string }>;
@@ -29,9 +350,16 @@ export default function DebatePage({ params }: DebatePageProps) {
   const [loading, setLoading] = useState(true);
   const [advancing, setAdvancing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { muted, playing, playTurn, toggleMute } = useAudio();
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const autoStarted = useRef(false);
 
-  const stages = QUICK_STAGES;
+  const stages = useMemo(
+    () => (debate ? getStagesForMode(debate.mode) : []),
+    [debate?.mode],
+  );
+  const isDiscussion = debate?.mode === "discussion";
+  const pageAvatarA = debate ? getAvatarUrl(debate.personaA) : undefined;
+  const pageAvatarB = debate ? getAvatarUrl(debate.personaB) : undefined;
 
   const loadDebate = useCallback(async () => {
     try {
@@ -50,24 +378,31 @@ export default function DebatePage({ params }: DebatePageProps) {
     loadDebate();
   }, [loadDebate]);
 
+  // Auto-scroll to bottom when new turns arrive
+  useEffect(() => {
+    if (turns.length > 0 && bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [turns.length]);
+
+  // Auto-start: skip the "Begin Debate" step and immediately generate the moderator setup
+  useEffect(() => {
+    if (debate && !loading && turns.length === 0 && !advancing && !autoStarted.current && debate.status !== "completed") {
+      autoStarted.current = true;
+      handleNextStage();
+    }
+  }, [debate, loading, turns.length]);
+
   async function handleNextStage() {
     if (advancing || !debate) return;
     setAdvancing(true);
     setError(null);
 
     try {
-      // advanceStage returns the full updated debate
       await advanceDebate(id);
-      // Re-fetch full state to stay in sync
       const updated = await fetchDebate(id);
       setDebate(updated);
       setTurns(updated.turns || []);
-
-      // Play audio for the latest turn if voice is on
-      if (!muted && updated.turns && updated.turns.length > 0) {
-        const latest = updated.turns[updated.turns.length - 1];
-        playTurn(latest.renderedText, latest.speaker);
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to advance stage");
     } finally {
@@ -78,7 +413,6 @@ export default function DebatePage({ params }: DebatePageProps) {
   const isCompleted = debate?.status === "completed";
   const currentStageIndex = debate?.stageIndex ?? 0;
 
-  // Determine active speaker from stage plan
   const getActiveSpeaker = (): Speaker | null => {
     if (isCompleted || !advancing) {
       if (currentStageIndex < stages.length && !isCompleted) {
@@ -103,7 +437,7 @@ export default function DebatePage({ params }: DebatePageProps) {
           className="flex flex-col items-center gap-4"
         >
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-          <p className="text-gray-500">Loading debate...</p>
+          <p className="text-gray-500">Loading {isDiscussion ? "discussion" : "debate"}...</p>
         </motion.div>
       </div>
     );
@@ -113,7 +447,7 @@ export default function DebatePage({ params }: DebatePageProps) {
     return (
       <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-red-500">Debate not found</p>
+          <p className="text-xl text-red-500">Not found</p>
           {error && <p className="mt-2 text-sm text-gray-500">{error}</p>}
         </div>
       </div>
@@ -121,104 +455,78 @@ export default function DebatePage({ params }: DebatePageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Motion Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center"
-      >
-        <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
-          Motion
-        </p>
-        <h1 className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">
-          &ldquo;{debate.motion}&rdquo;
-        </h1>
-        <button
-          onClick={toggleMute}
-          className={`mx-auto mt-3 flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${
-            muted
-              ? "bg-gray-100 text-gray-500 hover:bg-gray-200"
-              : "bg-blue-100 text-blue-700 hover:bg-blue-200"
-          }`}
-        >
-          {muted ? (
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.72-3.72a.75.75 0 0 1 1.28.53v14.88a.75.75 0 0 1-1.28.53L6.75 14.25H3.75a.75.75 0 0 1-.75-.75v-3a.75.75 0 0 1 .75-.75h3z" />
-            </svg>
-          ) : (
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-3.72a.75.75 0 0 1 1.28.53v14.88a.75.75 0 0 1-1.28.53L6.75 15.75H3.75a.75.75 0 0 1-.75-.75v-6a.75.75 0 0 1 .75-.75h3z" />
-            </svg>
-          )}
-          {muted ? "Voice Off" : playing ? "Playing..." : "Voice On"}
-        </button>
-      </motion.div>
-
-      {/* Stage Progress Tracker */}
-      <StageProgressTracker
-        stages={stages}
-        completedCount={turns.length}
-        isCompleted={isCompleted}
-      />
-
-      {/* Momentum Meter */}
-      <MomentumMeter
+    <>
+      {/* Sticky Subheader */}
+      <DebateSubheader
+        debate={debate}
         turns={turns}
         stages={stages}
-        personaAName={debate.personaA.name}
-        personaBName={debate.personaB.name}
+        isCompleted={!!isCompleted}
+        isDiscussion={!!isDiscussion}
       />
 
-      {/* MOD/JUDGE indicator (centered above arena) */}
-      <AnimatePresence>
-        {(activeSpeaker === "MOD" || activeSpeaker === "JUDGE") && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="flex justify-center"
-          >
-            <ModJudgeCard role={activeSpeaker} isActive={true} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Main content */}
+      {isCompleted ? (
+        <div className="mx-auto max-w-6xl px-6">
+          {isDiscussion ? (
+            <DiscussionSummaryView debate={debate} />
+          ) : (
+            <ResultsView debate={debate} />
+          )}
 
-      {/* Debate Arena Content */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
-        {/* Fighter Card A - Desktop */}
-        <div className="hidden w-52 shrink-0 lg:block">
-          <div className="sticky top-24">
-            <FighterCard
-              persona={debate.personaA}
-              side="A"
-              isActive={activeSpeaker === "A"}
-            />
-          </div>
+          <TranscriptDrawer
+            turns={turns}
+            stages={stages}
+            personaAName={debate.personaA.name}
+            personaBName={debate.personaB.name}
+          />
         </div>
+      ) : (
+        <div className="mx-auto max-w-6xl px-6 pt-4">
+          {/* MOD/JUDGE indicator */}
+          <AnimatePresence>
+            {(activeSpeaker === "MOD" || activeSpeaker === "JUDGE") && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-4 flex justify-center"
+              >
+                <ModJudgeCard role={activeSpeaker} isActive={true} />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        {/* Turns Display */}
-        <div className="min-w-0 flex-1">
+          {/* Turns */}
           <div className="space-y-4">
             <AnimatePresence>
               {turns.map((turn, idx) => (
                 <SpeechCard
                   key={turn.id}
                   turn={turn}
-                  stageLabel={stages[idx]?.label || turn.stageId}
+                  stageLabel={(stages[idx]?.label || turn.stageId).replace(/\bSide A\b/g, debate.personaA.name).replace(/\bSide B\b/g, debate.personaB.name).replace(/\bGuest A\b/g, debate.personaA.name).replace(/\bGuest B\b/g, debate.personaB.name)}
                   speakerName={
                     turn.speaker === "A"
                       ? debate.personaA.name
                       : turn.speaker === "B"
                       ? debate.personaB.name
+                      : turn.speaker === "MOD" && debate.moderatorPersona
+                      ? debate.moderatorPersona.name
                       : turn.speaker
+                  }
+                  avatarUrl={
+                    turn.speaker === "A"
+                      ? pageAvatarA
+                      : turn.speaker === "B"
+                      ? pageAvatarB
+                      : undefined
                   }
                   isLatest={idx === turns.length - 1}
                 />
               ))}
             </AnimatePresence>
 
-            {/* Loading indicator while advancing */}
+            {/* Loading indicator */}
             <AnimatePresence>
               {advancing && (
                 <motion.div
@@ -230,7 +538,7 @@ export default function DebatePage({ params }: DebatePageProps) {
                   <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
                   <span className="text-sm text-gray-500">
                     {currentStageIndex < stages.length
-                      ? `Generating ${stages[currentStageIndex]?.label}...`
+                      ? `Generating ${(stages[currentStageIndex]?.label || "").replace(/\bSide A\b/g, debate.personaA.name).replace(/\bSide B\b/g, debate.personaB.name).replace(/\bGuest A\b/g, debate.personaA.name).replace(/\bGuest B\b/g, debate.personaB.name)}...`
                       : "Generating..."}
                   </span>
                 </motion.div>
@@ -238,13 +546,27 @@ export default function DebatePage({ params }: DebatePageProps) {
             </AnimatePresence>
           </div>
 
-          {/* Next Stage Button */}
-          {!isCompleted && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mt-6 flex justify-center"
-            >
+          {/* Scroll anchor */}
+          <div ref={bottomRef} />
+
+          {/* Spacer so content doesn't hide behind sticky button */}
+          <div className="h-24" />
+
+          {/* Sticky Next Stage Button */}
+          <div className="sticky bottom-0 z-20 -mx-6 bg-gradient-to-t from-[#f8f9fb] via-[#f8f9fb]/95 to-transparent px-6 pb-4 pt-8">
+            <div className="flex flex-col items-center gap-2">
+              <AnimatePresence>
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="w-full max-w-md rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-600"
+                  >
+                    {error}
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <motion.button
                 onClick={handleNextStage}
                 disabled={advancing}
@@ -255,65 +577,23 @@ export default function DebatePage({ params }: DebatePageProps) {
                 {advancing
                   ? "Generating..."
                   : turns.length === 0
-                  ? "Begin Debate"
+                  ? isDiscussion
+                    ? "Begin Discussion"
+                    : "Begin Debate"
                   : `Next Stage (${turns.length + 1}/${stages.length})`}
               </motion.button>
-            </motion.div>
-          )}
-
-          {/* Results View */}
-          {isCompleted && <ResultsView debate={debate} />}
-
-          {/* Error */}
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
-              >
-                {error}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Fighter Card B - Desktop */}
-        <div className="hidden w-52 shrink-0 lg:block">
-          <div className="sticky top-24">
-            <FighterCard
-              persona={debate.personaB}
-              side="B"
-              isActive={activeSpeaker === "B"}
-            />
+            </div>
           </div>
+
+          {/* Transcript Timeline Drawer */}
+          <TranscriptDrawer
+            turns={turns}
+            stages={stages}
+            personaAName={debate.personaA.name}
+            personaBName={debate.personaB.name}
+          />
         </div>
-      </div>
-
-      {/* Mobile Fighter Cards */}
-      <div className="flex gap-4 lg:hidden">
-        <FighterCard
-          persona={debate.personaA}
-          side="A"
-          isActive={activeSpeaker === "A"}
-          compact
-        />
-        <FighterCard
-          persona={debate.personaB}
-          side="B"
-          isActive={activeSpeaker === "B"}
-          compact
-        />
-      </div>
-
-      {/* Transcript Timeline Drawer */}
-      <TranscriptDrawer
-        turns={turns}
-        stages={stages}
-        personaAName={debate.personaA.name}
-        personaBName={debate.personaB.name}
-      />
-    </div>
+      )}
+    </>
   );
 }

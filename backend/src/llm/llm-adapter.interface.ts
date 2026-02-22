@@ -1,4 +1,4 @@
-import { DebaterOutput, ModeratorOutput, JudgeOutput, CrossExOutput } from './llm-schemas.js';
+import { DebaterOutput, ModeratorOutput, JudgeOutput, CrossExOutput, DiscussionWrapOutput } from './llm-schemas.js';
 
 export interface LlmPrompt {
   system: string;
@@ -10,6 +10,7 @@ export interface LlmAdapter {
   generateDebaterTurn(prompt: LlmPrompt, speaker: 'A' | 'B'): Promise<DebaterOutput>;
   generateJudgeDecision(prompt: LlmPrompt): Promise<JudgeOutput>;
   generateCrossExTurn(prompt: LlmPrompt, speaker: 'A' | 'B'): Promise<CrossExOutput>;
+  generateDiscussionWrap(prompt: LlmPrompt): Promise<DiscussionWrapOutput>;
   /** Generic text completion for classifiers etc. */
   generateText(prompt: LlmPrompt): Promise<string>;
 }

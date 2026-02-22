@@ -2,10 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { StagePlan, StageConfig } from './stage-plan.types.js';
 import { QUICK_STAGE_PLAN } from './quick-stage-plan.js';
 import { PRO_STAGE_PLAN } from './pro-stage-plan.js';
+import { DISCUSSION_STAGE_PLAN } from './discussion-stage-plan.js';
 
 const STAGE_PLANS: Record<string, StagePlan> = {
   quick: QUICK_STAGE_PLAN,
   pro: PRO_STAGE_PLAN,
+  discussion: DISCUSSION_STAGE_PLAN,
 };
 
 @Injectable()
@@ -34,5 +36,9 @@ export class StagePlanService {
 
   getAvailableModes(): string[] {
     return Object.keys(STAGE_PLANS);
+  }
+
+  isDiscussion(mode: string): boolean {
+    return mode === 'discussion';
   }
 }

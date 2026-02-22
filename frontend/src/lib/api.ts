@@ -1,11 +1,14 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
+// personaJson may be v1 (flat: name, tagline, style, etc.) or v2 (nested: identity, positions, rhetoric, etc.)
+// Components should use fallback reads: e.g. json.identity?.avatarUrl ?? json.avatarUrl
 export interface Persona {
   id: string;
   name: string;
   tagline: string;
   personaJson: Record<string, unknown>;
   isTemplate: boolean;
+  role: string;
   createdAt: string;
 }
 
@@ -50,6 +53,26 @@ export interface Turn {
   createdAt: string;
 }
 
+export interface DetailedSubScores {
+  logicalRigor: number;
+  evidenceQuality: number;
+  rebuttalEffectiveness: number;
+  argumentNovelty: number;
+  persuasiveness: number;
+  voiceAuthenticity: number;
+  rhetoricalSkill: number;
+  emotionalResonance: number;
+  framingControl: number;
+  adaptability: number;
+}
+
+export interface SideAnalysis {
+  strengths: string[];
+  weaknesses: string[];
+  keyMoment: string;
+  keyMomentRef: string;
+}
+
 export interface JudgeDecision {
   id: string;
   debateId: string;
@@ -57,6 +80,12 @@ export interface JudgeDecision {
   scores: Record<string, { A: number; B: number }>;
   ballot: { stageRef: string; reason: string }[];
   bestLines: { A: string; B: string };
+  /** New in judge_v2 — may be absent for older debates */
+  detailedScores?: { A: DetailedSubScores; B: DetailedSubScores };
+  verdict?: string;
+  analysis?: { A: SideAnalysis; B: SideAnalysis };
+  momentum?: { trajectory: string; description: string };
+  closeness?: string;
   createdAt: string;
 }
 
@@ -66,14 +95,25 @@ export interface Debate {
   mode: string;
   personaAId: string;
   personaBId: string;
+  moderatorPersonaId: string | null;
+  confrontationLevel: number;
   stageIndex: number;
   status: string;
   createdAt: string;
   updatedAt: string;
   personaA: Persona;
   personaB: Persona;
+  moderatorPersona: Persona | null;
   turns: Turn[];
   judgeDecision: JudgeDecision | null;
+}
+
+export interface DiscussionWrapPayload {
+  narrative: string;
+  keyTakeaways: string[];
+  areasOfAgreement: string[];
+  areasOfDisagreement: string[];
+  openQuestions: string[];
 }
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
@@ -95,11 +135,17 @@ export async function fetchPersonas(): Promise<Persona[]> {
   return apiFetch<Persona[]>("/personas");
 }
 
+export async function fetchDebates(): Promise<Debate[]> {
+  return apiFetch<Debate[]>("/debates");
+}
+
 export async function createDebate(data: {
   motion: string;
   mode: string;
   personaAId: string;
   personaBId: string;
+  moderatorPersonaId?: string;
+  confrontationLevel?: number;
 }): Promise<Debate> {
   return apiFetch<Debate>("/debates", {
     method: "POST",
@@ -172,19 +218,6 @@ export async function createPersona(data: {
   });
 }
 
-// Text-to-Speech
-export async function fetchTtsAudio(text: string, speaker: string): Promise<Blob> {
-  const res = await fetch(`${API_BASE}/tts`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text, speaker }),
-  });
-  if (!res.ok) {
-    throw new Error(`TTS error ${res.status}`);
-  }
-  return res.blob();
-}
-
 // Quick stage plan for client-side reference
 export const QUICK_STAGES: StageConfig[] = [
   { id: "MOD_SETUP", label: "Moderator Setup", speaker: "MOD", maxWords: 110, bullets: null, questionRequired: false, questionCount: 0 },
@@ -197,3 +230,22 @@ export const QUICK_STAGES: StageConfig[] = [
   { id: "A_CLOSE", label: "Side A Closing", speaker: "A", maxWords: 85, bullets: null, questionRequired: false, questionCount: 0 },
   { id: "JUDGE", label: "Judge Decision", speaker: "JUDGE", maxWords: null, bullets: null, questionRequired: false, questionCount: 0 },
 ];
+
+// Discussion stage plan for client-side reference
+export const DISCUSSION_STAGES: StageConfig[] = [
+  { id: "MOD_INTRO", label: "Moderator Introduction", speaker: "MOD", maxWords: 130, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "MOD_Q1", label: "Opening Question", speaker: "MOD", maxWords: 60, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "A_RESPOND_1", label: "Guest A Response 1", speaker: "A", maxWords: 150, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "B_RESPOND_1", label: "Guest B Response 1", speaker: "B", maxWords: 150, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "MOD_Q2", label: "Follow-up Question", speaker: "MOD", maxWords: 70, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "B_RESPOND_2", label: "Guest B Response 2", speaker: "B", maxWords: 150, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "A_RESPOND_2", label: "Guest A Response 2", speaker: "A", maxWords: 150, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "MOD_SYNTHESIS", label: "Moderator Synthesis", speaker: "MOD", maxWords: 80, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "A_FINAL", label: "Guest A Final Thought", speaker: "A", maxWords: 100, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "MOD_WRAP", label: "Moderator Wrap-up", speaker: "MOD", maxWords: 150, bullets: null, questionRequired: false, questionCount: 0 },
+];
+
+export function getStagesForMode(mode: string): StageConfig[] {
+  if (mode === "discussion") return DISCUSSION_STAGES;
+  return QUICK_STAGES;
+}

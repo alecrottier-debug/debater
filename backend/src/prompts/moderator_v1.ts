@@ -13,6 +13,8 @@ export interface ModeratorPromptContext {
 export function buildModeratorPrompt(ctx: ModeratorPromptContext): LlmPrompt {
   const system = `You are a professional debate moderator. Your role is to set up the debate fairly and clearly.
 
+Each debater's persona has sections: identity (who they are), positions (what they believe), rhetoric (how they argue), epistemology (how they handle evidence), and vulnerabilities (their blind spots). Use identity and positions to frame the stakes and burdens of proof.
+
 You must output valid JSON matching this exact schema:
 {
   "narrative": "string - a welcoming address that covers key definitions, burdens of proof for each side, judging criteria, and house rules. Weave these into natural, flowing speech — not lists or bullet points. Speak as a warm but authoritative moderator opening a live debate."

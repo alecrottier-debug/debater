@@ -4,7 +4,7 @@ import { stdin as input, stdout as output } from 'node:process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { researchSubject } from '../src/personas/lib/perplexity-client.js';
-import { synthesizePersona, type SynthesizedPersona } from '../src/personas/lib/synthesis-client.js';
+import { synthesizePersona, type SynthesizedPersona, type PersonaV2 } from '../src/personas/lib/synthesis-client.js';
 import { execSync } from 'node:child_process';
 
 const rl = readline.createInterface({ input, output });
@@ -18,14 +18,27 @@ function toKebabCase(str: string): string {
     .replace(/^-|-$/g, '');
 }
 
-function displayPersona(persona: SynthesizedPersona): void {
+function getPersonaName(persona: PersonaV2 | SynthesizedPersona): string {
+  return 'identity' in persona ? persona.identity.name : persona.name;
+}
+
+function displayPersona(persona: PersonaV2 | SynthesizedPersona): void {
   console.log();
-  console.log(`  Name:       ${persona.name}`);
-  console.log(`  Tagline:    "${persona.tagline}"`);
-  console.log(`  Style:      ${persona.style}`);
-  console.log(`  Priorities: [${persona.priorities.join(', ')}]`);
-  console.log(`  Background: ${persona.background}`);
-  console.log(`  Tone:       ${persona.tone}`);
+  if ('identity' in persona) {
+    console.log(`  Name:       ${persona.identity.name}`);
+    console.log(`  Tagline:    "${persona.identity.tagline}"`);
+    console.log(`  Style:      ${persona.rhetoric.style}`);
+    console.log(`  Priorities: [${persona.positions.priorities.join(', ')}]`);
+    console.log(`  Background: ${persona.identity.biography.summary}`);
+    console.log(`  Tone:       ${persona.rhetoric.tone}`);
+  } else {
+    console.log(`  Name:       ${persona.name}`);
+    console.log(`  Tagline:    "${persona.tagline}"`);
+    console.log(`  Style:      ${persona.style}`);
+    console.log(`  Priorities: [${persona.priorities.join(', ')}]`);
+    console.log(`  Background: ${persona.background}`);
+    console.log(`  Tone:       ${persona.tone}`);
+  }
   console.log();
 }
 
@@ -78,7 +91,7 @@ async function main() {
   }
 
   // Synthesis loop
-  let persona: SynthesizedPersona | null = null;
+  let persona: PersonaV2 | SynthesizedPersona | null = null;
 
   while (true) {
     const proceed = await rl.question('? Generate persona? (Y/n): ');
@@ -125,7 +138,7 @@ async function main() {
   }
 
   // Save to file
-  const filename = `${toKebabCase(persona.name)}.json`;
+  const filename = `${toKebabCase(getPersonaName(persona))}.json`;
   const filePath = path.join(PERSONAS_DIR, filename);
 
   if (fs.existsSync(filePath)) {

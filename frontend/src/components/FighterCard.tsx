@@ -50,8 +50,9 @@ export default function FighterCard({
   compact = false,
 }: FighterCardProps) {
   const cfg = sideConfig[side];
-  const avatarUrl = (persona.personaJson as Record<string, unknown>)
-    ?.avatarUrl as string | undefined;
+  const raw = persona.personaJson as Record<string, unknown>;
+  const identity = raw.identity as Record<string, unknown> | undefined;
+  const avatarUrl = (identity?.avatarUrl ?? raw.avatarUrl) as string | undefined;
 
   if (compact) {
     return (

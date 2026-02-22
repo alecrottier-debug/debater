@@ -5,6 +5,7 @@ import {
   ModeratorOutput,
   JudgeOutput,
   CrossExOutput,
+  DiscussionWrapOutput,
 } from './llm-schemas.js';
 
 @Injectable()
@@ -40,6 +41,21 @@ export class MockLlmAdapter implements LlmAdapter {
         A: { clarity: 8, strength: 7, responsiveness: 8, weighing: 7 },
         B: { clarity: 7, strength: 6, responsiveness: 7, weighing: 6 },
       },
+      detailedScores: {
+        A: {
+          logicalRigor: 8, evidenceQuality: 7, rebuttalEffectiveness: 8,
+          argumentNovelty: 7, persuasiveness: 8, voiceAuthenticity: 7,
+          rhetoricalSkill: 7, emotionalResonance: 6, framingControl: 8,
+          adaptability: 7,
+        },
+        B: {
+          logicalRigor: 7, evidenceQuality: 6, rebuttalEffectiveness: 6,
+          argumentNovelty: 6, persuasiveness: 7, voiceAuthenticity: 7,
+          rhetoricalSkill: 6, emotionalResonance: 7, framingControl: 6,
+          adaptability: 6,
+        },
+      },
+      verdict: 'Side A wins this debate through superior argumentation and more effective engagement with the opponent\'s points. While Side B showed moments of strong rhetorical flair, particularly in their opening, they failed to sustain that energy through the middle rounds. The decisive moment came during A\'s challenge stage, where they systematically dismantled B\'s core framework.',
       ballot: [
         {
           reason: 'Side A presented stronger evidence with clearer logic.',
@@ -50,6 +66,37 @@ export class MockLlmAdapter implements LlmAdapter {
           refs: ['B_COUNTER'],
         },
       ],
+      analysis: {
+        A: {
+          strengths: [
+            'Strong opening framework that set favorable terms for the debate',
+            'Effective use of concrete evidence and data points',
+          ],
+          weaknesses: [
+            'Closing argument could have been more impactful',
+            'Missed an opportunity to address B\'s emotional appeal',
+          ],
+          keyMoment: 'The systematic dismantling of Side B\'s economic argument using their own cited statistics.',
+          keyMomentRef: 'A_CHALLENGE',
+        },
+        B: {
+          strengths: [
+            'Compelling emotional appeals that resonated with the audience',
+            'Strong opening that initially set the agenda',
+          ],
+          weaknesses: [
+            'Failed to provide concrete examples when challenged',
+            'Lost control of the framing in the middle rounds',
+          ],
+          keyMoment: 'The passionate opening argument that framed the human cost of the motion.',
+          keyMomentRef: 'B_OPEN',
+        },
+      },
+      momentum: {
+        trajectory: 'A_BUILDING',
+        description: 'Side A started solid and built momentum through the challenge and counter stages, while Side B peaked early and faded.',
+      },
+      closeness: 'clear',
       improvements: {
         A: ['Could strengthen closing argument.'],
         B: ['Should provide more concrete examples.'],
@@ -78,6 +125,17 @@ export class MockLlmAdapter implements LlmAdapter {
         },
       ],
       tags: ['evidence', 'logic'],
+    };
+  }
+
+  async generateDiscussionWrap(_prompt: LlmPrompt): Promise<DiscussionWrapOutput> {
+    this.logger.debug('[MOCK] generateDiscussionWrap called');
+    return {
+      narrative: 'What a fascinating discussion. Both guests brought unique perspectives to this important topic.',
+      keyTakeaways: ['First key takeaway', 'Second key takeaway', 'Third key takeaway'],
+      areasOfAgreement: ['Both agree on the importance of the topic'],
+      areasOfDisagreement: ['They differ on the best approach'],
+      openQuestions: ['What will the future hold?'],
     };
   }
 

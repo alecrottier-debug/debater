@@ -12,27 +12,32 @@ model Persona {
   tagline     String
   personaJson Json
   isTemplate  Boolean  @default(false)
+  role        String   @default("debater")
   createdAt   DateTime @default(now())
 
-  debatesAsA Debate[] @relation("PersonaA")
-  debatesAsB Debate[] @relation("PersonaB")
+  debatesAsA      Debate[] @relation("PersonaA")
+  debatesAsB      Debate[] @relation("PersonaB")
+  moderatedDebates Debate[] @relation("ModeratorPersona")
 }
 
 model Debate {
-  id         String   @id @default(uuid())
-  motion     String
-  mode       String   @default("quick")
-  personaAId String
-  personaBId String
-  stageIndex Int      @default(0)
-  status     String   @default("pending")
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                 String   @id @default(uuid())
+  motion             String
+  mode               String   @default("quick")
+  personaAId         String
+  personaBId         String
+  moderatorPersonaId String?
+  confrontationLevel Int      @default(3)
+  stageIndex         Int      @default(0)
+  status             String   @default("pending")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  personaA      Persona        @relation("PersonaA", fields: [personaAId], references: [id])
-  personaB      Persona        @relation("PersonaB", fields: [personaBId], references: [id])
-  turns         Turn[]
-  judgeDecision JudgeDecision?
+  personaA          Persona        @relation("PersonaA", fields: [personaAId], references: [id])
+  personaB          Persona        @relation("PersonaB", fields: [personaBId], references: [id])
+  moderatorPersona  Persona?       @relation("ModeratorPersona", fields: [moderatorPersonaId], references: [id])
+  turns             Turn[]
+  judgeDecision     JudgeDecision?
 }
 
 model Turn {
@@ -50,13 +55,18 @@ model Turn {
 }
 
 model JudgeDecision {
-  id        String   @id @default(uuid())
-  debateId  String   @unique
-  winner    String
-  scores    Json
-  ballot    Json
-  bestLines Json
-  createdAt DateTime @default(now())
+  id             String   @id @default(uuid())
+  debateId       String   @unique
+  winner         String
+  scores         Json
+  ballot         Json
+  bestLines      Json
+  detailedScores Json?
+  verdict        String?
+  analysis       Json?
+  momentum       Json?
+  closeness      String?
+  createdAt      DateTime @default(now())
 
   debate Debate @relation(fields: [debateId], references: [id])
 }

@@ -1,4 +1,4 @@
-import { SynthesizedPersonaSchema, SynthesizedPersona } from '../persona-synth.schema.js';
+import { PersonaV2Schema, PersonaV2, SynthesizedPersonaSchema, SynthesizedPersona } from '../persona-synth.schema.js';
 
 interface OpenAiResponse {
   id: string;
@@ -16,24 +16,38 @@ export interface SynthesisOptions {
   maxRetries?: number;
 }
 
-export type { SynthesizedPersona };
+export type { SynthesizedPersona, PersonaV2 };
 
 function buildPrompt(
   dossierSummary: string,
   subject: string,
   nameOverride?: string,
 ): string {
-  return `Based on the following research dossier about "${subject}", create a debate persona JSON object.
+  return `Based on the following research dossier about "${subject}", create a debate persona JSON object using the v2 schema.
 
 ${nameOverride ? `Use the name: "${nameOverride}"` : 'Choose an appropriate name for the persona.'}
 
-The JSON must have exactly these fields:
-- "name": string - the persona's display name
-- "tagline": string - one compelling line that captures their essence
-- "style": string - a description of their debate style (e.g., "aggressive cross-examiner", "calm evidence-based reasoner")
-- "priorities": string[] - an array of 3-5 things they care about most
-- "background": string - a brief background description (2-3 sentences)
-- "tone": string - how they speak and argue (e.g., "direct and confrontational", "measured with dry wit")
+The JSON must follow this exact structure:
+{
+  "schemaVersion": 2,
+  "identity": {
+    "name": "string - display name",
+    "tagline": "string - one compelling line capturing their essence",
+    "isRealPerson": boolean,
+    "biography": {
+      "summary": "string - 2-3 sentence background"
+    }
+  },
+  "positions": {
+    "priorities": ["string - 3-5 things they care about most"]
+  },
+  "rhetoric": {
+    "style": "string - their debate style",
+    "tone": "string - how they speak and argue"
+  },
+  "epistemology": {},
+  "vulnerabilities": {}
+}
 
 Research dossier:
 ${dossierSummary}
@@ -41,7 +55,7 @@ ${dossierSummary}
 Respond with ONLY the JSON object, no other text.`;
 }
 
-function parseAndValidate(raw: string): SynthesizedPersona {
+function parseAndValidate(raw: string): PersonaV2 | SynthesizedPersona {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
@@ -49,16 +63,22 @@ function parseAndValidate(raw: string): SynthesizedPersona {
     throw new Error(`Invalid JSON from OpenAI: ${raw.slice(0, 200)}`);
   }
 
-  const result = SynthesizedPersonaSchema.safeParse(parsed);
-
-  if (!result.success) {
-    const issues = result.error.issues
-      .map((i) => `${i.path.join('.')}: ${i.message}`)
-      .join('; ');
-    throw new Error(`Persona validation failed: ${issues}`);
+  // Try v2 first
+  const v2Result = PersonaV2Schema.safeParse(parsed);
+  if (v2Result.success) {
+    return v2Result.data;
   }
 
-  return result.data;
+  // Fall back to v1
+  const v1Result = SynthesizedPersonaSchema.safeParse(parsed);
+  if (v1Result.success) {
+    return v1Result.data;
+  }
+
+  const issues = v2Result.error.issues
+    .map((i) => `${i.path.join('.')}: ${i.message}`)
+    .join('; ');
+  throw new Error(`Persona validation failed: ${issues}`);
 }
 
 async function callOpenAi(
@@ -90,7 +110,6 @@ async function callOpenAi(
           content: prompt,
         },
       ],
-      temperature: 0.7,
       response_format: { type: 'json_object' },
     }),
   });
@@ -117,7 +136,7 @@ export async function synthesizePersona(
   subject: string,
   nameOverride: string | undefined,
   options: SynthesisOptions,
-): Promise<SynthesizedPersona> {
+): Promise<PersonaV2 | SynthesizedPersona> {
   const maxRetries = options.maxRetries ?? 2;
   let lastError: Error | null = null;
 

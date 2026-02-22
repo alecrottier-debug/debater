@@ -96,10 +96,16 @@ export class PersonasService {
       nameOverride,
     );
 
+    // Extract name/tagline from v2 (nested) or v1 (flat)
+    const name =
+      'identity' in persona ? persona.identity.name : persona.name;
+    const tagline =
+      'identity' in persona ? persona.identity.tagline : persona.tagline;
+
     const created = await this.prisma.persona.create({
       data: {
-        name: persona.name,
-        tagline: persona.tagline,
+        name,
+        tagline,
         personaJson: persona as object,
         isTemplate: false,
       },
