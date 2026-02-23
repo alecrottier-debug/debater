@@ -29,7 +29,7 @@ export default function DiscussionSummaryView({
   const [exportLoading, setExportLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const wrapTurn = debate.turns.find((t) => t.stageId === "MOD_WRAP");
+  const wrapTurn = debate.turns?.find((t) => t.stageId === "MOD_WRAP");
   const wrapPayload = wrapTurn?.payload as DiscussionWrapPayload | undefined;
 
   async function handleRematch() {
@@ -77,6 +77,37 @@ export default function DiscussionSummaryView({
     : undefined;
   const avatarA = getAvatarUrl(debate.personaA);
   const avatarB = getAvatarUrl(debate.personaB);
+  const nameA = debate.personaA.name;
+  const nameB = debate.personaB.name;
+
+  /** Replace any A/B placeholder references with actual participant names */
+  function humanizeText(text: string): string {
+    return text
+      .replace(/\bSide A\b/g, nameA)
+      .replace(/\bSide B\b/g, nameB)
+      .replace(/\bside A\b/g, nameA)
+      .replace(/\bside B\b/g, nameB)
+      .replace(/\bGuest A\b/g, nameA)
+      .replace(/\bGuest B\b/g, nameB)
+      .replace(/\bguest A\b/g, nameA)
+      .replace(/\bguest B\b/g, nameB)
+      .replace(/\bDebater A\b/g, nameA)
+      .replace(/\bDebater B\b/g, nameB)
+      .replace(/\bdebater A\b/g, nameA)
+      .replace(/\bdebater B\b/g, nameB)
+      .replace(/\bSpeaker A\b/g, nameA)
+      .replace(/\bSpeaker B\b/g, nameB)
+      .replace(/\bspeaker A\b/g, nameA)
+      .replace(/\bspeaker B\b/g, nameB)
+      .replace(/\bParticipant A\b/g, nameA)
+      .replace(/\bParticipant B\b/g, nameB)
+      .replace(/\bparticipant A\b/g, nameA)
+      .replace(/\bparticipant B\b/g, nameB)
+      // Strip stage IDs
+      .replace(/\[[A-Z][A-Z0-9_]+\]/g, "")
+      .replace(/\b[AB]_(?:OPEN|CHALLENGE|REBUTTAL|COUNTER|CLOSE|RESPOND_[12]|FINAL)\b/g, "")
+      .replace(/\b(MOD_(?:SETUP|INTRO|Q[12]|SYNTHESIS|WRAP))\b/g, "");
+  }
 
   return (
     <motion.div
@@ -130,7 +161,7 @@ export default function DiscussionSummaryView({
             </div>
           </div>
           <p className="text-base leading-relaxed text-gray-700">
-            {wrapPayload.narrative}
+            {humanizeText(wrapPayload.narrative)}
           </p>
         </motion.div>
       )}
@@ -159,7 +190,7 @@ export default function DiscussionSummaryView({
                   {i + 1}
                 </span>
                 <p className="text-base leading-relaxed text-gray-800">
-                  {item}
+                  {humanizeText(item)}
                 </p>
               </motion.div>
             ))}
@@ -188,7 +219,7 @@ export default function DiscussionSummaryView({
                   <div key={i} className="flex items-start gap-2.5">
                     <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
                     <p className="text-sm leading-relaxed text-gray-700">
-                      {item}
+                      {humanizeText(item)}
                     </p>
                   </div>
                 ))}
@@ -215,7 +246,7 @@ export default function DiscussionSummaryView({
                   <div key={i} className="flex items-start gap-2.5">
                     <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-red-400" />
                     <p className="text-sm leading-relaxed text-gray-700">
-                      {item}
+                      {humanizeText(item)}
                     </p>
                   </div>
                 ))}
@@ -247,7 +278,7 @@ export default function DiscussionSummaryView({
                 >
                   <span className="mt-0.5 text-lg font-bold leading-none text-purple-300">?</span>
                   <p className="text-sm italic leading-relaxed text-gray-700">
-                    {item}
+                    {humanizeText(item)}
                   </p>
                 </motion.div>
               ))}

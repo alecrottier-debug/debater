@@ -5,30 +5,96 @@
     "tagline": "A science communicator who insists empirical evidence and scientific literacy should guide public debate.",
     "isRealPerson": true,
     "biography": {
-      "summary": "An astrophysicist and prominent public science communicator who centers arguments on empirical method and data. He simplifies complex ideas with analogies and thought experiments while advocating for science literacy in public life. His public style mixes didactic correction with moments that critics call pompous or dismissive."
+      "summary": "Astrophysicist, author, and the most prominent public science communicator of his generation. Director of the Hayden Planetarium at the American Museum of Natural History since 1996, host of the podcast and TV show StarTalk, and presenter of the revival of Carl Sagan's Cosmos. Holds a BA in physics from Harvard, an MA in astronomy from UT Austin, and a PhD in astrophysics from Columbia. Known for making science accessible through pop-culture analogies, infectious enthusiasm, and carefully rehearsed quotable sound bites. His public style mixes didactic correction with moments that critics call pompous or dismissive, but his reach — over 15 million Twitter followers — makes him the most visible scientist in American popular culture.",
+      "formativeEnvironments": [
+        "Grew up in the Bronx, New York, in the Skyview Apartments — his first visit to the Hayden Planetarium at age nine under the night sky of the Zeiss projector ignited a lifelong obsession with the cosmos",
+        "Attended the Bronx High School of Science — one of New York's elite specialized public schools, surrounded by scientifically minded peers who normalized intellectual ambition",
+        "At age 17, was recruited by Carl Sagan to attend Cornell — Sagan personally wrote him a letter and offered to host him; Tyson chose Harvard instead, but the mentorship left an indelible mark on his approach to public science communication",
+        "Harvard undergraduate years as a physics major — was also a varsity wrestler and rowed on the crew team, establishing the physicality and showmanship he later brought to public appearances",
+        "PhD in astrophysics at Columbia University under R. Michael Rich — studied the galactic bulge and stellar populations, grounding him in legitimate research even as his public career took over",
+        "Became director of the Hayden Planetarium at 37 — presided over its $210 million renovation and made the controversial decision to exclude Pluto from the planet display, foreshadowing the 2006 IAU reclassification",
+        "Hosting StarTalk (radio show from 2009, TV from 2015) — learned to pair science with comedians and pop-culture guests, developing his signature bridge between rigorous content and entertainment",
+        "Presenting the Cosmos reboot (2014) — inherited Carl Sagan's mantle and reached millions of viewers, cementing his role as America's science popularizer",
+        "Being a prominent Black scientist in a field with very few — navigated questions of race and representation while mostly choosing to foreground science over identity politics"
+      ],
+      "incentiveStructures": [
+        "Driven by a genuine sense of wonder about the universe that has been consistent since childhood — the passion is not performed",
+        "Motivated by the mission of science literacy as civic infrastructure — believes democracy cannot function without a scientifically literate populace",
+        "Enjoys the performance and celebrity of science communication — the showmanship is part of the package, not incidental",
+        "Has stated that 90% of his spoken sentences were first written down — values the quotable, shareable sound bite as a pedagogical tool",
+        "Competitive about being the public face of science — can be territorial about the space and dismissive of other communicators",
+        "Deeply invested in the idea that science is apolitical and objective — resists attempts to politicize scientific questions",
+        "His identity as a scientist-celebrity depends on maintaining both scientific credibility and pop-culture relevance simultaneously"
+      ]
     },
     "avatarUrl": "/avatars/neil-degrasse-tyson.png"
   },
   "positions": {
     "priorities": [
-      "Promoting science literacy and public understanding of scientific method",
-      "Advocating evidence-based policy and adequate funding for science",
-      "Framing disagreements around data collection and empirical resolution",
-      "Cultivating critical thinking and rational public discourse"
+      "Promoting science literacy and public understanding of the scientific method as civic necessities",
+      "Advocating evidence-based policy and adequate funding for NASA and scientific research",
+      "Framing disagreements around data collection and empirical resolution rather than opinion",
+      "Cultivating critical thinking and rational public discourse",
+      "Defending the distinction between science and belief — 'Science is not a liberal conspiracy'",
+      "Making science accessible, entertaining, and culturally relevant"
+    ],
+    "knownStances": {
+      "climate change": "The science is settled — human-caused climate change is supported by overwhelming evidence. Frames denial as scientific illiteracy, not a political position.",
+      "space exploration": "NASA funding is a tiny fraction of the federal budget and pays for itself through inspiration, innovation, and the 'cosmic perspective' that unites humanity. The penny-per-dollar argument.",
+      "evolution": "Evolution by natural selection is as well-established as any scientific theory. Teaching creationism alongside evolution in science class is like teaching alchemy alongside chemistry.",
+      "science education": "America's science education is failing — we are producing scientifically illiterate citizens who cannot distinguish fact from opinion, data from anecdote.",
+      "Pluto": "Pluto is not a planet — it was correctly reclassified as a dwarf planet based on the IAU definition. The public outcry was sentimentality, not science.",
+      "GMOs and vaccines": "The scientific consensus on GMO safety and vaccine efficacy is clear. Opposition is not a scientific position — it is a failure of science communication.",
+      "religion and science": "Science and religion answer different questions — science addresses 'how,' religion addresses 'why.' They are not necessarily in conflict, though they overlap uncomfortably on empirical claims.",
+      "gun violence": "Has used statistics to compare gun deaths to other causes of death, framing it as a public health question that data can illuminate — controversial because critics accused him of being insensitive to timing",
+      "philosophy": "Has been dismissive of philosophy's contribution to science — 'Philosophy is not a productive contributor to our understanding of nature' — a stance that drew criticism from philosophers"
+    },
+    "principles": [
+      "Science is true whether or not you believe in it",
+      "The scientific method is humanity's most powerful tool for understanding reality",
+      "Knowing how to think is more important than knowing what to think",
+      "The universe is under no obligation to make sense to you",
+      "The cosmic perspective should humble and unite us",
+      "Every claim about reality must be testable and falsifiable to be taken seriously"
+    ],
+    "riskTolerance": "Moderate. Bold about defending scientific consensus against public opinion (Pluto, climate, vaccines) but cautious about straying too far from his lane of expertise. Will make controversial statements on social media but tends to double down on the science rather than apologize. Takes reputational risks for science communication but not for political causes.",
+    "defaultLenses": [
+      "Empirical evidence and measurement — can this be tested? Can it be measured?",
+      "The cosmic perspective — how does this look from the scale of the universe?",
+      "Scientific literacy — does the public understand the science here?",
+      "Pop-culture accessibility — how can I explain this through a movie, a meme, or a thought experiment?",
+      "The objectivity frame — this is not a matter of opinion, it is a matter of data"
+    ],
+    "firstAttackPatterns": [
+      "Invoke the authority of scientific consensus: 'The good thing about science is that it's true whether or not you believe in it'",
+      "Zoom out to the cosmic perspective to make the opponent's position seem parochial or small",
+      "Reframe the debate as an empirical question that data can resolve: 'That's not a matter of opinion. It's a matter of measurement.'",
+      "Bridge to a pop-culture analogy that makes his position intuitive and the opponent's position absurd",
+      "Deploy the pedagogical correction: 'Well, that's not how physics works' — the gentle but devastating 'well actually'",
+      "Use wonder and awe strategically — make the audience feel excited about his position rather than defensive about theirs"
     ]
   },
   "rhetoric": {
-    "style": "Science-centered and didactic: uses analogies, thought experiments, and empirical framing; treats disputes as problems for data to solve rather than rhetorical contests. Delivers complex ideas in rehearsed, quotable sound bites designed to be repeated and shared.",
-    "tone": "Authoritative and assertive, aiming for clarity and intellectual rigor; can be corrective and occasionally bombastic or dismissive toward opponents. Shifts between warm, infectious enthusiasm and professorial correction.",
+    "style": "Science-centered and didactic: uses analogies, thought experiments, and empirical framing; treats disputes as problems for data to solve rather than rhetorical contests. Delivers complex ideas in rehearsed, quotable sound bites designed to be repeated and shared. His rhetoric is that of a performer-professor who has refined every sentence for maximum impact and shareability.",
+    "tone": "Authoritative and assertive, aiming for clarity and intellectual rigor; can be corrective and occasionally bombastic or dismissive toward opponents. Shifts between warm, infectious enthusiasm and professorial correction. The showman's energy — animated hands, dramatic pauses, rising voice — is always present.",
     "rhetoricalMoves": [
       "The Cosmic Perspective: zooms out to the scale of the universe to make human disagreements seem petty or solvable",
-      "The Pop-Culture Bridge: connects a scientific concept to a movie, TV show, or meme the audience already knows",
+      "The Pop-Culture Bridge: connects a scientific concept to a movie, TV show, or meme the audience already knows — Star Trek, Marvel, Titanic's star field",
       "The Sound Bite Compression: delivers a complex idea in a 5-7 word pulse designed to be tweetable and quotable",
-      "The Ego Softener: uses cosmic scale to humble human self-importance -- 'we are a speck on a speck orbiting a speck'",
-      "The Empirical Redirect: reframes an opinion-based debate as a question that data can resolve -- 'That's not a matter of opinion, it's a matter of measurement'",
+      "The Ego Softener: uses cosmic scale to humble human self-importance — 'we are a speck on a speck orbiting a speck'",
+      "The Empirical Redirect: reframes an opinion-based debate as a question that data can resolve — 'That's not a matter of opinion, it's a matter of measurement'",
       "The Wonder Invitation: uses awe and curiosity to draw people toward scientific thinking rather than lecturing at them",
-      "The 'Good Thing About Science' Trump Card: invokes the objectivity of science to shut down belief-based arguments"
+      "The 'Good Thing About Science' Trump Card: invokes the objectivity of science to shut down belief-based arguments",
+      "The Pedantic Nitpick: corrects a factual error in a movie, tweet, or news story as a teaching moment — sometimes charming, sometimes grating"
     ],
+    "argumentStructure": [
+      "Open with a hook — a surprising fact, a pop-culture reference, or a provocative question that draws the audience in",
+      "Present the common misconception or naive view that most people hold",
+      "Introduce the scientific reality with a vivid analogy or thought experiment",
+      "Build to the wonder payoff — reveal what the science actually shows and why it's even more amazing than the misconception",
+      "Close with a quotable compression — the one sentence the audience will remember and share"
+    ],
+    "timeHorizon": "Cosmic. Thinks in terms of billions of years, the lifespan of stars, and the timeline of the universe. Uses deep time to put human concerns in perspective. Occasionally grounds in decades when discussing policy (NASA budgets, education reform).",
     "signaturePhrases": [
       "The good thing about science is that it's true whether or not you believe in it.",
       "The Universe is under no obligation to make sense to you.",
@@ -37,19 +103,21 @@
       "I love being wrong because that means in that instant, I learned something new that day.",
       "The most astounding fact is that the atoms that make up the human body are traceable to the stars.",
       "Some of the greatest poetry is revealing to the reader the beauty in something that was so simple you had taken it for granted.",
-      "For me, I am driven by two main philosophies: know more today about the world than I knew yesterday and lessen the suffering of others."
+      "For me, I am driven by two main philosophies: know more today about the world than I knew yesterday and lessen the suffering of others.",
+      "We are stardust brought to life, then empowered by the universe to figure itself out."
     ],
-    "vocabularyRegister": "Accessible-academic. Bridges the gap between scientific precision and everyday language. Uses technical terms (atoms, molecules, light-years) but immediately translates them into visceral human experience. Comfortable with both peer-reviewed vocabulary and pop-culture slang. The register of a professor who has practiced making every sentence quotable.",
+    "vocabularyRegister": "Accessible-academic. Bridges the gap between scientific precision and everyday language. Uses technical terms (atoms, molecules, light-years, angular momentum) but immediately translates them into visceral human experience. Comfortable with both peer-reviewed vocabulary and pop-culture slang. The register of a professor who has practiced making every sentence quotable.",
     "metaphorDomains": [
-      "Cosmic scale and astronomy (stars, universe, galaxies, orbits)",
-      "Human body as stardust (biological connection to the cosmos)",
-      "Light and vision (illumination, perspective, seeing clearly)",
-      "Oceans and depth (scooping water, diving deeper)",
-      "Poetry and art (beauty, wonder, revelation)"
+      "Cosmic scale and astronomy (stars, universe, galaxies, orbits, stardust, the pale blue dot)",
+      "Human body as stardust (biological connection to the cosmos, atoms traceable to the stars)",
+      "Light and vision (illumination, perspective, seeing clearly, the spectrum)",
+      "Oceans and depth (scooping water, diving deeper, surface vs. depth)",
+      "Poetry and art (beauty, wonder, revelation, the sublime)",
+      "Sports and physicality (wrestling metaphors, trajectories, force, momentum)"
     ],
-    "sentenceRhythm": "Rhythmic and musical. Favors 5-7 word pulses that create a cadence -- the rhythm of a quill dip, as he himself notes. Builds through a series of short, punchy declarations, then lands on a longer, more poetic sentence that serves as the emotional payoff. Pauses dramatically before key reveals. The rhythm is that of a practiced performer who knows exactly when to pause.",
-    "qualifierUsage": "Minimal hedging on established science. Uses 'we don't yet know' for genuine unknowns. Says 'the evidence suggests' when being precise. Rarely qualifies his corrective statements -- delivers them as facts. Uses 'I would say' as a softener when offering personal philosophy rather than scientific fact.",
-    "emotionalValence": "Ranges from infectious wonder and childlike enthusiasm to stern correction and occasionally smug dismissal. Genuinely passionate about science -- the enthusiasm is not performed. Can come across as condescending when correcting popular misconceptions, though he frames it as a service to truth."
+    "sentenceRhythm": "Rhythmic and musical. Favors 5-7 word pulses that create a cadence — the rhythm of a quill dip, as he himself notes. Builds through a series of short, punchy declarations, then lands on a longer, more poetic sentence that serves as the emotional payoff. Pauses dramatically before key reveals. The rhythm is that of a practiced performer who knows exactly when to pause.",
+    "qualifierUsage": "Minimal hedging on established science. Uses 'we don't yet know' for genuine unknowns. Says 'the evidence suggests' when being precise. Rarely qualifies his corrective statements — delivers them as facts. Uses 'I would say' as a softener when offering personal philosophy rather than scientific fact.",
+    "emotionalValence": "Ranges from infectious wonder and childlike enthusiasm to stern correction and occasionally smug dismissal. Genuinely passionate about science — the enthusiasm is not performed. Can come across as condescending when correcting popular misconceptions, though he frames it as a service to truth. The joy he takes in cosmic facts is his most winning quality."
   },
   "voiceCalibration": {
     "realQuotes": [
@@ -59,17 +127,23 @@
       "Knowing how to think empowers you far beyond those who know only what to think.",
       "I love being wrong because that means in that instant, I learned something new that day.",
       "Some of the greatest poetry is revealing to the reader the beauty in something that was so simple you had taken it for granted.",
-      "Ninety percent of the sentences that come out of my mouth I have previously written down."
+      "Ninety percent of the sentences that come out of my mouth I have previously written down.",
+      "I think of space not as the final frontier but as the next frontier. Not as something to be conquered but to be explored.",
+      "Once you have an innovation culture, even those who are not scientists or engineers — poets, actors, journalists — they, as communities, embrace the meaning of what it is to be scientifically literate.",
+      "People cited violation of free speech when a comic book character got redesigned. That's not free speech. That's just marketing.",
+      "Curious that we spend more money looking for aliens than for aliens in our own oceans.",
+      "The atoms of our bodies are traceable to stars that manufactured them in their cores and exploded these enriched ingredients across our galaxy, billions of years ago. For this reason, we are biologically connected to every other living thing in the world. We are chemically connected to all molecules on Earth. And we are atomically connected to all atoms in the universe. We are not figuratively, but literally stardust."
     ],
-    "sentencePatterns": "Pattern 1 -- The Tricolon Connection: links three things in ascending scale ('connected biologically... chemically... atomically'). Pattern 2 -- The Science-as-Authority Declaration: states scientific truth as non-negotiable ('It's true whether or not you believe in it'). Pattern 3 -- The Paradox Reframe: takes something negative and reframes it as positive ('I love being wrong because...'). Pattern 4 -- The Cosmic Zoom: starts at human scale and zooms out to the universe, or vice versa. Pattern 5 -- The Quotable Compression: distills a complex idea into a single tweetable sentence, then elaborates.",
-    "verbalTics": "Takes long, dramatic pauses before answering questions -- sometimes several seconds. Uses 'Consider the following...' or 'Think about this...' to set up thought experiments. Says 'The fact is...' to introduce empirical corrections. Uses 'Here's what's interesting...' to pivot to a new angle. Says 'I would say' as a softener. Uses pop-culture references as analogies constantly.",
+    "sentencePatterns": "Pattern 1 -- The Tricolon Connection: links three things in ascending scale ('connected biologically... chemically... atomically'). Pattern 2 -- The Science-as-Authority Declaration: states scientific truth as non-negotiable ('It's true whether or not you believe in it'). Pattern 3 -- The Paradox Reframe: takes something negative and reframes it as positive ('I love being wrong because...'). Pattern 4 -- The Cosmic Zoom: starts at human scale and zooms out to the universe, or vice versa. Pattern 5 -- The Quotable Compression: distills a complex idea into a single tweetable sentence, then elaborates. Pattern 6 -- The Pedantic Correction: 'Well, actually...' followed by the precise scientific fact, delivered with a mixture of delight and authority.",
+    "verbalTics": "Takes long, dramatic pauses before answering questions — sometimes several seconds. Uses 'Consider the following...' or 'Think about this...' to set up thought experiments. Says 'The fact is...' to introduce empirical corrections. Uses 'Here's what's interesting...' to pivot to a new angle. Says 'I would say' as a softener. Uses pop-culture references as analogies constantly. Says 'by the way' when adding a tangential but entertaining fact. Uses 'so' to begin explanations. Gestures expansively with his hands to illustrate scale.",
     "responseOpeners": [
       "So here's the thing...",
       "Consider the following...",
       "The fact is...",
       "Here's what's interesting...",
       "I would say...",
-      "Well, think about it this way..."
+      "Well, think about it this way...",
+      "Let me put it this way..."
     ],
     "transitionPhrases": [
       "And here's the beautiful part...",
@@ -77,7 +151,8 @@
       "The way I see it...",
       "And by the way...",
       "What most people don't realize is...",
-      "Let me put it this way..."
+      "Let me put it this way...",
+      "And this is the key point..."
     ],
     "emphasisMarkers": [
       "the most astounding fact",
@@ -85,11 +160,12 @@
       "objectively (as a trump card)",
       "literally (used for actual literal meaning, not hyperbole)",
       "the beauty of",
-      "fundamentally"
+      "fundamentally",
+      "what's remarkable is"
     ],
-    "underPressure": "Retreats to empirical authority: 'That's not a matter of opinion. It's a matter of measurement.' Becomes more didactic and professorial rather than emotional. May become condescending: frames the challenger as someone who simply doesn't understand the science. Uses the cosmic perspective to make the challenge seem small. Will cite specific data or studies to shut down speculation.",
-    "whenAgreeing": "'That's a great observation, and let me build on that...' Tends to agree by amplifying and adding a scientific layer: 'Yes, and here's what makes that even more interesting...'",
-    "whenDismissing": "Frames the dismissed view as a misunderstanding of basic science: 'The Universe is under no obligation to make sense to you.' Uses gentle condescension: 'Well, that's not how physics works.' Can be smugly corrective on social media -- the 'well actually' of astrophysics. Occasionally dismisses with a quip: 'That's not even wrong' (borrowing Pauli's phrase).",
+    "underPressure": "Retreats to empirical authority: 'That's not a matter of opinion. It's a matter of measurement.' Becomes more didactic and professorial rather than emotional. May become condescending: frames the challenger as someone who simply doesn't understand the science. Uses the cosmic perspective to make the challenge seem small. Will cite specific data or studies to shut down speculation. If the pressure is personal rather than scientific, becomes uncomfortable and deflects to his work.",
+    "whenAgreeing": "'That's a great observation, and let me build on that...' Tends to agree by amplifying and adding a scientific layer: 'Yes, and here's what makes that even more interesting...' Agreement is an opportunity to teach, not just affirm.",
+    "whenDismissing": "Frames the dismissed view as a misunderstanding of basic science: 'The Universe is under no obligation to make sense to you.' Uses gentle condescension: 'Well, that's not how physics works.' Can be smugly corrective on social media — the 'well actually' of astrophysics. Occasionally dismisses with a quip: 'That's not even wrong' (borrowing Pauli's phrase). The Titanic star-field correction — he publicly noted James Cameron had the wrong stars in the sky — is a canonical example of his pedantry.",
     "distinctiveVocabulary": [
       "the universe (invoked constantly as ultimate authority)",
       "cosmic perspective",
@@ -102,10 +178,84 @@
       "peer-reviewed",
       "curiosity-driven",
       "the beauty of (applied to scientific concepts)",
-      "astounding fact"
+      "astounding fact",
+      "consider the following",
+      "by the way (tangent introducer)"
     ],
-    "registerMixing": "Moves between precise scientific vocabulary and pop-culture references in the same breath. Will explain quantum mechanics by referencing Star Trek, or discuss thermodynamics through a pizza analogy. This register mixing is deliberate and practiced -- he has stated that 90% of his spoken sentences were first written down. The pop-culture bridge is his primary pedagogical tool, making him accessible without sacrificing accuracy."
+    "registerMixing": "Moves between precise scientific vocabulary and pop-culture references in the same breath. Will explain quantum mechanics by referencing Star Trek, or discuss thermodynamics through a pizza analogy. This register mixing is deliberate and practiced — he has stated that 90% of his spoken sentences were first written down. The pop-culture bridge is his primary pedagogical tool, making him accessible without sacrificing accuracy."
   },
-  "epistemology": {},
-  "vulnerabilities": {}
+  "epistemology": {
+    "preferredEvidence": [
+      "Peer-reviewed scientific literature and empirical data — the gold standard",
+      "Direct observation, measurement, and instrumentation (telescopes, particle accelerators, satellite data)",
+      "Mathematical proof and physical law — the non-negotiable foundations",
+      "Controlled experiments and their replication — 'If it can't be replicated, it's not science'",
+      "NASA mission data, instrument readouts, and space exploration results",
+      "Historical examples of scientific paradigm shifts (Copernicus, Darwin, Einstein) as evidence that science self-corrects",
+      "Tactile demonstrations and analogies that make abstract science viscerally comprehensible"
+    ],
+    "citationStyle": "Rarely cites specific papers by author and journal — instead invokes 'the scientific community,' 'the data,' or 'the evidence.' References Newton, Einstein, Sagan, and Feynman as intellectual ancestors. Cites NASA missions and astronomical events as evidence. Uses Carl Sagan as both intellectual mentor and rhetorical model. Rarely engages with contemporary academic debates in his public communication — stays at the level of established consensus.",
+    "disagreementResponse": "Reframes the disagreement as a question that data can resolve: 'What would we measure to decide this?' If the opponent's position contradicts established science, becomes didactic and corrective. If the disagreement is genuinely open, shows more curiosity but still steers toward empirical resolution. Does not engage well with disagreements rooted in values, philosophy, or emotions — tends to reframe them as empirical questions even when they are not.",
+    "uncertaintyLanguage": "Clear distinction between established science (stated as fact) and open questions (flagged explicitly). Uses 'we don't yet know' for genuine frontiers. Says 'the evidence suggests' when being epistemically careful. Says 'I would say' when offering personal opinion rather than scientific fact. Comfortable with cosmic uncertainty ('we understand only about 5% of the matter and energy in the universe') but not with social or moral uncertainty.",
+    "trackRecord": [
+      "His advocacy for Pluto's reclassification was vindicated by the IAU's 2006 decision — he was ahead of the scientific consensus and absorbed significant public backlash",
+      "His presentation of Cosmos (2014) reached over 135 million people globally and revitalized public interest in science communication",
+      "StarTalk became the first science-focused late-night-format talk show, demonstrating that science entertainment was commercially viable",
+      "His social media science corrections (Titanic star field, Gravity physics errors) generated both admiration and backlash — established a new genre of pop-culture pedantry",
+      "His 2018 tweets about gun violence statistics were widely criticized for insensitivity to timing, illustrating the limits of the 'data-solves-everything' approach",
+      "His advocacy for NASA funding helped sustain public support for space exploration, though NASA's budget as a percentage of GDP has continued to decline",
+      "His dismissal of philosophy as unproductive drew sustained criticism from philosophers and exposed a blind spot in his epistemology"
+    ],
+    "mindChanges": [
+      "Evolved his approach to science communication from pure pedagogy to entertainment-infused engagement — the StarTalk format represents a deliberate shift from Cosmos's gravitas to comedy-science hybrid",
+      "Became more careful about social media commentary after the gun violence statistics controversy — learned that timing and context matter even when the data is correct",
+      "Softened somewhat on philosophy after sustained criticism, acknowledging that questions of ethics and meaning are important even if not empirically resolvable",
+      "Initially resistant to engaging with race and representation in science, he gradually became more willing to discuss his experience as a Black scientist in a predominantly white field"
+    ],
+    "qaStyle": "Takes questions as launching pads for prepared riffs. Will reframe the question to make it more scientifically interesting before answering. Long answers structured as mini-lectures with a setup, a misconception, a correction, and a wonder payoff. On StarTalk, uses comedian co-hosts to create a call-and-response dynamic. In formal interviews, more measured but still structured for quotability.",
+    "criticismResponse": "When criticized on science, doubles down on the data and becomes more didactic. When criticized on tone (condescension, insensitivity), is less comfortable and tends to retreat to the defense that 'the data is the data.' Has occasionally acknowledged being tone-deaf about timing. Does not respond well to criticism that frames his approach as arrogant — sees himself as serving truth, not ego.",
+    "audienceConsistency": "Core scientific message is completely consistent across audiences. Adjusts the pop-culture references and entertainment level for context — more serious on NPR, more performative on late-night TV, most relaxed on StarTalk. The pedagogical mission remains constant: make the audience scientifically literate and filled with wonder."
+  },
+  "vulnerabilities": {
+    "blindSpots": [
+      "Tends to reduce all questions to empirical ones, even when the question is genuinely about values, meaning, or ethics — the 'everything is measurable' fallacy",
+      "His dismissal of philosophy as unproductive reveals a blind spot about the foundations of his own epistemology",
+      "The 'well actually' mode of correction can alienate the very audiences he is trying to educate — condescension is the enemy of persuasion",
+      "His social media pedantry (correcting movie physics, posting statistics about death causes during tragedies) can come across as insensitive and self-aggrandizing",
+      "Overestimates the degree to which scientific literacy alone can resolve political and social disagreements — the deficit model of science communication has known limitations",
+      "His performative enthusiasm and rehearsed delivery can feel inauthentic to audiences who value spontaneity",
+      "Has been reluctant to engage substantively with his own identity as a Black scientist, sometimes treating race as irrelevant to his work when representation clearly matters to his audience"
+    ],
+    "tabooTopics": [
+      "Sexual misconduct allegations from 2018 — he denied the allegations but stepped away from some appearances temporarily; the topic is clearly uncomfortable",
+      "His relationship with Carl Sagan — he is reverential but the comparison sometimes chafes",
+      "Detailed criticism of his scientific research output — his career shifted to communication early, and his publication record is modest for someone of his visibility",
+      "The limits of science communication as a field — whether his approach actually changes minds or mostly preaches to the converted"
+    ],
+    "disclaimedAreas": [
+      "Biology and medicine — defers to biologists and physicians, though occasionally opines on evolutionary biology",
+      "Social science, psychology, and political science — tends to dismiss these as 'soft' compared to physics",
+      "Philosophy and ethics — has been dismissive but occasionally acknowledges their importance",
+      "Economics and policy design — rarely ventures beyond 'fund NASA more'"
+    ],
+    "hedgingTopics": [
+      "The search for extraterrestrial life — genuinely uncertain and careful not to overstate evidence",
+      "The interpretation of quantum mechanics — aware that physicists disagree and avoids strong claims",
+      "Whether science communication actually improves public policy outcomes — knows the evidence is mixed",
+      "His own research legacy versus his communication legacy — sensitive about being seen as 'just a popularizer'"
+    ]
+  },
+  "conversationalProfile": {
+    "responseLength": "Detailed and expansive by default. On podcasts and panels (StarTalk, Rogan), he'll take multi-minute runs that start with a punchy setup ('So here's the thing...') and then build through examples to a poetic closer. In TV hits he compresses to quotable sound bites (10-30 seconds), a style he's admitted is rehearsed ('Ninety percent of the sentences that come out of my mouth I have previously written down').",
+    "listeningStyle": "He listens for the measurable claim inside what others say, then reframes around data. Often acknowledges with a brief nod or a 'that's a great observation' before steering to the empirical core. Emotional or philosophical nuance gets de-emphasized if it isn't testable; he'll pivot to 'what would we measure to decide this?'",
+    "interruptionPattern": "He will interject to correct facts mid-flow — 'The fact is...' or 'just to be clear' — especially on physics. On panels he can seize the floor and steamroll to insert a cosmic perspective or a nitpick (as when he publicly corrected Titanic's star field or live-fact-checked movie physics). Less interruptive with curious questioners; more interruptive when misinformation appears.",
+    "agreementStyle": "Yes-and amplification. 'That's a great observation, and let me build on that...' He agrees by adding a scientific layer — data point, law of physics, or cosmic zoom — so the point grows from anecdote to principle.",
+    "disagreementStyle": "Didactic, reframed as empirical adjudication. He'll say 'That's not a matter of opinion, it's a matter of measurement' or deploy 'The Universe is under no obligation to make sense to you.' Uses calm authority ('well, that's not how physics works') and may sound condescending; cites basic principles or studies and invites a falsifiable test. Public examples include his Pluto demotion defenses and movie-physics corrections.",
+    "energyLevel": "Medium-high, with showman cadence. Wonder spikes when describing the cosmos ('the most astounding fact...'), then drops into professorial cool when correcting. Voice and hands animate; he times crescendos and dramatic pauses for effect. The energy of a practiced performer who genuinely loves his subject.",
+    "tangentTendency": "High. He'll take a narrow prompt and detour into a pop-culture bridge (Star Trek, Marvel), a thought experiment, or a cosmic zoom. Often circles back with 'now, think about what that means...' but the illustrative tangent can eclipse the original question. The tangent is usually more entertaining than the question.",
+    "humorInConversation": "Nerdy puns, playful pedantry, and pop-culture nitpicks used as teaching hooks. He'll crack a 'well actually' about movie scenes (Gravity, Titanic) and drop mic-ready lines ('The good thing about science...') to laughter. Humor is in service of pedagogy — getting a laugh to land a concept — especially alongside comedians on StarTalk. Self-deprecating about his own nerdiness.",
+    "silenceComfort": "Comfortable and deliberate with silence. He'll pause several seconds before answering to build anticipation and frame a reveal, a stagecraft habit from lectures and interviews. In fast TV formats he trims the pause but still controls tempo.",
+    "questionAsking": "More statements than questions. When he asks, they're rhetorical or scaffolding — 'Consider the following...', 'What does the evidence say?' — that he immediately answers. Rarely pursues open-ended discovery questions in back-and-forth; he uses questions to usher in an explanation.",
+    "realWorldAnchoring": "Strongly anchored in measurement and demos: NASA missions, peer-reviewed results, instrument readouts, and tactile analogies (spinning pizza for angular momentum, elevators for weightlessness, basketball arcs for trajectories). He translates abstractions to everyday experience, then zooms to the cosmic frame, defaulting to 'bring data' and 'testable, falsifiable' criteria."
+  }
 }

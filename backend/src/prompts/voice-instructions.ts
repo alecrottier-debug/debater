@@ -205,7 +205,28 @@ export function buildVoiceInstructions(
       );
   }
 
-  // ── 4. Stage-specific voice adaptation ────────────────────────────────
+  // ── 4. Conversational profile — how this person actually behaves in discussions ──
+
+  const convo = persona.conversationalProfile as Record<string, string> | undefined;
+  if (convo && opts.mode === 'discussion') {
+    parts.push('');
+    parts.push('=== HOW YOU ACTUALLY TALK IN CONVERSATIONS ===');
+    parts.push('These are the MOST IMPORTANT voice instructions. They override everything else.');
+    parts.push('');
+    if (convo.responseLength) parts.push(`RESPONSE LENGTH: ${convo.responseLength}. Match this precisely — do NOT pad your response to fill the word limit if this person would naturally be briefer.`);
+    if (convo.listeningStyle) parts.push(`LISTENING & ENGAGEMENT: ${convo.listeningStyle}`);
+    if (convo.agreementStyle) parts.push(`WHEN YOU AGREE: ${convo.agreementStyle}`);
+    if (convo.disagreementStyle) parts.push(`WHEN YOU DISAGREE: ${convo.disagreementStyle}`);
+    if (convo.energyLevel) parts.push(`YOUR ENERGY: ${convo.energyLevel}`);
+    if (convo.tangentTendency) parts.push(`TOPIC DISCIPLINE: ${convo.tangentTendency}`);
+    if (convo.humorInConversation) parts.push(`HUMOR: ${convo.humorInConversation}`);
+    if (convo.silenceComfort) parts.push(`PACING: ${convo.silenceComfort}`);
+    if (convo.questionAsking) parts.push(`QUESTIONS: ${convo.questionAsking}`);
+    if (convo.realWorldAnchoring) parts.push(`GROUNDING: ${convo.realWorldAnchoring}`);
+    if (convo.interruptionPattern) parts.push(`INTERJECTION STYLE: ${convo.interruptionPattern}`);
+  }
+
+  // ── 5. Stage-specific voice adaptation ────────────────────────────────
 
   const stageAdaptation = buildStageAdaptation(
     name,
@@ -218,7 +239,7 @@ export function buildVoiceInstructions(
   );
   if (stageAdaptation) parts.push(stageAdaptation);
 
-  // ── 5. Assemble ───────────────────────────────────────────────────────
+  // ── 6. Assemble ───────────────────────────────────────────────────────
 
   if (parts.length === 0) return '';
   return (
@@ -394,6 +415,33 @@ export function buildVoiceAuthenticityBlock(
     mode === 'debate'
       ? 'debate prose'
       : 'discussion prose';
+
+  if (mode === 'discussion') {
+    // Check for conversationalProfile to override sentence length guidance
+    const convo = persona.conversationalProfile as Record<string, string> | undefined;
+    const responseLengthGuidance = convo?.responseLength
+      ? `Match ${name}'s natural response length: ${convo.responseLength}. Do NOT force short responses if they naturally give longer, detailed answers, and do NOT pad responses if they are naturally brief.`
+      : `Keep it short and natural. Even if ${name} writes long sentences, people talk in shorter ones. ${lengthGuidance}`;
+
+    const sentenceLengthGuidance = convo?.responseLength
+      ? `SENTENCE LENGTH: Match this persona's natural speech patterns. Some people speak in short, punchy sentences. Others build complex, multi-clause thoughts. Follow the persona's sentenceRhythm and conversationalProfile — do NOT force all personas into the same short-sentence pattern.`
+      : `SENTENCE LENGTH: Keep it short and natural. Even if ${name} writes long sentences, people talk in shorter ones. ${lengthGuidance}`;
+
+    // Discussion mode: prioritize naturalness over strict pattern-matching
+    return `PERSONA VOICE — You are ${name}. The audience should recognize you within the first few words.
+
+BUT: Naturalness ALWAYS wins over pattern-matching in a discussion. Do NOT try to cram in every rhetorical device, signature phrase, or vocal pattern from your persona data. Real people on panels use maybe 10-20% of their full rhetorical toolkit in any given response.
+
+HOW TO SOUND LIKE ${name.toUpperCase()} IN CONVERSATION:
+\u2022 WORD CHOICE: Use ${name}'s natural vocabulary — the words they reach for instinctively. But keep it conversational, not performative.
+\u2022 RESPONSE LENGTH: ${responseLengthGuidance}
+\u2022 ${sentenceLengthGuidance}
+\u2022 PERSONALITY: Capture ${name}'s energy, attitude, and worldview — that matters more than mimicking specific phrases.
+\u2022 ONE OR TWO SIGNATURE TOUCHES per response is enough. Don't overdo it. A real person doesn't use every catchphrase in every answer.
+\u2022 VERBAL TEXTURE: Include natural speech patterns — hedges, self-corrections, direct address to the other guest.
+
+The test is NOT "does this match every voice pattern?" — it's "does this sound like ${name} having a real conversation?"`;
+  }
 
   return `CRITICAL \u2014 PERSONA AUTHENTICITY:
 The audience must be able to identify ${name} from voice alone within the first sentence. This is not a suggestion \u2014 it is the single most important instruction. Every sentence must pass the test: "Would ${name} actually say this, in these exact words, with this exact rhythm?"

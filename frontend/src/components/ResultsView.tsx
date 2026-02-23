@@ -21,8 +21,11 @@ function ConfettiParticle({ delay }: { delay: number }) {
   const randomX = useMemo(() => Math.random() * 100, []);
   const randomDuration = useMemo(() => 2 + Math.random() * 3, []);
   const randomRotation = useMemo(() => Math.random() * 720 - 360, []);
-  const colors = ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b", "#ef4444"];
-  const color = useMemo(() => colors[Math.floor(Math.random() * colors.length)], []);
+  const colors = ["#a8802e", "#c9a84c", "#3a75d4", "#c4564a", "#3a8a5c"];
+  const color = useMemo(
+    () => colors[Math.floor(Math.random() * colors.length)],
+    [],
+  );
   const size = useMemo(() => 4 + Math.random() * 8, []);
 
   return (
@@ -81,25 +84,32 @@ const detailedScoreLabels: Record<keyof DetailedSubScores, string> = {
   adaptability: "Adaptability",
 };
 
-const detailedScoreGroups: { label: string; keys: (keyof DetailedSubScores)[] }[] = [
-  { label: "Argument Quality", keys: ["logicalRigor", "evidenceQuality", "rebuttalEffectiveness", "argumentNovelty", "persuasiveness"] },
-  { label: "Rhetorical Performance", keys: ["voiceAuthenticity", "rhetoricalSkill", "emotionalResonance"] },
+const detailedScoreGroups: {
+  label: string;
+  keys: (keyof DetailedSubScores)[];
+}[] = [
+  {
+    label: "Argument Quality",
+    keys: [
+      "logicalRigor",
+      "evidenceQuality",
+      "rebuttalEffectiveness",
+      "argumentNovelty",
+      "persuasiveness",
+    ],
+  },
+  {
+    label: "Rhetorical Performance",
+    keys: ["voiceAuthenticity", "rhetoricalSkill", "emotionalResonance"],
+  },
   { label: "Strategic Skills", keys: ["framingControl", "adaptability"] },
 ];
 
-const closenessLabels: Record<string, { text: string; color: string }> = {
-  "blowout": { text: "Blowout", color: "bg-red-100 text-red-700 border-red-200" },
-  "clear": { text: "Clear Victory", color: "bg-amber-100 text-amber-700 border-amber-200" },
-  "narrow": { text: "Narrow Win", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-  "razor-thin": { text: "Razor-Thin", color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-};
-
-const momentumLabels: Record<string, { text: string; icon: string }> = {
-  "A_BUILDING": { text: "Side A gaining momentum", icon: "^" },
-  "B_BUILDING": { text: "Side B gaining momentum", icon: "^" },
-  "A_FADING": { text: "Side A losing steam", icon: "v" },
-  "B_FADING": { text: "Side B losing steam", icon: "v" },
-  "EVEN": { text: "Even momentum throughout", icon: "=" },
+const closenessText: Record<string, string> = {
+  blowout: "Blowout",
+  clear: "Clear Victory",
+  narrow: "Narrow Win",
+  "razor-thin": "Razor-Thin",
 };
 
 /* ── Main component ── */
@@ -111,7 +121,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
   const [exportLoading, setExportLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showDetailedScores, setShowDetailedScores] = useState(false);
-  const [activeAnalysisTab, setActiveAnalysisTab] = useState<"A" | "B">("A");
+  const [activeTab, setActiveTab] = useState<"ballot" | "A" | "B">("ballot");
   const decision = debate.judgeDecision;
 
   useEffect(() => {
@@ -167,12 +177,10 @@ export default function ResultsView({ debate }: ResultsViewProps) {
   const winnerPersona = winner === "A" ? debate.personaA : debate.personaB;
   const loserPersona = winner === "A" ? debate.personaB : debate.personaA;
   const winnerAvatar = getAvatarUrl(winnerPersona);
-  const loserAvatar = getAvatarUrl(loserPersona);
-  const winnerColor = winner === "A" ? "blue" : "purple";
 
-  const rawScores = decision.scores as Record<string, Record<string, number>>;
+  const rawScores = decision.scores;
   const scores: Record<string, { A: number; B: number }> = {};
-  if (rawScores.A && rawScores.B) {
+  if (rawScores?.A && rawScores?.B) {
     for (const category of Object.keys(rawScores.A)) {
       scores[category] = {
         A: rawScores.A[category] ?? 0,
@@ -185,583 +193,648 @@ export default function ResultsView({ debate }: ResultsViewProps) {
   const nameA = debate.personaA.name;
   const nameB = debate.personaB.name;
 
-  // New v2 fields (may be absent for older debates)
   const verdict = decision.verdict;
   const closeness = decision.closeness;
-  const momentum = decision.momentum;
   const analysis = decision.analysis;
   const detailedScores = decision.detailedScores;
 
-  function humanizeReason(text: string): string {
-    return text
-      // Strip trailing references like "References: A_OPEN, A_CHALLENGE, ..."
-      .replace(/\s*References?:\s*[A-Z_,;\s]+\.?\s*$/g, "")
-      // Strip inline parenthesized stage refs
-      .replace(/\s*\([A-Z_]+(?:,\s*[A-Z_]+)*\)/g, "")
-      // Named references
-      .replace(/\bSide A\b/g, nameA)
-      .replace(/\bSide B\b/g, nameB)
-      .replace(/\bside A\b/g, nameA)
-      .replace(/\bside B\b/g, nameB)
-      .replace(/\bDebater A\b/g, nameA)
-      .replace(/\bDebater B\b/g, nameB)
-      .replace(/\bdebater A\b/g, nameA)
-      .replace(/\bdebater B\b/g, nameB)
-      // Standalone "B" is almost never a real English word — replace all instances
-      .replace(/\bB\b/g, nameB)
-      // Standalone "A" after punctuation (colon, semicolon, comma, period+space) = debater ref
-      .replace(/(?<=[:;,]\s*)A\b/g, nameA)
-      .replace(/(?<=\.\s+)A\b/g, nameA)
-      // Possessive A's
-      .replace(/(?<![A-Za-z])\bA\b(?='s\b)/g, nameA);
+  const winnerTotal = winner === "A" ? totalA : totalB;
+  const loserTotal = winner === "A" ? totalB : totalA;
+  const scoreDiff = Math.abs(totalA - totalB);
+
+  /** Map raw stage IDs to human-readable labels with debater names */
+  function humanizeStageId(stageId: string): string {
+    const stageMap: Record<string, string> = {
+      A_OPEN: `${nameA}'s Opening`,
+      A_CHALLENGE: `${nameA}'s Challenge`,
+      A_REBUTTAL: `${nameA}'s Rebuttal`,
+      A_COUNTER: `${nameA}'s Counter`,
+      A_CLOSE: `${nameA}'s Closing`,
+      A_RESPOND_1: `${nameA}'s First Response`,
+      A_RESPOND_2: `${nameA}'s Second Response`,
+      A_FINAL: `${nameA}'s Final Thought`,
+      B_OPEN: `${nameB}'s Opening`,
+      B_CHALLENGE: `${nameB}'s Challenge`,
+      B_REBUTTAL: `${nameB}'s Rebuttal`,
+      B_COUNTER: `${nameB}'s Counter`,
+      B_CLOSE: `${nameB}'s Closing`,
+      B_RESPOND_1: `${nameB}'s First Response`,
+      B_RESPOND_2: `${nameB}'s Second Response`,
+      B_FINAL: `${nameB}'s Final Thought`,
+      MOD_SETUP: "Moderator Setup",
+      MOD_INTRO: "Moderator Introduction",
+      MOD_Q1: "Opening Question",
+      MOD_Q2: "Follow-up Question",
+      MOD_SYNTHESIS: "Moderator Synthesis",
+      MOD_WRAP: "Moderator Wrap-up",
+      JUDGE: "Judge Decision",
+    };
+    return stageMap[stageId] ?? stageId;
   }
-  const rawBallot = decision.ballot as { stageRef: string; reason: string }[];
+
+  function humanizeReason(text: string): string {
+    return (
+      text
+        .replace(/\s*References?:\s*[A-Z_,;\s]+\.?\s*$/g, "")
+        .replace(/\s*\([A-Z_]+(?:,\s*[A-Z_]+)*\)/g, "")
+        .replace(/\[([A-Z][A-Z0-9_]+)\]/g, (_match, id) =>
+          humanizeStageId(id),
+        )
+        .replace(
+          /\b([AB]_(?:OPEN|CHALLENGE|REBUTTAL|COUNTER|CLOSE|RESPOND_[12]|FINAL))\b/g,
+          (_match, id) => humanizeStageId(id),
+        )
+        .replace(
+          /\b(MOD_(?:SETUP|INTRO|Q[12]|SYNTHESIS|WRAP))\b/g,
+          (_match, id) => humanizeStageId(id),
+        )
+        .replace(/\bSide A\b/g, nameA)
+        .replace(/\bSide B\b/g, nameB)
+        .replace(/\bside A\b/g, nameA)
+        .replace(/\bside B\b/g, nameB)
+        .replace(/\bDebater A\b/g, nameA)
+        .replace(/\bDebater B\b/g, nameB)
+        .replace(/\bdebater A\b/g, nameA)
+        .replace(/\bdebater B\b/g, nameB)
+        .replace(/\bSpeaker A\b/g, nameA)
+        .replace(/\bSpeaker B\b/g, nameB)
+        .replace(/\bspeaker A\b/g, nameA)
+        .replace(/\bspeaker B\b/g, nameB)
+        .replace(/\bParticipant A\b/g, nameA)
+        .replace(/\bParticipant B\b/g, nameB)
+        .replace(/\bparticipant A\b/g, nameA)
+        .replace(/\bparticipant B\b/g, nameB)
+        .replace(/\bB\b/g, nameB)
+        // Standalone "A" after punctuation = debater ref
+        .replace(/(?<=[:;,]\s*)A\b/g, nameA)
+        .replace(/(?<=\.\s+)A\b/g, nameA)
+        .replace(/(?<![A-Za-z])\bA\b(?='s\b)/g, nameA)
+    );
+  }
+
+  const rawBallot = decision.ballot as { refs: string[]; reason: string }[];
   const ballot = rawBallot?.map((item) => ({
     ...item,
     reason: humanizeReason(item.reason),
   }));
   const bestLines = decision.bestLines as { A: string; B: string };
 
-  // Set initial analysis tab to the winner's side
-  const effectiveAnalysisTab = activeAnalysisTab;
-  const currentAnalysis = analysis?.[effectiveAnalysisTab];
-  const currentAnalysisName = effectiveAnalysisTab === "A" ? nameA : nameB;
-  const currentAnalysisColor = effectiveAnalysisTab === "A" ? "blue" : "purple";
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="flex flex-col gap-3 overflow-y-auto pb-4"
+      className="flex flex-col gap-4 pt-2.5 pb-4"
     >
       <AnimatePresence>{showConfetti && <Confetti />}</AnimatePresence>
 
       {/* ═══════════════════════════════════════════════
-          ROW 1: Winner Hero (left) + Scorecard (right)
+          3-Column Grid: Scorecard │ Winner │ Best Moments
          ═══════════════════════════════════════════════ */}
-      <div className="grid grid-cols-5 gap-3">
-        {/* ── Winner Hero ── */}
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3, type: "spring", stiffness: 200, damping: 22 }}
-          className={`col-span-3 relative overflow-hidden rounded-2xl border-2 px-5 py-3 ${
-            winnerColor === "blue"
-              ? "border-blue-200 bg-gradient-to-br from-blue-50 via-sky-50/60 to-white"
-              : "border-purple-200 bg-gradient-to-br from-purple-50 via-fuchsia-50/60 to-white"
-          }`}
-        >
-          {/* Decorative glows */}
-          <div
-            className={`pointer-events-none absolute -top-20 -left-20 h-60 w-60 rounded-full blur-3xl ${
-              winnerColor === "blue" ? "bg-blue-200/30" : "bg-purple-200/30"
-            }`}
-          />
-          <div
-            className={`pointer-events-none absolute -bottom-16 right-10 h-40 w-40 rounded-full blur-3xl ${
-              winnerColor === "blue" ? "bg-cyan-200/20" : "bg-pink-200/20"
-            }`}
-          />
-
-          <div className="relative flex items-center gap-7">
-            {/* Large avatar pinned left */}
-            <motion.div
-              initial={{ scale: 0, rotate: -10 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ delay: 0.6, type: "spring", stiffness: 250 }}
-              className="shrink-0"
-            >
-              {winnerAvatar ? (
-                <div className="relative">
-                  <div
-                    className={`absolute -inset-2 rounded-2xl blur-xl ${
-                      winnerColor === "blue" ? "bg-blue-400/25" : "bg-purple-400/25"
-                    }`}
-                  />
-                  <img
-                    src={winnerAvatar}
-                    alt={winnerPersona.name}
-                    className={`relative h-36 w-36 rounded-2xl border-2 object-cover shadow-2xl ${
-                      winnerColor === "blue"
-                        ? "border-blue-300 shadow-blue-200/50"
-                        : "border-purple-300 shadow-purple-200/50"
-                    }`}
-                  />
-                  <div className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-amber-600 shadow-lg shadow-amber-300/50 ring-3 ring-white">
-                    <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M5 3h14c.6 0 1 .4 1 1v2c0 3.3-2.2 6.2-5.3 7.1A3 3 0 0 1 12 16a3 3 0 0 1-2.7-2.9C6.2 12.2 4 9.3 4 6V4c0-.6.4-1 1-1Zm4 17h6v1c0 .6-.4 1-1 1H10c-.6 0-1-.4-1-1v-1Z" />
-                    </svg>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex h-28 w-28 items-center justify-center rounded-2xl bg-gradient-to-br from-yellow-400 to-amber-600 shadow-2xl shadow-amber-200/50">
-                  <svg className="h-12 w-12 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M5 3h14c.6 0 1 .4 1 1v2c0 3.3-2.2 6.2-5.3 7.1A3 3 0 0 1 12 16a3 3 0 0 1-2.7-2.9C6.2 12.2 4 9.3 4 6V4c0-.6.4-1 1-1Zm4 17h6v1c0 .6-.4 1-1 1H10c-.6 0-1-.4-1-1v-1Z" />
-                  </svg>
-                </div>
-              )}
-            </motion.div>
-
-            {/* Text content right of avatar */}
-            <div className="flex-1 min-w-0">
-              <motion.p
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="text-sm font-bold uppercase tracking-[0.25em] text-gray-400"
-              >
-                Judge&apos;s Decision
-              </motion.p>
-
-              <motion.h2
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-                className={`mt-1 font-[var(--font-playfair)] text-4xl font-black tracking-tight ${
-                  winnerColor === "blue" ? "text-blue-600" : "text-purple-600"
-                }`}
-              >
-                {isTie ? "TIE" : winnerPersona.name}
-              </motion.h2>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.9 }}
-                className="mt-1 flex items-center gap-3"
-              >
-                {!isTie && (
-                  <>
-                    <span className="text-base text-gray-500">
-                      defeats
-                    </span>
-                    <div className="flex items-center gap-2">
-                      {loserAvatar && (
-                        <img
-                          src={loserAvatar}
-                          alt={loserPersona.name}
-                          className="h-7 w-7 rounded-full border border-gray-200 object-cover opacity-60"
-                        />
-                      )}
-                      <span className="text-base font-semibold text-gray-500">
-                        {loserPersona.name}
-                      </span>
-                    </div>
-                  </>
-                )}
-              </motion.div>
-
-              {/* Score pill + closeness badge */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.0 }}
-                className="mt-2 flex items-center gap-3"
-              >
-                <div className="inline-flex items-center gap-4 rounded-full border border-gray-200 bg-white/90 px-5 py-1.5 shadow-sm backdrop-blur-sm">
-                  <span className="text-xl font-extrabold text-blue-600 tabular-nums">{totalA}</span>
-                  <span className="text-lg text-gray-300">&mdash;</span>
-                  <span className="text-xl font-extrabold text-purple-600 tabular-nums">{totalB}</span>
-                </div>
-                {closeness && closenessLabels[closeness] && (
-                  <span className={`rounded-full border px-3 py-1 text-xs font-bold ${closenessLabels[closeness].color}`}>
-                    {closenessLabels[closeness].text}
-                  </span>
-                )}
-                {momentum && momentumLabels[momentum.trajectory] && (
-                  <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-500" title={momentum.description}>
-                    {momentum.trajectory.startsWith(winner) ? (
-                      <svg className="mr-1 inline h-3 w-3 text-emerald-500" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
-                      </svg>
-                    ) : momentum.trajectory === "EVEN" ? (
-                      <svg className="mr-1 inline h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
-                      </svg>
-                    ) : (
-                      <svg className="mr-1 inline h-3 w-3 text-orange-500" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 4.5l-15 15m0 0h11.25M4.5 19.5V8.25" />
-                      </svg>
-                    )}
-                    {momentumLabels[momentum.trajectory].text.replace("Side A", nameA.split(" ")[0]).replace("Side B", nameB.split(" ")[0])}
-                  </span>
-                )}
-              </motion.div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* ── Scorecard ── */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5, type: "spring", stiffness: 200, damping: 22 }}
-          className="col-span-2 rounded-2xl border border-gray-200 bg-white shadow-sm"
-        >
-          <div className="flex items-center justify-between border-b border-gray-100 px-5 py-2.5">
-            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-500">
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        className={`grid grid-cols-1 items-stretch gap-3.5 ${
+          bestLines
+            ? "lg:grid-cols-[1fr_240px_1fr]"
+            : "lg:grid-cols-[1fr_240px]"
+        }`}
+      >
+        {/* ── Scorecard (left) ── */}
+        <div className="flex flex-col rounded-[10px] border border-[#e5e3dc] bg-white px-[18px] py-4">
+          <div className="mb-2.5 flex items-center justify-between">
+            <span className="font-[var(--font-geist-mono)] text-[13px] font-medium uppercase tracking-[2.5px] text-[#999]">
               Scorecard
-            </h3>
+            </span>
             {detailedScores && (
               <button
                 onClick={() => setShowDetailedScores(!showDetailedScores)}
-                className="text-xs font-medium text-blue-500 hover:text-blue-700 transition-colors"
+                className="font-[var(--font-geist-mono)] text-[9px] uppercase tracking-[1.5px] text-[#3a75d4] transition-colors hover:text-[#2a5aa4]"
               >
                 {showDetailedScores ? "Summary" : "Detailed"}
               </button>
             )}
           </div>
 
-          {/* Column headers */}
-          <div className="flex items-center border-b border-gray-100 px-5 py-2">
-            <div className="flex-1 text-xs font-semibold uppercase tracking-wider text-gray-400">
-              Category
-            </div>
-            <div className="w-16 text-center text-xs font-bold text-blue-600">
-              {debate.personaA.name.split(" ")[0]}
-            </div>
-            <div className="w-16 text-center text-xs font-bold text-purple-600">
-              {debate.personaB.name.split(" ")[0]}
-            </div>
-          </div>
-
-          {/* Score rows — summary or detailed */}
-          <div>
-            <AnimatePresence mode="wait">
-              {!showDetailedScores ? (
-                <motion.div
-                  key="summary"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  {Object.entries(scores).map(([category, values], idx) => {
-                    const isAHigher = values.A > values.B;
-                    const isBHigher = values.B > values.A;
-                    return (
-                      <motion.div
-                        key={category}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.7 + idx * 0.06 }}
-                        className="flex items-center border-b border-gray-50 px-5 py-2.5 last:border-b-0"
-                      >
-                        <div className="flex-1 text-sm font-medium text-gray-600">
-                          {scoreLabels[category] || category}
-                        </div>
-                        <div
-                          className={`w-16 text-center text-lg font-bold tabular-nums ${
-                            isAHigher ? "text-blue-600" : "text-gray-300"
-                          }`}
+          <div className="flex flex-1 flex-col justify-center">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th className="border-b border-[#eceae4] pb-2 text-left" />
+                  <th className="w-[42px] border-b border-[#eceae4] pb-2 text-center font-[var(--font-geist-mono)] text-[9px] font-medium uppercase tracking-[1.5px] text-[#3a75d4]">
+                    {nameA.split(" ")[0].charAt(0)}
+                  </th>
+                  <th className="w-[42px] border-b border-[#eceae4] pb-2 text-center font-[var(--font-geist-mono)] text-[9px] font-medium uppercase tracking-[1.5px] text-[#c4564a]">
+                    {nameB.split(" ")[0].charAt(0)}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {!showDetailedScores
+                  ? Object.entries(scores).map(([category, values], idx) => {
+                      const isAHigher = values.A > values.B;
+                      const isBHigher = values.B > values.A;
+                      return (
+                        <motion.tr
+                          key={category}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.4 + idx * 0.06 }}
                         >
-                          {values.A}
-                        </div>
-                        <div
-                          className={`w-16 text-center text-lg font-bold tabular-nums ${
-                            isBHigher ? "text-purple-600" : "text-gray-300"
-                          }`}
-                        >
-                          {values.B}
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </motion.div>
-              ) : detailedScores ? (
-                <motion.div
-                  key="detailed"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  {detailedScoreGroups.map((group) => (
-                    <div key={group.label}>
-                      <div className="bg-gray-50 px-5 py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400">
-                        {group.label}
-                      </div>
-                      {group.keys.map((key) => {
-                        const aVal = detailedScores.A[key];
-                        const bVal = detailedScores.B[key];
-                        const isAHigher = aVal > bVal;
-                        const isBHigher = bVal > aVal;
-                        return (
-                          <div
-                            key={key}
-                            className="flex items-center border-b border-gray-50 px-5 py-1.5 last:border-b-0"
+                          <td className="border-t border-[#eceae4] py-[7px] pr-2.5 text-[14px] text-[#5c5c5c] first:border-t-0">
+                            {scoreLabels[category] || category}
+                          </td>
+                          <td className="border-t border-[#eceae4] py-[7px] text-center font-[var(--font-geist-mono)] text-[15px] font-medium text-[#3a75d4] first:border-t-0">
+                            <span
+                              className={`inline-block min-w-[28px] rounded px-1 py-px ${isAHigher ? "bg-[rgba(58,117,212,0.07)]" : ""}`}
+                            >
+                              {values.A}
+                            </span>
+                          </td>
+                          <td className="border-t border-[#eceae4] py-[7px] text-center font-[var(--font-geist-mono)] text-[15px] font-medium text-[#c4564a] first:border-t-0">
+                            <span
+                              className={`inline-block min-w-[28px] rounded px-1 py-px ${isBHigher ? "bg-[rgba(196,86,74,0.07)]" : ""}`}
+                            >
+                              {values.B}
+                            </span>
+                          </td>
+                        </motion.tr>
+                      );
+                    })
+                  : detailedScores
+                    ? detailedScoreGroups.flatMap((group) => [
+                        <tr key={`h-${group.label}`}>
+                          <td
+                            colSpan={3}
+                            className="bg-[#f3f2ee] py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#999]"
                           >
-                            <div className="flex-1 text-xs font-medium text-gray-500">
-                              {detailedScoreLabels[key]}
-                            </div>
-                            <div
-                              className={`w-16 text-center text-sm font-bold tabular-nums ${
-                                isAHigher ? "text-blue-600" : "text-gray-300"
-                              }`}
-                            >
-                              {aVal}
-                            </div>
-                            <div
-                              className={`w-16 text-center text-sm font-bold tabular-nums ${
-                                isBHigher ? "text-purple-600" : "text-gray-300"
-                              }`}
-                            >
-                              {bVal}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ))}
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-          </div>
+                            {group.label}
+                          </td>
+                        </tr>,
+                        ...group.keys.map((key) => {
+                          const aVal = detailedScores.A[key];
+                          const bVal = detailedScores.B[key];
+                          const isAHigher = aVal > bVal;
+                          const isBHigher = bVal > aVal;
+                          return (
+                            <tr key={key}>
+                              <td className="border-t border-[#eceae4] py-[5px] pr-2 text-[12px] text-[#5c5c5c]">
+                                {detailedScoreLabels[key]}
+                              </td>
+                              <td className="border-t border-[#eceae4] py-[5px] text-center font-[var(--font-geist-mono)] text-[12px] font-medium text-[#3a75d4]">
+                                <span
+                                  className={`inline-block min-w-[24px] rounded px-1 py-px ${isAHigher ? "bg-[rgba(58,117,212,0.07)]" : ""}`}
+                                >
+                                  {aVal}
+                                </span>
+                              </td>
+                              <td className="border-t border-[#eceae4] py-[5px] text-center font-[var(--font-geist-mono)] text-[12px] font-medium text-[#c4564a]">
+                                <span
+                                  className={`inline-block min-w-[24px] rounded px-1 py-px ${isBHigher ? "bg-[rgba(196,86,74,0.07)]" : ""}`}
+                                >
+                                  {bVal}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        }),
+                      ])
+                    : null}
 
-          {/* Totals */}
-          <div className="flex items-center border-t-2 border-gray-200 bg-gray-50/50 px-5 py-2.5">
-            <div className="flex-1 text-sm font-bold text-gray-900">Total</div>
-            <div className="w-16 text-center text-xl font-extrabold text-blue-600">
-              {totalA}
-            </div>
-            <div className="w-16 text-center text-xl font-extrabold text-purple-600">
-              {totalB}
-            </div>
+                {/* Total row */}
+                <tr>
+                  <td className="border-t-[1.5px] border-[#e5e3dc] pt-2.5 text-[15px] font-semibold text-[#1a1a1a]">
+                    Total
+                  </td>
+                  <td className="border-t-[1.5px] border-[#e5e3dc] pt-2.5 text-center font-[var(--font-geist-mono)] text-[20px] font-bold text-[#3a75d4]">
+                    <span
+                      className={`inline-block rounded px-1.5 py-px ${totalA > totalB ? "bg-[rgba(58,117,212,0.07)]" : ""}`}
+                    >
+                      {totalA}
+                    </span>
+                  </td>
+                  <td className="border-t-[1.5px] border-[#e5e3dc] pt-2.5 text-center font-[var(--font-geist-mono)] text-[20px] font-bold text-[#c4564a]">
+                    <span
+                      className={`inline-block rounded px-1.5 py-px ${totalB > totalA ? "bg-[rgba(196,86,74,0.07)]" : ""}`}
+                    >
+                      {totalB}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </motion.div>
-      </div>
+        </div>
 
-      {/* ═══════════════════════════════════════════════
-          ROW 1.5: Verdict (full width, if present)
-         ═══════════════════════════════════════════════ */}
-      {verdict && (
+        {/* ── Winner Card (center) ── */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.05 }}
-          className="rounded-2xl border border-gray-200 bg-gradient-to-r from-white via-gray-50/50 to-white px-5 py-2.5 shadow-sm"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            delay: 0.5,
+            type: "spring",
+            stiffness: 200,
+            damping: 22,
+          }}
+          className="relative flex flex-col items-center justify-center overflow-hidden rounded-[10px] border border-[#e6d5a0] bg-[#faf6eb] p-5 text-center"
         >
-          <div className="flex items-start gap-3">
-            <svg className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L3 7l1.63 14.27L12 22l7.37-0.73L21 7l-9-5zm-1 15h2v2h-2v-2zm0-8h2v6h-2V9z" />
-            </svg>
-            <p className="text-sm leading-relaxed text-gray-700 italic">
-              {humanizeReason(verdict)}
-            </p>
-          </div>
-        </motion.div>
-      )}
+          {/* Gold accent line at top */}
+          <div className="pointer-events-none absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent opacity-60" />
 
-      {/* ═══════════════════════════════════════════════
-          ROW 2: Ballot + Analysis (left) + Best Moments (right)
-         ═══════════════════════════════════════════════ */}
-      <div className="grid grid-cols-5 gap-3">
-        {/* ── Ballot Reasons + Analysis (wider: 3/5) ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
-          className="col-span-3 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
-        >
-          {/* Tab bar for Ballot vs Analysis */}
-          <div className="flex border-b border-gray-100">
-            <button
-              className={`flex-1 px-5 py-2 text-sm font-bold uppercase tracking-[0.2em] transition-colors ${
-                !analysis || activeAnalysisTab === "A" && !showDetailedScores
-                  ? "text-gray-500 border-b-2 border-gray-300"
-                  : "text-gray-500 border-b-2 border-gray-300"
-              }`}
-              style={{ borderBottomColor: "transparent" }}
+          {/* Crown + label */}
+          <div className="mb-2.5 flex items-center justify-center gap-[5px] font-[var(--font-geist-mono)] text-[12px] font-medium uppercase tracking-[2.5px] text-[#a8802e]">
+            <svg
+              className="h-[13px] w-[13px] fill-[#a8802e]"
+              viewBox="0 0 24 24"
+              style={{ animation: "crownPulse 3s ease-in-out infinite" }}
             >
-              Ballot Reasons
-            </button>
-            {analysis && (
-              <>
-                <button
-                  onClick={() => setActiveAnalysisTab("A")}
-                  className={`px-4 py-2 text-xs font-bold uppercase tracking-[0.15em] transition-colors border-b-2 ${
-                    activeAnalysisTab === "A"
-                      ? "text-blue-600 border-blue-500"
-                      : "text-gray-400 border-transparent hover:text-gray-600"
-                  }`}
-                >
-                  {nameA.split(" ")[0]} Analysis
-                </button>
-                <button
-                  onClick={() => setActiveAnalysisTab("B")}
-                  className={`px-4 py-2 text-xs font-bold uppercase tracking-[0.15em] transition-colors border-b-2 ${
-                    activeAnalysisTab === "B"
-                      ? "text-purple-600 border-purple-500"
-                      : "text-gray-400 border-transparent hover:text-gray-600"
-                  }`}
-                >
-                  {nameB.split(" ")[0]} Analysis
-                </button>
-              </>
-            )}
+              <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
+            </svg>
+            Judge&apos;s Decision
           </div>
 
-          <div>
-            {/* Ballot reasons — always shown at top */}
-            {ballot && ballot.length > 0 && (
-              <div className="space-y-2 px-5 py-2">
-                {ballot.map((item, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.3 + idx * 0.08 }}
-                    className="flex items-start gap-3 rounded-xl bg-gray-50 px-4 py-3"
-                  >
-                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
-                    <p className="text-sm leading-relaxed text-gray-700">
-                      {item.reason}
-                    </p>
-                  </motion.div>
-                ))}
+          {/* Portrait */}
+          <motion.div
+            initial={{ scale: 0, rotate: -10 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.7, type: "spring", stiffness: 250 }}
+          >
+            {winnerAvatar ? (
+              <img
+                src={winnerAvatar}
+                alt={winnerPersona.name}
+                className="mb-3 h-[150px] w-[150px] shrink-0 rounded-full border-[3px] border-[#e6d5a0] bg-[#f3f2ee] object-cover"
+                style={{
+                  boxShadow:
+                    "0 0 0 5px #faf6eb, 0 4px 24px rgba(168,128,46,0.15)",
+                }}
+              />
+            ) : (
+              <div
+                className="mb-3 flex h-[150px] w-[150px] shrink-0 items-center justify-center rounded-full border-[3px] border-[#e6d5a0] bg-gradient-to-br from-[#c9a84c] to-[#a8802e]"
+                style={{
+                  boxShadow:
+                    "0 0 0 5px #faf6eb, 0 4px 24px rgba(168,128,46,0.15)",
+                }}
+              >
+                <svg
+                  className="h-12 w-12 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
+                </svg>
               </div>
             )}
+          </motion.div>
 
-            {/* Per-side analysis (if present) */}
-            {analysis && currentAnalysis && (
-              <div className="border-t border-gray-100 px-5 py-3 space-y-3">
-                {/* Strengths */}
-                {currentAnalysis.strengths && currentAnalysis.strengths.length > 0 && (
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1">Strengths</h4>
-                    <div className="space-y-1">
-                      {currentAnalysis.strengths.map((s, i) => (
-                        <div key={i} className="flex items-start gap-2 rounded-lg bg-emerald-50 px-3 py-2">
-                          <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
-                          </svg>
-                          <p className="text-xs leading-relaxed text-gray-700">{humanizeReason(s)}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+          {/* Winner name */}
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="font-[var(--font-playfair)] text-2xl font-semibold leading-tight text-[#a8802e]"
+          >
+            {isTie ? "TIE" : winnerPersona.name}
+          </motion.div>
 
-                {/* Weaknesses */}
-                {currentAnalysis.weaknesses && currentAnalysis.weaknesses.length > 0 && (
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-orange-600 mb-1">Areas for Improvement</h4>
-                    <div className="space-y-1">
-                      {currentAnalysis.weaknesses.map((w, i) => (
-                        <div key={i} className="flex items-start gap-2 rounded-lg bg-orange-50 px-3 py-2">
-                          <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                          </svg>
-                          <p className="text-xs leading-relaxed text-gray-700">{humanizeReason(w)}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+          {/* Defeats */}
+          {!isTie && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.0 }}
+              className="mt-0.5 mb-2.5 text-[12px] text-[#5c5c5c]"
+            >
+              defeats{" "}
+              <strong className="font-medium text-[#1a1a1a]">
+                {loserPersona.name}
+              </strong>
+            </motion.div>
+          )}
 
-                {/* Key moment */}
-                {currentAnalysis.keyMoment && (
-                  <div className={`rounded-xl border px-4 py-3 ${
-                    currentAnalysisColor === "blue"
-                      ? "border-blue-200 bg-blue-50/50"
-                      : "border-purple-200 bg-purple-50/50"
-                  }`}>
-                    <h4 className={`text-xs font-bold uppercase tracking-wider mb-1 ${
-                      currentAnalysisColor === "blue" ? "text-blue-600" : "text-purple-600"
-                    }`}>
-                      Key Moment
-                      {currentAnalysis.keyMomentRef && (
-                        <span className="ml-2 font-mono text-[10px] text-gray-400">
-                          [{currentAnalysis.keyMomentRef}]
-                        </span>
-                      )}
-                    </h4>
-                    <p className="text-sm italic leading-relaxed text-gray-700">
-                      {humanizeReason(currentAnalysis.keyMoment)}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          {/* Scores box */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.1 }}
+            className="rounded-lg border border-[#e6d5a0] bg-white/60 px-4 py-2.5"
+          >
+            <div className="flex items-baseline justify-center gap-2 font-[var(--font-playfair)]">
+              <span className="text-[22px] font-light text-[#999]">
+                {loserTotal}
+              </span>
+              <span className="text-[13px] text-[#999]">&mdash;</span>
+              <span className="text-[28px] font-bold text-[#a8802e]">
+                {winnerTotal}
+              </span>
+            </div>
+            <div className="mt-0.5 font-[var(--font-geist-mono)] text-[9px] uppercase tracking-[1.5px] text-[#a8802e]">
+              {closeness && closenessText[closeness]
+                ? closenessText[closeness]
+                : "Victory"}{" "}
+              &middot; +{scoreDiff}
+            </div>
+          </motion.div>
         </motion.div>
 
-        {/* ── Best Moments (narrower: 2/5) ── */}
+        {/* ── Best Moments (right) ── */}
         {bestLines && (
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.4 }}
-            className="col-span-2 flex flex-col gap-2 self-start"
+            transition={{ delay: 0.6 }}
+            className="flex flex-col rounded-[10px] border border-[#e5e3dc] bg-white px-[18px] py-4"
           >
-            <h3 className="text-center text-sm font-bold uppercase tracking-[0.2em] text-gray-500">
+            <div className="mb-2.5 font-[var(--font-geist-mono)] text-[13px] font-medium uppercase tracking-[2.5px] text-[#999]">
               Best Moments
-            </h3>
-
-            {/* Side A best line */}
-            <div className="group relative">
-              <div className="absolute -inset-px rounded-xl bg-gradient-to-br from-blue-400 via-cyan-300 to-blue-500 opacity-40 transition-opacity group-hover:opacity-70" />
-              <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 via-sky-50/50 to-transparent px-4 py-3 shadow-sm">
-                <div className="absolute -right-2 -top-2 select-none font-serif text-[70px] font-bold leading-none text-blue-200/40">
-                  &ldquo;
-                </div>
-                <p className="relative text-base font-semibold italic leading-relaxed text-blue-800">
+            </div>
+            <div className="flex flex-1 flex-col justify-center gap-2.5">
+              {/* Side A quote */}
+              <div className="rounded-[6px] border-l-[3px] border-l-[#3a75d4] bg-[#f7f6f2] px-3.5 py-3">
+                <p className="mb-1.5 font-[var(--font-cormorant)] text-[21px] italic leading-[1.4] text-[#1a1a1a]">
                   &ldquo;{bestLines.A}&rdquo;
                 </p>
-                <div className="relative mt-2 flex items-center gap-2">
-                  {getAvatarUrl(debate.personaA) && (
-                    <img
-                      src={getAvatarUrl(debate.personaA)!}
-                      alt={debate.personaA.name}
-                      className="h-6 w-6 rounded-full border border-blue-200 object-cover"
-                    />
-                  )}
-                  <div className="h-0.5 w-4 rounded-full bg-blue-500/50" />
-                  <span className="text-sm font-bold text-gray-600">
-                    {debate.personaA.name}
-                  </span>
+                <div className="flex items-center gap-[5px] font-[var(--font-geist-mono)] text-[10px] tracking-[1px] text-[#999]">
+                  <span className="inline-block h-[5px] w-[5px] rounded-full bg-[#3a75d4]" />
+                  {nameA}
                 </div>
               </div>
-            </div>
-
-            {/* Side B best line */}
-            <div className="group relative">
-              <div className="absolute -inset-px rounded-xl bg-gradient-to-br from-purple-400 via-pink-300 to-purple-500 opacity-40 transition-opacity group-hover:opacity-70" />
-              <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-purple-50 via-fuchsia-50/50 to-transparent px-4 py-3 shadow-sm">
-                <div className="absolute -right-2 -top-2 select-none font-serif text-[70px] font-bold leading-none text-purple-200/40">
-                  &ldquo;
-                </div>
-                <p className="relative text-base font-semibold italic leading-relaxed text-purple-800">
+              {/* Side B quote */}
+              <div className="rounded-[6px] border-l-[3px] border-l-[#c4564a] bg-[#f7f6f2] px-3.5 py-3">
+                <p className="mb-1.5 font-[var(--font-cormorant)] text-[21px] italic leading-[1.4] text-[#1a1a1a]">
                   &ldquo;{bestLines.B}&rdquo;
                 </p>
-                <div className="relative mt-2 flex items-center gap-2">
-                  {getAvatarUrl(debate.personaB) && (
-                    <img
-                      src={getAvatarUrl(debate.personaB)!}
-                      alt={debate.personaB.name}
-                      className="h-6 w-6 rounded-full border border-purple-200 object-cover"
-                    />
-                  )}
-                  <div className="h-0.5 w-4 rounded-full bg-purple-500/50" />
-                  <span className="text-sm font-bold text-gray-600">
-                    {debate.personaB.name}
-                  </span>
+                <div className="flex items-center gap-[5px] font-[var(--font-geist-mono)] text-[10px] tracking-[1px] text-[#999]">
+                  <span className="inline-block h-[5px] w-[5px] rounded-full bg-[#c4564a]" />
+                  {nameB}
                 </div>
               </div>
             </div>
           </motion.div>
         )}
-      </div>
+      </motion.div>
 
       {/* ═══════════════════════════════════════════════
-          BOTTOM: Action buttons
+          Tabbed Analysis: Ballot │ Per-debater
+         ═══════════════════════════════════════════════ */}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8 }}
+        className="overflow-hidden rounded-[10px] border border-[#e5e3dc] bg-white"
+      >
+        {/* Tab bar */}
+        <div className="flex border-b border-[#e5e3dc]">
+          <button
+            onClick={() => setActiveTab("ballot")}
+            className={`flex-1 border-b-2 px-3.5 py-2.5 text-center font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] transition-all ${
+              activeTab === "ballot"
+                ? "border-[#a8802e] bg-[#faf6eb] text-[#a8802e]"
+                : "border-transparent text-[#999] hover:bg-[#f3f2ee] hover:text-[#5c5c5c]"
+            }`}
+          >
+            Ballot Reasons
+          </button>
+          {analysis && (
+            <>
+              <button
+                onClick={() => setActiveTab("A")}
+                className={`flex-1 border-b-2 px-3.5 py-2.5 text-center font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] transition-all ${
+                  activeTab === "A"
+                    ? "border-[#a8802e] bg-[#faf6eb] text-[#a8802e]"
+                    : "border-transparent text-[#999] hover:bg-[#f3f2ee] hover:text-[#5c5c5c]"
+                }`}
+              >
+                {nameA.split(" ")[0]} Analysis
+              </button>
+              <button
+                onClick={() => setActiveTab("B")}
+                className={`flex-1 border-b-2 px-3.5 py-2.5 text-center font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] transition-all ${
+                  activeTab === "B"
+                    ? "border-[#a8802e] bg-[#faf6eb] text-[#a8802e]"
+                    : "border-transparent text-[#999] hover:bg-[#f3f2ee] hover:text-[#5c5c5c]"
+                }`}
+              >
+                {nameB.split(" ")[0]} Analysis
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Tab content */}
+        <div className="px-5 py-[18px]">
+          <AnimatePresence mode="wait">
+            {activeTab === "ballot" && (
+              <motion.div
+                key="ballot"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                {/* Verdict */}
+                {verdict && (
+                  <div className="mb-3.5 border-b border-[#eceae4] pb-3 text-[15px] leading-[1.7] text-[#5c5c5c]">
+                    {humanizeReason(verdict)}
+                  </div>
+                )}
+                {/* Ballot points */}
+                {ballot &&
+                  ballot.length > 0 &&
+                  ballot.map((item, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.1 + idx * 0.06 }}
+                      className="relative border-b border-[#eceae4] py-[7px] pl-3.5 last:border-b-0"
+                    >
+                      <span className="absolute left-0 top-[13px] h-[5px] w-[5px] rounded-full bg-[#a8802e]" />
+                      <p className="text-[14px] leading-[1.6] text-[#5c5c5c]">
+                        {item.reason}
+                      </p>
+                    </motion.div>
+                  ))}
+              </motion.div>
+            )}
+
+            {activeTab === "A" && analysis?.A && (
+              <motion.div
+                key="analysisA"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {/* Strengths */}
+                  <div>
+                    <div className="mb-2 flex items-center gap-[5px] font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] text-[#3a8a5c]">
+                      <svg
+                        className="h-3 w-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      Strengths
+                    </div>
+                    {analysis.A.strengths?.map((s, i) => (
+                      <div
+                        key={i}
+                        className="mb-[5px] flex items-start gap-[7px] rounded-[6px] bg-[#f3f2ee] px-2.5 py-[7px] text-[13px] leading-[1.5] text-[#5c5c5c]"
+                      >
+                        <div className="mt-0.5 flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-full bg-[rgba(58,138,92,0.08)] text-[8px] font-bold text-[#3a8a5c]">
+                          ✓
+                        </div>
+                        <span>{humanizeReason(s)}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Weaknesses */}
+                  <div>
+                    <div className="mb-2 flex items-center gap-[5px] font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] text-[#b5564a]">
+                      <svg
+                        className="h-3 w-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                      Weaknesses
+                    </div>
+                    {analysis.A.weaknesses?.map((w, i) => (
+                      <div
+                        key={i}
+                        className="mb-[5px] flex items-start gap-[7px] rounded-[6px] bg-[#f3f2ee] px-2.5 py-[7px] text-[13px] leading-[1.5] text-[#5c5c5c]"
+                      >
+                        <div className="mt-0.5 flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-full bg-[rgba(181,86,74,0.06)] text-[8px] font-bold text-[#b5564a]">
+                          ✗
+                        </div>
+                        <span>{humanizeReason(w)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Key moment */}
+                {analysis.A.keyMoment && (
+                  <div className="mt-4 rounded-[6px] border border-[#e5e3dc] bg-[#f7f6f2] px-4 py-3">
+                    <div className="mb-1 font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] text-[#a8802e]">
+                      Key Moment
+                      {analysis.A.keyMomentRef && (
+                        <span className="ml-2 normal-case tracking-normal text-[#999]">
+                          ({humanizeStageId(analysis.A.keyMomentRef)})
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[14px] italic leading-[1.6] text-[#5c5c5c]">
+                      {humanizeReason(analysis.A.keyMoment)}
+                    </p>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {activeTab === "B" && analysis?.B && (
+              <motion.div
+                key="analysisB"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {/* Strengths */}
+                  <div>
+                    <div className="mb-2 flex items-center gap-[5px] font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] text-[#3a8a5c]">
+                      <svg
+                        className="h-3 w-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      Strengths
+                    </div>
+                    {analysis.B.strengths?.map((s, i) => (
+                      <div
+                        key={i}
+                        className="mb-[5px] flex items-start gap-[7px] rounded-[6px] bg-[#f3f2ee] px-2.5 py-[7px] text-[13px] leading-[1.5] text-[#5c5c5c]"
+                      >
+                        <div className="mt-0.5 flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-full bg-[rgba(58,138,92,0.08)] text-[8px] font-bold text-[#3a8a5c]">
+                          ✓
+                        </div>
+                        <span>{humanizeReason(s)}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Weaknesses */}
+                  <div>
+                    <div className="mb-2 flex items-center gap-[5px] font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] text-[#b5564a]">
+                      <svg
+                        className="h-3 w-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                      Weaknesses
+                    </div>
+                    {analysis.B.weaknesses?.map((w, i) => (
+                      <div
+                        key={i}
+                        className="mb-[5px] flex items-start gap-[7px] rounded-[6px] bg-[#f3f2ee] px-2.5 py-[7px] text-[13px] leading-[1.5] text-[#5c5c5c]"
+                      >
+                        <div className="mt-0.5 flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-full bg-[rgba(181,86,74,0.06)] text-[8px] font-bold text-[#b5564a]">
+                          ✗
+                        </div>
+                        <span>{humanizeReason(w)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Key moment */}
+                {analysis.B.keyMoment && (
+                  <div className="mt-4 rounded-[6px] border border-[#e5e3dc] bg-[#f7f6f2] px-4 py-3">
+                    <div className="mb-1 font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] text-[#a8802e]">
+                      Key Moment
+                      {analysis.B.keyMomentRef && (
+                        <span className="ml-2 normal-case tracking-normal text-[#999]">
+                          ({humanizeStageId(analysis.B.keyMomentRef)})
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[14px] italic leading-[1.6] text-[#5c5c5c]">
+                      {humanizeReason(analysis.B.keyMoment)}
+                    </p>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+
+      {/* ═══════════════════════════════════════════════
+          Action Buttons
          ═══════════════════════════════════════════════ */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.6 }}
-        className="flex items-center justify-center gap-3 border-t border-gray-200/60 pt-3 pb-1"
+        transition={{ delay: 1.2 }}
+        className="flex items-center justify-center gap-3 pt-1"
       >
         {/* Rematch */}
         <motion.button
@@ -769,17 +842,27 @@ export default function ResultsView({ debate }: ResultsViewProps) {
           disabled={rematchLoading}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-2 rounded-[10px] bg-[#a8802e] px-6 py-2.5 font-[var(--font-geist-mono)] text-[11px] font-medium uppercase tracking-[1.5px] text-white shadow-md transition-all hover:bg-[#8f6c26] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {rematchLoading ? (
             <>
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
               Rematch...
             </>
           ) : (
             <>
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
+              <svg
+                className="h-3.5 w-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182"
+                />
               </svg>
               Rematch
             </>
@@ -792,17 +875,27 @@ export default function ResultsView({ debate }: ResultsViewProps) {
           disabled={exportLoading}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-2.5 text-sm font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-2 rounded-[10px] border border-[#e5e3dc] bg-white px-6 py-2.5 font-[var(--font-geist-mono)] text-[11px] font-medium uppercase tracking-[1.5px] text-[#5c5c5c] transition-all hover:border-[#d5d3cc] hover:bg-[#f7f6f2] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {exportLoading ? (
             <>
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
+              <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#999] border-t-transparent" />
               Exporting...
             </>
           ) : (
             <>
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              <svg
+                className="h-3.5 w-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+                />
               </svg>
               Export
             </>
@@ -814,19 +907,39 @@ export default function ResultsView({ debate }: ResultsViewProps) {
           onClick={handleCopyExport}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-2.5 text-sm font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50"
+          className="flex items-center gap-2 rounded-[10px] border border-[#e5e3dc] bg-white px-6 py-2.5 font-[var(--font-geist-mono)] text-[11px] font-medium uppercase tracking-[1.5px] text-[#5c5c5c] transition-all hover:border-[#d5d3cc] hover:bg-[#f7f6f2]"
         >
           {copied ? (
             <>
-              <svg className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+              <svg
+                className="h-3.5 w-3.5 text-[#3a8a5c]"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m4.5 12.75 6 6 9-13.5"
+                />
               </svg>
-              <span className="text-emerald-600">Copied!</span>
+              <span className="text-[#3a8a5c]">Copied!</span>
             </>
           ) : (
             <>
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9.75a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+              <svg
+                className="h-3.5 w-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9.75a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
+                />
               </svg>
               Copy
             </>

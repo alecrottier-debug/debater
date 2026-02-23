@@ -48,3 +48,9 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* Crown pulse for winner card */
+@keyframes crownPulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(168,128,46,0.2)); }
+  50% { filter: drop-shadow(0 0 10px rgba(168,128,46,0.35)); }
+}

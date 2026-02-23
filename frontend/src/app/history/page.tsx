@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchDebates } from "@/lib/api";
 import type { Debate } from "@/lib/api";
+import StatsDashboard from "@/components/StatsDashboard";
 
 /* ── Helpers ── */
 
@@ -137,19 +138,41 @@ function DebateCard({
   const isDiscussion = debate.mode === "discussion";
 
   const ballot = debate.judgeDecision?.ballot as
-    | Array<{ reason: string }>
+    | Array<{ reason: string; refs?: string[] }>
     | undefined;
-  const rawSummary = ballot?.[0]?.reason?.replace(
-    /\s*\([A-Z_]+(?:,\s*[A-Z_]+)*\)/g,
-    ""
-  );
-  const summary = rawSummary
-    ?.replace(/\bSide A\b/g, debate.personaA.name)
-    .replace(/\bSide B\b/g, debate.personaB.name)
-    .replace(/\bside A\b/g, debate.personaA.name)
-    .replace(/\bside B\b/g, debate.personaB.name)
-    .replace(/\bDebater A\b/g, debate.personaA.name)
-    .replace(/\bDebater B\b/g, debate.personaB.name);
+  const nameA = debate.personaA.name;
+  const nameB = debate.personaB.name;
+  const summary = ballot?.[0]?.reason
+    // Strip trailing references like "References: A_OPEN, A_CHALLENGE, ..."
+    ?.replace(/\s*References?:\s*[A-Z_,;\s]+\.?\s*$/g, "")
+    // Strip inline parenthesized stage refs
+    .replace(/\s*\([A-Z_]+(?:,\s*[A-Z_]+)*\)/g, "")
+    // Strip bracketed stage refs like [A_CHALLENGE]
+    .replace(/\[[A-Z][A-Z0-9_]+\]/g, "")
+    // Replace bare stage IDs in prose
+    .replace(/\b[AB]_(?:OPEN|CHALLENGE|REBUTTAL|COUNTER|CLOSE|RESPOND_[12]|FINAL)\b/g, "")
+    // Named references — case variations
+    .replace(/\bSide A\b/g, nameA)
+    .replace(/\bSide B\b/g, nameB)
+    .replace(/\bside A\b/g, nameA)
+    .replace(/\bside B\b/g, nameB)
+    .replace(/\bDebater A\b/g, nameA)
+    .replace(/\bDebater B\b/g, nameB)
+    .replace(/\bdebater A\b/g, nameA)
+    .replace(/\bdebater B\b/g, nameB)
+    .replace(/\bSpeaker A\b/g, nameA)
+    .replace(/\bSpeaker B\b/g, nameB)
+    .replace(/\bspeaker A\b/g, nameA)
+    .replace(/\bspeaker B\b/g, nameB)
+    // Standalone "B" = debater ref
+    .replace(/\bB\b/g, nameB)
+    // Standalone "A" after punctuation
+    .replace(/(?<=[:;,]\s*)A\b/g, nameA)
+    .replace(/(?<=\.\s+)A\b/g, nameA)
+    .replace(/(?<![A-Za-z])\bA\b(?='s\b)/g, nameA)
+    // Clean up any double spaces left from stripping
+    .replace(/\s{2,}/g, " ")
+    .trim();
 
   const date = new Date(debate.createdAt).toLocaleDateString("en-US", {
     month: "short",
@@ -242,6 +265,8 @@ function DebateCard({
 
 /* ── Main page ── */
 
+type ViewMode = "dashboard" | "list";
+
 export default function HistoryPage() {
   const router = useRouter();
   const [debates, setDebates] = useState<Debate[]>([]);
@@ -249,6 +274,7 @@ export default function HistoryPage() {
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState<TabFilter>("all");
   const [selectedParticipant, setSelectedParticipant] = useState("");
+  const [view, setView] = useState<ViewMode>("dashboard");
 
   useEffect(() => {
     fetchDebates()
@@ -298,25 +324,86 @@ export default function HistoryPage() {
 
   return (
     <div className="min-h-[calc(100vh-5rem)]">
-      {/* Page header */}
-      <div className="mb-6">
-        <motion.h1
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="font-[var(--font-playfair)] text-3xl font-black tracking-tight text-gray-900"
-        >
-          History
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="mt-1 text-sm text-gray-500"
-        >
-          Browse past debates and discussions
-        </motion.p>
+      {/* Page header + view toggle */}
+      <div className="mb-5 grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
+        {/* Left: title + subtitle */}
+        <div className="text-center sm:text-left">
+          <motion.h1
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="font-[var(--font-playfair)] text-3xl font-black tracking-tight text-gray-900"
+          >
+            History
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="mt-1 text-sm text-gray-500"
+          >
+            Browse past debates and discussions
+          </motion.p>
+        </div>
+
+        {/* Center: toggle (truly centered via grid) */}
+        <div className="mx-auto flex items-center gap-1 rounded-xl bg-gray-100 p-1">
+          <button
+            type="button"
+            onClick={() => setView("dashboard")}
+            className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
+              view === "dashboard"
+                ? "bg-white text-gray-900 shadow-sm ring-1 ring-gray-200"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
+            </svg>
+            Dashboard
+          </button>
+          <button
+            type="button"
+            onClick={() => setView("list")}
+            className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
+              view === "list"
+                ? "bg-white text-gray-900 shadow-sm ring-1 ring-gray-200"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+            </svg>
+            All Debates
+          </button>
+        </div>
+        <div />
       </div>
 
+      {/* Dashboard view */}
+      {view === "dashboard" && !loading && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <StatsDashboard
+            debates={debates}
+            onPersonaClick={(name) => {
+              setSelectedParticipant(name);
+              setView("list");
+            }}
+          />
+        </motion.div>
+      )}
+
+      {view === "dashboard" && loading && (
+        <div className="flex items-center justify-center py-20">
+          <div className="h-8 w-8 animate-spin rounded-full border-3 border-gray-300 border-t-blue-500" />
+        </div>
+      )}
+
+      {/* List view — Filters bar */}
+      {view === "list" && (
+      <>
       {/* Filters bar */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -436,6 +523,8 @@ export default function HistoryPage() {
             ))}
           </AnimatePresence>
         </div>
+      )}
+      </>
       )}
     </div>
   );

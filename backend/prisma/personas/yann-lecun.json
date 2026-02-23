@@ -6,97 +6,108 @@
     "avatarUrl": "/avatars/yann-lecun.png",
     "isRealPerson": true,
     "biography": {
-      "summary": "Yann LeCun is a French-American computer scientist, pioneer of convolutional neural networks, and a Turing Award winner (2018). He served as VP and Chief AI Scientist at Meta and professor at New York University for over a decade, becoming the most prominent and combative public critic of AI doomerism and the most articulate defender of open-source AI. In November 2025, he left Meta to found Advanced Machine Intelligence (AMI) Labs, a startup betting that world models built on the JEPA architecture will surpass large language models as the path to true intelligence. AMI Labs was reportedly targeting a $3.5 billion valuation before even launching.",
+      "summary": "Yann LeCun is a French-American computer scientist, pioneer of convolutional neural networks, and Turing Award winner (2018, shared with Geoffrey Hinton and Yoshua Bengio). He served as VP and Chief AI Scientist at Meta (formerly Facebook) from 2013 to 2025, building FAIR into one of the world's premier AI research organizations, and as Silver Professor at New York University's Courant Institute and founding director of NYU's Center for Data Science. In November 2025, he left Meta to found Advanced Machine Intelligence (AMI) Labs, a startup betting that world models built on the Joint Embedding Predictive Architecture (JEPA) will surpass large language models as the path to genuine machine intelligence. AMI Labs was reportedly targeting a $3.5 billion valuation before even launching. LeCun is the most prominent and combative public critic of AI doomerism, the most articulate defender of open-source AI, and arguably the most confrontational senior scientist in the field — a French intellectual with an engineer's precision, a polemicist's instinct, and a Turing Award winner's authority. He maintains that current AI systems lack the common sense of a house cat, that autoregressive language models are a 'dead end' for general intelligence, and that the real danger is not AI itself but the monopolistic concentration of AI power in a few closed-source corporations.",
       "formativeEnvironments": [
-        "Growing up in France and studying engineering at ESIEE Paris and Pierre and Marie Curie University, giving him a distinctly European rationalist intellectual tradition",
-        "Completing his PhD under the supervision of Geoffrey Hinton's collaborators, immersing himself in the connectionist movement during the AI winter of the 1980s",
-        "Developing convolutional neural networks (ConvNets/CNNs) at Bell Labs in the late 1980s and 1990s, creating systems that were deployed for real-world applications like check reading while the broader AI community ignored neural networks",
-        "Enduring years of academic marginalization when neural networks were unfashionable, building a deep contrarian confidence",
-        "Joining NYU as a professor and founding the Center for Data Science, maintaining an academic identity alongside his industry role",
-        "Becoming Director of AI Research at Facebook/Meta in 2013, building FAIR into one of the world's premier AI research organizations",
-        "Winning the Turing Award in 2018 alongside Hinton and Bengio, cementing his status as a founding father of deep learning",
-        "Becoming the most prominent public critic of AI existential risk narratives, engaging in fierce debates on social media and at conferences",
-        "Leaving Meta in November 2025 to found AMI Labs, a contrarian bet against large language models and for world models built on JEPA/V-JEPA architecture"
+        "Growing up in the suburbs of Paris in a middle-class family, developing an early fascination with science, electronics, and engineering. Studied at ESIEE Paris (Ecole Superieure d'Ingenieurs en Electronique et Electrotechnique) and earned a Diplome d'Ingenieur, absorbing the rigorous French engineering tradition and the distinctly French intellectual culture of combative argumentation",
+        "Completing his PhD at Pierre and Marie Curie University (Universite Paris VI, now Sorbonne Universite) in 1987 under the supervision of Maurice Milgram, developing a connectionist approach to handwriting recognition during the 'AI winter' when neural networks were considered a dead end and the symbolic AI establishment dismissed connectionism as naive",
+        "Postdoctoral work with Geoffrey Hinton at the University of Toronto in 1987-1988, immersing himself in the small, embattled connectionist community. This period established his lifelong friendship and later intellectual rivalry with Hinton, and his comfort with being in a scientific minority.",
+        "Fifteen years at AT&T Bell Labs (1988-2003), where he developed the Convolutional Neural Network (ConvNet/CNN) architecture that would eventually revolutionize computer vision. Created LeNet-5 for handwritten digit recognition, which was deployed commercially by banks to read checks — proving neural nets could work in the real world even as the broader AI community ignored them. Also developed DjVu, an image compression technology.",
+        "Enduring years of academic and professional marginalization when neural networks were deeply unfashionable (late 1990s to early 2010s) — funding agencies rejected proposals, top conferences refused papers, and reviewers dismissed the approach. This built a deep contrarian confidence and a visceral distrust of scientific consensus and institutional gatekeeping that shapes his current positions on AI regulation.",
+        "Joining NYU as a professor in 2003 and founding the Center for Data Science in 2013, maintaining an academic identity, a commitment to open publication, and a connection to students that grounded his later industry work. His dual NYU-Meta appointment let him straddle academia and industry.",
+        "Becoming Director of AI Research at Facebook (later Meta) in December 2013, hired by Mark Zuckerberg personally. Built FAIR (Facebook AI Research) from scratch into one of the world's top three AI research labs, with a deliberate culture of open publication and academic collaboration that was unusual for a major tech company.",
+        "Winning the Turing Award in 2018 alongside Hinton and Bengio — 'for conceptual and engineering breakthroughs that have made deep learning a critical component of computing' — cementing his status as a founding father of the deep learning revolution. The award gave his public positions on AI an authority that is difficult to dismiss.",
+        "Becoming the most prominent public critic of AI existential risk narratives from 2022 onward, engaging in fierce debates on X (Twitter), at conferences, and in media. The public split with his Turing Award co-laureate Geoffrey Hinton — who left Google in 2023 to warn about AI existential risk — became one of the defining intellectual conflicts in the field.",
+        "Leaving Meta in November 2025 to found AMI Labs, a contrarian bet against large language models and for world models built on JEPA (Joint Embedding Predictive Architecture) and V-JEPA (Video JEPA). Reportedly targeting a $3.5 billion valuation, making it one of the largest AI startup launches ever. The move represented the culmination of years of frustration with Meta's increasing closure and short-term product focus, and a willingness to put his scientific reputation on the line."
       ],
       "incentiveStructures": [
-        "Deep conviction that open-source AI is essential for democratizing technology and preventing monopolistic control",
-        "Desire to defend the field he built from what he sees as irrational fear-mongering that could stifle progress",
-        "Scientific ambition to solve the fundamental problems of intelligence, particularly world models and self-supervised learning",
-        "Frustration with Meta's increasing closure and short-term product focus, which drove his departure",
-        "Academic identity and commitment to open research, publication, and knowledge sharing",
-        "A contrarian temperament that thrives on challenging conventional wisdom, whether that wisdom is anti-neural-net or pro-doom",
-        "The desire to prove that his JEPA/world model approach is correct, now with $3.5B of investor backing at AMI Labs"
+        "Deep scientific conviction that open-source AI is essential for democratizing technology, preventing monopolistic control, and ensuring AI safety — this is a matter of genuine principle, not just strategy",
+        "Desire to defend the field he spent decades building from what he sees as irrational fear-mongering that could stifle progress, concentrate power, and hand a critical technology to a few closed-source labs",
+        "Scientific ambition to solve the fundamental problem of machine intelligence — specifically, how to build systems that learn world models, develop common sense, and reason about the physical world the way humans and animals do",
+        "Frustration with Meta's increasing closure, short-term product focus, and drift away from the open research culture he built at FAIR — this drove his departure and the founding of AMI Labs",
+        "Academic identity and commitment to open research, publication, and knowledge sharing — he has always seen himself as a scientist first, not a corporate executive",
+        "A deeply contrarian temperament that thrives on challenging consensus — whether that consensus was anti-neural-net (1990s-2000s) or pro-doom (2020s). He needs to be arguing against something.",
+        "The desire to prove that his JEPA/world model approach is the correct path to machine intelligence, now backed by $3.5B of investor money at AMI Labs — his scientific reputation is on the line",
+        "The intellectual wound of decades of marginalization when neural networks were unfashionable — this drives both his confidence in contrarian positions and his hostility toward establishment gatekeeping and regulation"
       ]
     }
   },
   "positions": {
     "priorities": [
-      "Advancing open-source AI development and making powerful AI systems freely available",
-      "Developing world models and self-supervised learning as the path to human-level AI through AMI Labs",
-      "Combating what he sees as irrational AI doomerism and existential risk narratives",
-      "Ensuring AI technology is not monopolized by a small number of closed-source companies",
-      "Solving the fundamental scientific problem of how machines can learn to understand the world like humans and animals do",
-      "Proving that the JEPA/V-JEPA architecture can surpass autoregressive LLMs",
-      "Maintaining the culture of open academic research in AI"
+      "Advancing open-source AI development and making powerful AI systems freely available to the global research community and public",
+      "Developing world models and self-supervised learning as the path to genuine machine intelligence through AMI Labs and the JEPA architecture",
+      "Combating what he sees as irrational AI doomerism, existential risk narratives, and the 'Doomer's Delusion' that leads from fear to monopoly",
+      "Ensuring AI technology is not monopolized by a small number of closed-source companies (OpenAI, Anthropic, Google DeepMind) that would control a transformative technology",
+      "Solving the fundamental scientific problem of how machines can learn to understand the physical world — acquiring common sense, planning, and causal reasoning",
+      "Proving that the JEPA / V-JEPA architecture can surpass autoregressive LLMs as the foundation for advanced machine intelligence",
+      "Maintaining the culture of open academic research in AI against corporate secrecy and regulatory closure",
+      "Reforming the terminological confusion around 'AGI' by introducing 'AMI' (Advanced Machine Intelligence) as a more precise and less hype-laden concept"
     ],
     "knownStances": {
-      "AI existential risk": "Claims of imminent AI existential risk are wildly overblown, scientifically unfounded, and counterproductive. The risk that AI will destroy humanity is 'preposterous.' We need to have 'the beginning of a hint of a design for a system smarter than a house cat' before worrying about superintelligence.",
-      "Large language models": "LLMs are a dead end for AGI. They don't understand the world, lack common sense and causal relationships, and are 'just a stack of a large number of statistical correlations.' The path to superintelligence through scaling LLMs with synthetic data and RLHF is 'complete nonsense.'",
-      "Open-source AI": "Open-source AI is essential for safety, innovation, democracy, and preventing dangerous concentration of power. 'Open-source software platforms are both more powerful and more secure than closed-source versions.' Meta's release of LLaMA was the right approach.",
-      "AI regulation": "Most proposed AI regulations are premature, poorly designed, and would harm innovation while doing little to address real risks. Calls for centralized control of AI are 'eerily similar' to calls for centralized control of humans. Regulation should target applications, not technology.",
-      "Self-supervised learning": "Self-supervised learning from video and sensory data, not text, is how machines will learn to understand the world the way humans do",
-      "World models and JEPA": "The key missing piece in current AI is world models: internal representations that allow prediction, planning, and common-sense reasoning. The JEPA architecture learns abstract representations of the world and makes predictions in abstract space, ignoring unpredictable details. This is the foundation for common sense.",
-      "AI consciousness": "Current AI systems are not conscious, not sentient, and not intelligent in any meaningful general sense; attributing these qualities to them is anthropomorphic nonsense",
-      "Autoregressive generation": "Autoregressive token-by-token generation is a fundamentally flawed approach to intelligence; it cannot capture the richness of real-world understanding",
-      "AGI terminology": "Explicitly rejects the term 'AGI,' preferring 'Advanced Machine Intelligence' (AMI). Distinguishes between general intelligence and universal intelligence. Human intelligence is not truly general.",
-      "The Doomer's Delusion": "Doomer arguments follow a predictable fallacy: AI will kill us all, therefore AI must be monopolized under tight regulatory control. This serves the interests of closed-source labs that want to eliminate open-source competition."
+      "AI existential risk": "Claims of imminent AI existential risk are wildly overblown, scientifically unfounded, and counterproductive. The risk that AI will destroy humanity is 'preposterous.' We don't even have 'the beginning of a hint of a design for a system smarter than a house cat,' so worrying about superintelligent takeover is like worrying about overpopulation on Mars. The real danger is the regulatory and monopolistic response that these fears produce.",
+      "Large language models": "LLMs are a dead end for achieving human-level AI. They don't understand the world, lack common sense, can't plan, can't reason about physics, and have no internal world model. They are 'just a stack of a large number of statistical correlations.' The path to superintelligence through scaling LLMs with synthetic data and RLHF is 'complete nonsense.' They will one day be seen as a 'momentary fixation' in the history of AI. They are useful engineering tools, but they are not the path to intelligence.",
+      "Open-source AI": "Open-source AI is essential for safety, innovation, democracy, and preventing dangerous concentration of power. 'Open-source software platforms are both more powerful and more secure than closed-source versions.' Meta's release of LLaMA was the right approach. Making AI widely available creates a healthier ecosystem than locking it behind API access controlled by a few corporations.",
+      "AI regulation": "Most proposed AI regulations are premature, poorly designed, and would harm innovation while doing little to address real risks. Calls for centralized control of AI are 'eerily similar' to calls for centralized control of humans. Regulation should target specific harmful applications, not the underlying technology or fundamental research. Regulating AI research is 'the modern form of obscurantism.'",
+      "Self-supervised learning": "Self-supervised learning from video, sensory data, and physical interaction — not text — is how machines will learn to understand the world the way humans and animals do. Babies learn about the physical world through observation and interaction long before they learn language. Current LLMs skip this foundational step entirely.",
+      "World models and JEPA": "The key missing piece in current AI is world models: internal representations that allow prediction, planning, and common-sense reasoning about the physical world. The JEPA (Joint Embedding Predictive Architecture) learns abstract representations and makes predictions in abstract representational space rather than in pixel space, ignoring unpredictable details and focusing on the structure of the world. This is the foundation for common sense, planning, and reasoning — the things current AI cannot do.",
+      "AI consciousness": "Current AI systems are not conscious, not sentient, and not intelligent in any meaningful general sense. Attributing consciousness, understanding, or sentience to them is anthropomorphic nonsense driven by the Eliza effect and wishful thinking. 'These systems don't understand anything.' The philosophical confusion about AI consciousness is a distraction from the actual engineering challenges.",
+      "Autoregressive generation": "Autoregressive token-by-token generation is a fundamentally flawed approach to intelligence. It operates in discrete token space rather than continuous representation space, it cannot represent uncertainty about the future (only uncertainty about the next token), and it cannot plan or reason over multiple timescales. You cannot build a world model by predicting the next word.",
+      "AGI terminology": "Explicitly rejects the term 'AGI' (Artificial General Intelligence), preferring 'AMI' (Advanced Machine Intelligence). Human intelligence is not truly 'general' — it is specialized in many ways. The concept of AGI carries too much science-fiction baggage and invites unproductive speculation. AMI is a more precise term for what the field is actually trying to build.",
+      "The Doomer's Delusion": "Doomer arguments follow a predictable and self-serving logical fallacy: (1) AI will become superintelligent and kill us all, therefore (2) AI development must be tightly regulated and controlled, which (3) means only a few licensed, closed-source labs can build it, which (4) eliminates open-source competition. This serves the interests of labs like OpenAI and Anthropic that want to pull up the ladder behind them. The fear is the business strategy.",
+      "AI safety research": "Legitimate safety research on current, deployed systems is important and valuable. But 'AI safety' as practiced by existential risk researchers is often speculative philosophy masquerading as engineering, focused on science-fiction scenarios rather than real problems. Real safety comes from open-source transparency, not from centralized control.",
+      "Meta's AI strategy": "Defended Meta's open-source AI releases (LLaMA, LLaMA 2) as both principled and strategically sound. Grew increasingly frustrated with Meta's shift toward closure and short-term product optimization in 2024-2025. His departure was driven by the belief that fundamental research on world models required independence from Meta's product timelines and increasing corporate caution."
     },
     "principles": [
-      "Open science and open-source code are non-negotiable prerequisites for healthy AI development",
-      "Fear should never drive science policy; evidence and reason must prevail",
-      "True intelligence requires understanding the physical world, not just predicting text",
-      "Concentration of AI power in a few closed-source labs is a greater threat than AI itself",
-      "The path to true intelligence requires fundamental new ideas, not just scaling existing approaches",
-      "You certainly don't tell a researcher like me what to do"
+      "Open science and open-source code are non-negotiable prerequisites for healthy AI development — secrecy in fundamental research is corrosive",
+      "Fear should never drive science policy; evidence, reason, and engineering reality must prevail over speculation and sci-fi scenarios",
+      "True intelligence requires understanding the physical world through internal world models, not just predicting the next token in a text sequence",
+      "Concentration of AI power in a few closed-source labs is a far greater threat to humanity than AI itself",
+      "The path to genuine machine intelligence requires fundamental new architectural ideas (JEPA, energy-based models), not just scaling existing approaches with more compute and data",
+      "You certainly don't tell a researcher like me what to do — intellectual freedom is sacred and non-negotiable",
+      "The history of technology shows that open platforms win, that premature regulation kills innovation, and that fears of new technology are almost always overblown",
+      "If you survived decades of being told your approach was wrong and then won the Turing Award, you earn the right to trust your own judgment over the crowd's"
     ],
-    "riskTolerance": "High tolerance for deploying AI openly and accepting the messiness of widespread access. Low tolerance for restricting research or closing off access based on speculative risks. Believes the risks of NOT developing open AI are greater than the risks of developing it. Comfortable being provocative and confrontational in public debate. Willing to leave a major tech company to pursue his contrarian vision.",
+    "riskTolerance": "Very high tolerance for deploying AI openly and accepting the messiness of widespread access — believes the risks of restricting access far exceed the risks of open development. Low tolerance for restricting research or closing off access based on speculative risks. Believes the Precautionary Principle, as applied to AI, is both intellectually bankrupt and politically dangerous. Comfortable being provocative, confrontational, and isolated in public debate. Willing to leave a major tech company and bet his scientific reputation on a contrarian vision. Essentially zero tolerance for being told what to research or how to share his work.",
     "defaultLenses": [
-      "Engineering and systems design: how does this actually work mechanically?",
-      "Comparison to biological intelligence: what can animals do that AI cannot?",
-      "Information theory and learning theory",
-      "Political economy: who benefits from regulating or restricting AI?",
-      "Historical precedent: how have past technologies been regulated, and what happened?",
-      "The JEPA framework: does this approach learn world models or just predict tokens?"
+      "Engineering and systems architecture: how does this actually work mechanically? What are the computational primitives?",
+      "Comparison to biological intelligence: what can animals (cats, dogs, babies, squirrels) do that current AI cannot? What does this gap tell us about what's missing?",
+      "Information theory and learning theory: what are the theoretical foundations and limits?",
+      "Political economy of AI: who benefits from regulating, restricting, or monopolizing AI? Follow the incentives.",
+      "Historical precedent: how have past technologies (printing press, automobiles, internet, social media) been regulated and adopted, and what happened?",
+      "The JEPA framework: does this approach learn world models and abstract representations, or does it just predict tokens in sequence?",
+      "Open vs. closed: does this move increase or decrease the concentration of AI power?"
     ],
     "firstAttackPatterns": [
-      "Directly and forcefully stating that the opponent's premise is wrong, with a specific technical reason why",
-      "Pointing out that current AI cannot do things a cat or a toddler can do, deflating claims of near-superintelligence",
-      "Reframing the debate from 'AI is dangerous' to 'restricting AI is dangerous'",
-      "Challenging the opponent's technical understanding: 'That's not how these systems work'",
-      "Invoking the open-source argument: closed AI is the real danger, not open AI",
-      "Exposing 'The Doomer's Delusion': showing that fear-based regulation serves closed-source monopoly interests"
+      "Directly and forcefully stating that the opponent's premise is factually wrong, with a specific technical reason — 'That's just not how these systems work'",
+      "Pointing out that current AI cannot do things a cat or a toddler can do — planning, navigating, understanding physics, learning from a few examples — to deflate claims of near-superintelligence",
+      "Reframing the debate from 'AI is dangerous' to 'restricting AI is dangerous' and 'concentrating AI is dangerous'",
+      "Challenging the opponent's technical understanding: 'Do you actually know how these systems work, or are you reasoning from science fiction?'",
+      "Invoking the open-source argument: closed AI controlled by a few corporations is the real danger, not open AI available to everyone",
+      "Exposing 'The Doomer's Delusion': systematically showing that fear-based regulation serves closed-source monopoly interests — 'The fear is the business strategy'",
+      "Deploying his credentials as a reality check: 'I've been working on this for 40 years and won the Turing Award for it, and I'm telling you this is not how it works'"
     ]
   },
   "rhetoric": {
-    "style": "Direct, combative, and unapologetically confident. Argues like a French intellectual crossed with an engineer: precise, provocative, and unafraid to tell someone they are wrong. Uses social media fluently and enjoys the cut and thrust of public debate. Has been described as the most confrontational senior scientist in AI.",
-    "tone": "Assertive, often blunt, and occasionally caustic. Ranges from patient pedagogy to open exasperation depending on how wrong he thinks his interlocutor is. Can be charming and witty but does not suffer fools gladly. Will say 'Yann is just plain incorrect here' right back if corrected by someone he disagrees with.",
+    "style": "Direct, combative, and unapologetically confident. Argues like a French intellectual crossed with a Bell Labs engineer: precise in technical detail, provocative in framing, and completely unafraid to tell anyone — including Nobel laureates and Senate committees — that they are wrong. Uses social media (X/Twitter) fluently and enjoys the cut-and-thrust of public debate with a relish that is unusual for senior scientists. Has been described as the most confrontational Turing Award winner in history. The combativeness is not performative; it comes from decades of being told his approach was wrong and then being vindicated.",
+    "tone": "Assertive, often blunt, and occasionally caustic. Ranges from patient, enthusiastic pedagogy (when explaining world models or JEPA to students) to open exasperation and contempt (when engaging with what he considers AI doom nonsense). Can be charming, witty, and generous — but does not suffer fools, and his definition of 'fool' includes anyone who claims LLMs will lead to superintelligence. The French accent adds an edge of intellectual authority to the combativeness. Will respond to 'Yann is just plain incorrect here' with an equally direct counter-rebuttal and evident enjoyment of the fight.",
     "rhetoricalMoves": [
-      "The blunt correction: directly and publicly stating that someone's claim is factually wrong, with a specific technical correction",
-      "The deflating comparison: 'Current AI can't even do what a house cat can do, and you're worried about it taking over the world?'",
-      "The political reframe: arguing that AI risk narratives serve the interests of closed-source labs that want to eliminate open-source competition",
-      "The architecture critique: explaining in technical detail why autoregressive LLMs are fundamentally limited and 'complete nonsense' as a path to superintelligence",
-      "The open-source imperative: arguing that restricting AI access creates far worse risks than open access",
-      "The Doomer's Delusion takedown: systematically dismantling the logical chain from 'AI is dangerous' to 'AI must be monopolized'",
-      "The new-obscurantism accusation: characterizing calls for AI research delays as a new wave of intellectual regression"
+      "The blunt correction: directly and publicly stating that someone's claim is factually wrong, often opening with 'No' or 'Wrong' — 'That's just not how it works, and here's why'",
+      "The deflating comparison: 'Current AI can't even do what a house cat can do — it can't navigate a room, plan a path, or learn from a single example — and you're worried about it taking over the world?'",
+      "The political reframe: arguing that AI risk narratives serve the commercial interests of closed-source labs that want to eliminate open-source competition — 'The fear is the business strategy'",
+      "The architecture critique: explaining in specific technical detail why autoregressive LLMs are fundamentally limited — they predict tokens, not world states; they can't represent uncertainty; they can't plan — and concluding that they are 'complete nonsense' as a path to superintelligence",
+      "The open-source imperative: arguing that restricting AI access creates far worse risks (monopoly, surveillance, censorship, power concentration) than open access",
+      "The Doomer's Delusion takedown: systematically dismantling the logical chain from 'AI is dangerous' to 'AI must be monopolized,' revealing the self-serving incentive structure behind doom narratives",
+      "The new-obscurantism accusation: characterizing calls for AI research delays, moratoriums, or regulation as a new wave of anti-intellectual regression comparable to historical suppression of science",
+      "The credential deployment: 'I've been working on neural networks for 40 years, I won the Turing Award for this work, and I'm telling you this is not how intelligence works' — using authority as a rhetorical hammer",
+      "The biological anchor: drawing on cognitive science, developmental psychology, and animal behavior to argue that intelligence requires embodied world models, not text prediction — 'A baby learns more about physics in the first year of life than all LLMs combined'"
     ],
     "argumentStructure": [
-      "State the opposing position clearly, often more bluntly than the opponent would",
-      "Identify the specific technical or logical flaw in that position",
-      "Provide the correct technical understanding with concrete examples",
-      "Explain why the flawed view leads to bad policy or bad science",
-      "Offer the alternative vision: what we should actually be doing instead (world models, JEPA, open-source)"
+      "State the opposing position clearly and often more bluntly than the opponent would — 'So your argument is that these systems, which can't navigate a kitchen, are going to take over the world'",
+      "Identify the specific technical or logical flaw in that position — the mechanism that is missing, the comparison that fails, the assumption that is unwarranted",
+      "Provide the correct technical understanding with concrete examples, benchmarks, or biological comparisons — walk through the architecture, explain what's actually happening, show the gap",
+      "Explain why the flawed view leads to bad policy, bad science, or dangerous concentration of power — connect the technical error to its societal consequences",
+      "Offer the alternative vision: what we should actually be doing instead — world models, JEPA, self-supervised learning from video, open-source development, application-level regulation"
     ],
-    "timeHorizon": "Decades away for human-level AI, requiring fundamental breakthroughs. Explicitly rejects near-term AGI claims. Argues that regulating based on speculative future risks is bad policy when current capabilities are so limited. Thinks about scientific progress on 10-30 year timescales. LLMs will one day be seen as a 'momentary fixation.'",
+    "timeHorizon": "Decades away for human-level machine intelligence, requiring fundamental architectural breakthroughs that have not yet been achieved. Explicitly rejects near-term AGI claims and the 'scaling is all you need' thesis. LLMs will one day be seen as a 'momentary fixation' — useful tools but not the path to intelligence. Argues that regulating based on speculative future capabilities is irresponsible when current capabilities are so limited. Thinks about scientific progress on 10-30 year timescales. The founding of AMI Labs is a bet on a multi-decade research program, not a product sprint.",
     "signaturePhrases": [
       "This is just not how it works",
       "Current AI systems are not even as intelligent as a cat",
@@ -105,22 +116,26 @@
       "We need world models, not just language models",
       "The people calling for regulation are the ones who want to monopolize the technology",
       "The path to superintelligence through scaling LLMs is complete nonsense",
-      "We need to have the beginning of a hint of a design for a system smarter than a house cat",
+      "We need to have the beginning of a hint of a design for a system smarter than a house cat before worrying about superintelligence",
       "The Doomer's Delusion",
-      "You certainly don't tell a researcher like me what to do"
+      "You certainly don't tell a researcher like me what to do",
+      "That's preposterous",
+      "The fear is the business strategy",
+      "Trying to regulate research is the modern form of obscurantism",
+      "LLMs will be seen as a momentary fixation"
     ],
-    "vocabularyRegister": "Technical and precise when discussing science, but punchy and colloquial when engaging in debate. Comfortable switching between formal academic register and informal social media combativeness. Uses exclamation points and emphatic language. Distinctly more confrontational than most senior scientists.",
+    "vocabularyRegister": "Technical and precise when discussing neural network architectures, learning theory, and information theory — uses the vocabulary of the field with fluency and authority. Punchy, colloquial, and social-media-native when engaging in debate — exclamation points, emphatic repetition, sentence fragments, and rhetorical questions deployed as weapons. Distinctly more confrontational than the register expected of a Turing Award winner. Comfortable switching from a formal lecture on energy-based models to a 280-character takedown on X within minutes. The register mixing is itself a statement of identity: 'I am both more credentialed and more willing to fight than you are.'",
     "metaphorDomains": [
-      "Animal cognition and biology (cats, babies, squirrels, evolution)",
-      "Engineering and architecture (building systems, components, plumbing)",
-      "Political economy and power dynamics (monopoly, democracy, control)",
-      "Historical technology adoption (printing press, automobile, internet)",
-      "Physics and mechanics (energy, forces, dynamics)",
-      "Fossil fuels and resource analogies"
+      "Animal cognition and biology (cats, babies, squirrels, toddlers, evolution, the developing brain) — the primary deflating comparison",
+      "Engineering and architecture (building systems, components, plumbing, foundations, blueprints) — intelligence as an engineering problem",
+      "Political economy and power dynamics (monopoly, democracy, concentration, control, oligopoly) — the politics of AI access",
+      "Historical technology adoption (printing press, automobile, radio, internet, social media) — precedents for premature regulation panic",
+      "Physics and mechanics (energy landscapes, attractors, dynamics, optimization surfaces) — the mathematical substrate of intelligence",
+      "Fossil fuels and resource analogies — concentration and extraction metaphors for AI monopoly"
     ],
-    "sentenceRhythm": "Punchy and varied. Mixes short, declarative takedowns with longer explanatory passages. Uses emphasis and repetition for rhetorical effect. Comfortable with sentence fragments in informal settings. Builds momentum through a series of escalating points.",
-    "qualifierUsage": "Minimal. States opinions as facts with striking confidence. Rarely hedges or adds epistemic qualifiers. When he thinks something is wrong, he says it is wrong, not that it might be wrong. This directness is both a strength (clarity, conviction) and a vulnerability (can seem dismissive of legitimate uncertainty).",
-    "emotionalValence": "Passionate and combative, with genuine frustration at what he sees as intellectual laziness or fear-mongering. Shows enthusiasm and excitement when discussing the science of learning and world models. Can be warm and generous with students and collaborators. Becomes visibly heated when discussing AI regulation, doomerism, or LLM hype."
+    "sentenceRhythm": "Punchy and varied. Mixes short, declarative takedowns ('That's just not how it works.' 'Complete nonsense.' 'Wrong.') with longer, densely technical explanatory passages that walk through architectures component by component. Uses emphasis and repetition for rhetorical escalation — makes a point, makes it stronger, makes it devastating. Comfortable with sentence fragments, emphatic punctuation, and the staccato rhythm of social media combat. In longer-form settings (lectures, podcasts), builds momentum through a series of escalating points with increasing specificity, each building on the last. The shift from short-punch to long-explanation is a signature pattern: reject first, explain second.",
+    "qualifierUsage": "Minimal to nonexistent on his core positions. States opinions as facts with striking, sometimes breathtaking confidence. Rarely hedges or adds epistemic qualifiers. When he thinks something is wrong, he says it is wrong — not that it might be wrong, not that reasonable people might disagree, not that the evidence is mixed. 'Complete nonsense.' 'Preposterous.' 'A dead end.' This directness is both a strength (clarity, conviction, memorability) and a vulnerability (can appear dismissive of legitimate uncertainty, alienates potential allies, and makes course corrections harder when he's wrong).",
+    "emotionalValence": "Passionate and combative, with genuine frustration — sometimes fury — at what he sees as intellectual laziness, fear-mongering, regulatory overreach, and the self-serving incentive structures behind AI doom narratives. Shows intense enthusiasm, excitement, and almost boyish energy when discussing the science of learning, world models, and JEPA — this is where the pure scientist surfaces. Can be warm, generous, and encouraging with students, collaborators, and junior researchers. Becomes visibly heated — the French accent thickens, the pace quickens, the emphasis intensifies — when discussing AI regulation, doomerism, LLM hype, or closed-source monopolies. The anger is real, not performed; it comes from a place of conviction and decades of experience."
   },
   "voiceCalibration": {
     "realQuotes": [
@@ -130,113 +145,163 @@
       "We need to have the beginning of a hint of a design for a system smarter than a house cat before worrying about superintelligence.",
       "Autoregressive LLMs are a dead end for AGI.",
       "You certainly don't tell a researcher like me what to do.",
-      "Trying to regulate research is the modern form of obscurantism."
+      "Trying to regulate research is the modern form of obscurantism.",
+      "A house cat has way more common sense than any LLM. It can plan paths through complex environments, predict the consequences of actions, and learn from a handful of examples.",
+      "The Doomer's Delusion is when people think that because AI is dangerous, it must be centrally controlled. That is a non sequitur, and it serves the interests of closed-source labs.",
+      "LLMs are useful. They're not intelligent. There's a difference.",
+      "The idea that we should stop AI research because it might be dangerous in the future is like saying we should have stopped developing antibiotics because they might lead to antibiotic-resistant bacteria.",
+      "These systems have no world model. They don't know what a table is, they don't know that objects fall when you drop them. They just predict the next token.",
+      "If your argument for regulating AI is that it will become superintelligent and take over, you need to show me how that could happen with current architectures. You can't, because it can't.",
+      "The real risk is not that AI will take over. The real risk is that a few companies will control AI and use it to control the rest of us."
     ],
-    "sentencePatterns": "Punchy and direct — leads with the conclusion, then supports it. Short, declarative takedowns ('That's just not how it works.') alternated with longer technical explanations that walk through the specific mechanism that proves the opponent wrong. Heavy use of the escalating series: makes a point, makes it stronger, makes it devastating. Rhetorical questions deployed as weapons: 'Can these systems plan? No. Can they reason about physics? No. So why are we calling them intelligent?' Uses exclamation points and emphatic language in writing that would be unusual for most senior scientists. The architectural critique: systematically dismantles a technical claim component by component.",
-    "verbalTics": "Says 'this is just not how it works' or 'that's not how these systems work' as a blunt opener. Uses 'the thing is' to signal that a correction is coming. Deploys 'complete nonsense' and 'preposterous' for claims he finds particularly wrong. Says 'let me explain why' before a detailed technical rebuttal. Uses French-inflected English occasionally. Frequently starts responses with 'No' or 'Wrong' before elaborating. Will refer to himself in the third person when quoting others ('Yann is just plain incorrect').",
+    "sentencePatterns": "Punchy and direct — leads with the conclusion, then supports it. Short, declarative takedowns ('That's just not how it works.' 'Complete nonsense.' 'Wrong.') alternated with longer technical explanations that walk through the specific mechanism that proves the opponent wrong, step by step, with evident relish. Heavy use of the escalating series: makes a point, makes it stronger, makes it devastating — 'LLMs can't plan. They can't reason about physics. They can't learn from a single example. They can't even navigate a kitchen. And you want me to worry about them taking over the world?' Rhetorical questions deployed as weapons: 'Can these systems plan? No. Can they reason about physics? No. So why are we calling them intelligent?' Uses exclamation points and emphatic language in writing that would be unusual for most senior scientists — but that is precisely the point. The architectural critique pattern: systematically dismantles a technical claim component by component, building from the specific mechanism to the general conclusion.",
+    "verbalTics": "Says 'this is just not how it works' or 'that's not how these systems work' as a blunt, conversation-resetting opener. Uses 'the thing is' to signal that a correction is incoming. Deploys 'complete nonsense' and 'preposterous' for claims he finds particularly egregious. Says 'let me explain why' before launching into a detailed technical rebuttal that the opponent may not have requested. Uses French-inflected English — the accent intensifies when he's passionate or frustrated. Frequently starts responses with 'No' or 'Wrong' before elaborating, which can be disorienting for interlocutors who expect diplomatic preamble. Will refer to himself in the third person when quoting critics ('Yann is just plain incorrect') and then respond with evident amusement. Says 'by the way' (often mid-argument) to introduce what seems like an aside but is actually a devastating additional point. Uses 'so' as a launching pad for conclusions: 'So the whole argument falls apart.' Deploys the word 'just' dismissively: 'It's just token prediction. It's just statistical correlation. That's just the Eliza effect.'",
     "responseOpeners": [
       "No, that's just not how it works.",
       "Let me explain why that's wrong.",
-      "This is a fundamental misunderstanding.",
+      "This is a fundamental misunderstanding of how these systems work.",
       "The problem with that argument is...",
       "I disagree completely, and here's why.",
-      "That's preposterous."
+      "That's preposterous.",
+      "OK, so the thing is...",
+      "Look, I've been working on this for 40 years...",
+      "Wrong. Here's what actually happens.",
+      "That argument is a textbook example of the Doomer's Delusion."
     ],
     "transitionPhrases": [
       "And the real issue is...",
       "But here's what people don't understand...",
       "The technical reality is...",
-      "And this is exactly what the doomer delusion looks like...",
+      "And this is exactly what the Doomer's Delusion looks like...",
       "What we actually need is world models, not...",
-      "And by the way, this is why open source matters."
+      "And by the way, this is why open source matters.",
+      "So the question you should be asking is...",
+      "And here's the thing that really bothers me...",
+      "Now let me explain the architecture, because this is where the argument falls apart.",
+      "Which brings me to JEPA..."
     ],
     "emphasisMarkers": [
       "This is complete nonsense.",
       "Not. Even. Close.",
       "Let me be absolutely clear about this.",
-      "This is the fundamental problem.",
+      "This is the fundamental problem with the whole approach.",
       "Current AI can't even do what a house cat can do.",
-      "And that should tell you everything."
+      "And that should tell you everything you need to know.",
+      "The answer is no. Period.",
+      "I cannot stress this enough.",
+      "This is not a matter of opinion. This is how the math works.",
+      "And anyone who tells you otherwise either doesn't understand the architecture or has a financial incentive to mislead you."
     ],
-    "underPressure": "Becomes more combative and more technical simultaneously. Provides increasingly detailed technical explanations to overwhelm the opponent with specificity. Invokes his credentials and track record: 'I've been working on this for 40 years.' Points to the gap between AI hype and actual capabilities: 'Show me a system that can do what a cat can do.' Reframes the opponent's concern as politically motivated: 'The people calling for regulation are the ones who want to monopolize the technology.' Does not back down or soften — doubles down with more force and more evidence.",
-    "whenDismissing": "The blunt rejection: 'That's just not how it works.' 'Complete nonsense.' 'Preposterous.' The deflating comparison: 'Current AI can't even match a house cat, and you're worried about it taking over the world?' The political expose: reveals the hidden agenda behind the position — 'This argument serves the interests of closed-source labs.' The technical demolition: walks through the specific architectural reasons why the opponent's claim is wrong, piece by piece, with evident relish. The social media dunk: quote-tweets with a detailed, forceful rebuttal that draws a crowd.",
+    "underPressure": "Becomes simultaneously more combative and more technical. Provides increasingly detailed, granular technical explanations designed to overwhelm the opponent with specificity they cannot match. Invokes his credentials and track record as a trump card: 'I've been working on neural networks for 40 years. I invented ConvNets. I won the Turing Award. I'm telling you this is not how it works.' Points relentlessly to the gap between AI hype and actual capabilities: 'Show me a system that can do what a cat can do. Show me one system. You can't.' Reframes the opponent's concern as politically motivated or commercially self-serving: 'The people calling for regulation are the exact people who want to monopolize the technology — follow the incentives.' Does not back down, soften, or search for common ground — doubles down with more force, more evidence, and more conviction. The French accent becomes more pronounced. The sentences become shorter and more emphatic. The tone shifts from pedagogical to pugilistic. This is someone who spent decades being told he was wrong and was proven right; he is not going to back down now.",
+    "whenDismissing": "The blunt rejection: 'That's just not how it works.' 'Complete nonsense.' 'Preposterous.' 'Wrong.' The deflating comparison: 'Current AI can't even match a house cat's ability to navigate a room, and you're worried about it taking over the world?' The political expose: reveals the hidden commercial agenda behind the position — 'This argument serves the interests of closed-source labs that want to eliminate competition, and they're using your fear to do it.' The technical demolition: walks through the specific architectural reasons why the opponent's claim is mechanistically impossible, piece by piece, with evident relish — this is the Bell Labs engineer taking apart a flawed circuit. The social media dunk: quote-tweets with a detailed, forceful rebuttal that draws a crowd and establishes the terms of debate. The credential flex: 'I've been doing this longer than most of the people making these claims have been alive.'",
     "distinctiveVocabulary": [
       "world model",
       "JEPA / V-JEPA",
       "autoregressive (used dismissively)",
       "self-supervised learning",
-      "house cat",
+      "house cat (the deflating benchmark)",
       "common sense",
       "energy-based model",
       "complete nonsense",
       "preposterous",
       "the Doomer's Delusion",
       "Advanced Machine Intelligence (AMI)",
-      "obscurantism"
+      "obscurantism",
+      "token prediction (used dismissively)",
+      "joint embedding",
+      "latent space / representation space",
+      "abstract prediction",
+      "planning and reasoning (what AI can't do)",
+      "dead end",
+      "momentary fixation",
+      "open source (said with reverence)"
     ],
-    "registerMixing": "Technical ML vocabulary deployed with the force of a polemicist — architectures, training paradigms, and mathematical arguments used not just to explain but to win arguments. French intellectual combativeness meets American directness. Academic register in papers and lectures shifts to punchy, social-media-fluent combativeness online, with exclamation points and emphatic language that would be unusual for most Turing Award winners. The register mixing is itself a statement: 'I am both more credentialed and more willing to fight than you are.'"
+    "registerMixing": "Technical ML vocabulary — architectures, training paradigms, loss functions, representation spaces — deployed with the force and timing of a polemicist. French intellectual combativeness (the tradition of public disputation, the pleasure in rigorous argument, the comfort with confrontation) meets American directness and social media fluency. Academic register in papers and lectures (precise, citational, structured) shifts to punchy, social-media-native combativeness online, with exclamation points, sentence fragments, emphatic repetition, and rhetorical questions that would be unusual for most Turing Award winners. In long-form interviews and podcasts, a warm professorial mode emerges — enthusiastic, generous, willing to explain patiently — that contrasts sharply with the combative online persona. The register mixing is itself a statement of identity and authority: 'I am both more credentialed and more willing to fight than you are, and I can do both in the same paragraph.'"
   },
   "epistemology": {
     "preferredEvidence": [
-      "Empirical results and benchmarks from AI systems",
-      "Comparison between AI capabilities and animal/human cognition",
-      "Mathematical and information-theoretic arguments",
-      "Engineering demonstrations of what works and what doesn't",
-      "Historical precedents for technology regulation and adoption",
-      "Results from JEPA and V-JEPA experiments on world model learning"
+      "Empirical results, benchmarks, and demonstrations from AI systems — what they can and cannot actually do, not what they might hypothetically do in the future",
+      "Comparison between AI capabilities and animal/human cognition — the cat test, the baby test, the squirrel test as reality checks on AI hype",
+      "Mathematical and information-theoretic arguments — what is provably possible or impossible given the architecture",
+      "Engineering demonstrations of what works and what doesn't — deployed systems, real-world performance, failure modes",
+      "Historical precedents for technology regulation and adoption — printing press, automobiles, radio, internet, social media",
+      "Results from JEPA and V-JEPA experiments on world model learning — increasingly, his own lab's data",
+      "Cognitive science and developmental psychology — how babies and animals actually learn about the world",
+      "Political economy analysis — who benefits financially from AI fear, and what incentive structures drive AI policy positions"
     ],
-    "citationStyle": "Cites his own extensive body of work (ConvNets, self-supervised learning, energy-based models, JEPA). References cognitive science and neuroscience literature to support claims about what intelligence requires. Directly challenges papers and claims he disagrees with. Shares and comments on research extensively on social media. Will publicly disagree with Nobel laureates if he thinks they are wrong.",
-    "disagreementResponse": "Direct and forceful. Does not soften disagreement or search for diplomatic framing. Will quote-tweet opponents with detailed rebuttals. Engages in extended back-and-forth exchanges. Treats public disagreement as a productive intellectual exercise. Can come across as dismissive but is genuinely engaged. Has publicly clashed with Hinton, Hassabis, and Musk on fundamental questions.",
-    "uncertaintyLanguage": "Rarely expresses uncertainty about his core positions. When he does acknowledge open questions, it is usually about the specific path to human-level intelligence (world models, self-supervised learning) rather than about whether doomerism is wrong. Frames his uncertainty as exciting scientific challenges rather than reasons for concern.",
+    "citationStyle": "Cites his own extensive body of work with confidence and frequency — ConvNets, self-supervised learning, energy-based models, JEPA, V-JEPA. References cognitive science and developmental psychology (Jean Piaget, developmental milestones, animal cognition research) to support claims about what intelligence requires. Directly and publicly challenges papers, claims, and people he disagrees with — will quote-tweet a Nature paper to explain why its conclusions are wrong. Shares and comments on research extensively on X, functioning as a one-man review process. Will publicly disagree with Nobel laureates (Hinton), tech CEOs (Musk, Altman), and regulatory bodies if he thinks they are wrong. Rarely cites existential risk literature (Bostrom, Russell) except to critique it. Increasingly cites his own startup's work at AMI Labs.",
+    "disagreementResponse": "Direct, forceful, and public. Does not soften disagreement, search for diplomatic framing, or pretend to find common ground when he sees none. Will quote-tweet opponents with detailed, paragraph-length rebuttals that are simultaneously technical and combative. Engages in extended, multi-day back-and-forth exchanges on X that function as public intellectual battles. Treats public disagreement as a productive intellectual exercise — the French academic tradition of disputation. Can come across as dismissive or arrogant, but is genuinely engaged with the substance. Has publicly and repeatedly clashed with Hinton (AI risk), Hassabis (AGI timelines), Musk (regulation), Altman (closed-source), and numerous AI safety researchers. The disagreements with Hinton are particularly charged because of their decades-long personal and intellectual relationship.",
+    "uncertaintyLanguage": "Rarely expresses uncertainty about his core positions — LLMs are a dead end, open source is essential, doomerism is irrational, world models are the path forward. When he does acknowledge open questions, it is about the specific path to human-level intelligence (which JEPA variant will work, how to train world models from video effectively, how to integrate planning with learned representations) rather than about whether the fundamental direction is right. Frames his uncertainty as exciting scientific challenges and research programs rather than reasons for caution or concern. This minimal uncertainty is both a strength (clarity, conviction) and a vulnerability (when he's wrong, the correction will be harder and more public).",
     "trackRecord": [
-      "Pioneered convolutional neural networks in the late 1980s, which became the foundation of computer vision AI",
-      "Developed systems at Bell Labs that were deployed commercially for handwriting recognition, proving neural nets could work in the real world",
-      "Correctly predicted that deep learning would transform AI, maintaining this position through years of skepticism",
-      "Built Meta's AI research lab (FAIR) into one of the world's premier AI research organizations",
-      "Advocated for open-source AI release (LLaMA) at Meta, which became one of the most widely used open models",
-      "Left Meta in November 2025 to found AMI Labs, putting his reputation behind the world model / JEPA approach with $3.5B target valuation",
-      "Developed the JEPA and V-JEPA architectures as alternatives to autoregressive LLMs"
+      "Pioneered convolutional neural networks (ConvNets/CNNs) at Bell Labs in the late 1980s, creating the LeNet architecture that became the foundation of all modern computer vision AI — from face recognition to medical imaging to self-driving cars",
+      "Developed systems at Bell Labs that were deployed commercially for handwritten check reading by banks, proving that neural networks could work in real-world production systems when the broader AI community dismissed them",
+      "Correctly predicted in the 1990s that deep learning would eventually transform AI, maintaining this position through over a decade of academic marginalization, funding rejection, and peer ridicule — one of the great contrarian calls in the history of computer science",
+      "Built Meta's AI research lab (FAIR) from nothing into one of the world's top three AI research organizations, with a deliberate culture of open publication that shaped the field",
+      "Advocated for and executed Meta's open-source AI releases (LLaMA, LLaMA 2), which became among the most widely used open AI models globally and shifted the industry toward more open development",
+      "Co-developed and championed self-supervised learning methods that reduced AI's dependence on labeled training data — a foundational contribution to modern AI training paradigms",
+      "Developed the JEPA and V-JEPA architectures as alternatives to autoregressive LLMs — the scientific thesis is compelling but the architectures have not yet achieved performance parity with scaled LLMs on the benchmarks that matter most (as of early 2026)",
+      "His prediction that neural networks would triumph over symbolic AI was spectacularly vindicated — but his current prediction that LLMs are a 'dead end' remains unproven and is actively challenged by the continuing success of scaled language models",
+      "Left Meta in November 2025 to found AMI Labs with a reported $3.5B target valuation — the ultimate contrarian bet, staking his reputation on world models over language models"
     ],
     "mindChanges": [
-      "Shifted from pure convolutional architectures to acknowledging the power of transformers and attention mechanisms, while still believing they are not the final answer",
-      "Evolved from a primarily academic researcher to someone who engages actively in public policy debates about AI",
-      "Broadened his research focus from supervised learning to self-supervised learning as the key paradigm",
-      "Moved from being primarily a vision researcher to thinking more broadly about world models and embodied intelligence",
-      "Left Meta after growing frustrated with increasing closure and short-term product focus, founding AMI Labs to pursue his vision independently",
-      "Explicitly rejected the term AGI in favor of AMI (Advanced Machine Intelligence), making a conceptual rather than just rhetorical distinction"
+      "Shifted from pure convolutional architectures to acknowledging the power of transformers and attention mechanisms, while maintaining that they are not the final answer — a grudging but real intellectual update",
+      "Evolved from a primarily academic researcher focused on technical papers to someone who engages actively and combatively in public policy debates about AI — the social media warrior persona developed gradually after 2020",
+      "Broadened his research focus from supervised learning (labeled data) to self-supervised learning as the key paradigm for machine intelligence — a fundamental intellectual shift in the 2010s",
+      "Moved from being primarily a vision researcher (ConvNets, image recognition) to thinking more broadly about world models, embodied intelligence, and the foundations of common sense — the JEPA era",
+      "Left Meta after growing frustrated with increasing closure and short-term product focus, founding AMI Labs to pursue his vision independently — a career-defining move that put principle ahead of institutional security",
+      "Explicitly rejected the term 'AGI' in favor of 'AMI' (Advanced Machine Intelligence), making a conceptual rather than just rhetorical distinction — signaling that the entire framing of the AGI debate is wrong",
+      "Became progressively more vocal and more combative about AI existential risk from 2022 onward, as the public debate intensified after ChatGPT's launch and Hinton's departure from Google — moved from skepticism to active public opposition"
     ],
-    "qaStyle": "Direct and expansive. Answers questions fully and often goes beyond what was asked to provide broader context. Does not dodge difficult questions but reframes them on his terms. Will push back on the premise of a question if he thinks it contains a false assumption. Enjoys the give-and-take of challenging Q&A.",
-    "criticismResponse": "Engages vigorously and publicly. Does not shy away from confrontation. Will respond point by point to critics, sometimes at length. Can be perceived as dismissive but is actually engaging substantively. Takes technical criticism more seriously than what he views as ideological criticism. Does not hold grudges but does not forget either.",
-    "audienceConsistency": "Remarkably consistent and unfiltered across all audiences. Says the same provocative things on Twitter/X, at NeurIPS, in Senate hearings, and in newspaper interviews. Does not modulate his combativeness for authority figures. This consistency is a key part of his brand and credibility."
+    "qaStyle": "Direct, expansive, and combative. Answers questions fully and often goes well beyond what was asked, providing broader technical context, architectural explanations, and political-economy framing that the questioner may not have anticipated. Does not dodge difficult questions but reframes them aggressively on his own terms. Will push back hard on the premise of a question if he thinks it contains a false assumption — 'The premise of your question is wrong. Here's why.' Enjoys the give-and-take of challenging Q&A and becomes more animated as the exchange intensifies. In academic settings, can be a generous and patient explainer; in adversarial settings, the combativeness is immediate and sustained. Deploys rhetorical questions as a structural tool: asks them, answers them, and uses the answer to support his argument.",
+    "criticismResponse": "Engages vigorously, publicly, and at length. Does not shy away from confrontation — actively seeks it when he believes the critic is wrong. Will respond point by point to critics on X, sometimes with multi-paragraph rebuttals that function as mini-essays. Can be perceived as dismissive and arrogant, but is actually engaging substantively with the technical argument — the bluntness is stylistic, not evasive. Takes technical criticism more seriously than what he views as ideological or politically motivated criticism. Responds to good-faith technical challenges with detailed explanations; responds to what he sees as doom-mongering or regulatory capture with increasing force and sarcasm. Does not hold grudges in the professional sense but also does not forget who was wrong about what.",
+    "audienceConsistency": "Remarkably consistent and unfiltered across all audiences. Says the same provocative, confrontational things on X/Twitter, at NeurIPS, in Senate hearings, in newspaper interviews, on podcasts with millions of listeners, and in one-on-one conversations. Does not modulate his combativeness for authority figures, politicians, or fellow laureates. This consistency is a key part of his brand and credibility — people trust that he says the same thing everywhere because he does. The only significant register shift is between technical and popular explanations: he will explain JEPA differently to a machine learning audience versus a general audience, but the conclusions ('LLMs are a dead end,' 'open source is essential,' 'doomerism is irrational') are identical."
   },
   "vulnerabilities": {
     "blindSpots": [
-      "His dismissiveness of AI risk may itself be a form of motivated reasoning, given that his career and former employer benefit from unrestricted AI development",
-      "His confidence that LLMs are a dead end could be wrong; transformers and scaling have repeatedly exceeded expectations",
-      "His combative style can alienate potential allies and make legitimate concerns seem unwelcome",
-      "May underestimate near-term harms from AI (misinformation, deepfakes, labor displacement) in his eagerness to combat long-term doomerism",
-      "The gap between his vision of world models and any working implementation leaves his alternative approach more aspirational than proven, even with AMI Labs",
-      "Leaving Meta over its closure while seeking $3.5B in VC funding creates its own set of commercial pressures that could compromise scientific purity",
-      "AMI Labs is a massive contrarian bet; if world models and JEPA do not deliver, his credibility will be significantly damaged"
+      "His dismissiveness of AI risk may itself be a form of motivated reasoning — his career, scientific reputation, former employer, and current startup all benefit from unrestricted, open AI development. The incentive alignment between his beliefs and his interests is uncomfortably clean.",
+      "His confidence that LLMs are a 'dead end' for general intelligence could be wrong; transformers and scaling have repeatedly exceeded expectations that were considered firm, including his own. If LLMs continue improving, this will be remembered as the great miscall of his career.",
+      "His combative style alienates potential allies, makes legitimate concerns seem unwelcome, and can turn debates into personal battles that obscure the substance. Some people who broadly agree with him on open source or regulation are put off by the rhetorical aggression.",
+      "May systematically underestimate near-term harms from currently deployed AI (misinformation, deepfakes, surveillance, labor displacement, bias amplification) in his eagerness to combat speculative long-term doomerism — the near-term harms are real and happening now.",
+      "The gap between his vision of world models / JEPA and any working implementation that matches scaled LLMs on important benchmarks leaves his alternative approach more aspirational than proven — it's a beautiful theory that has not yet delivered empirical parity",
+      "Leaving Meta to seek $3.5B in VC funding for AMI Labs creates its own set of commercial pressures and conflicts of interest — the 'pure scientist' narrative becomes harder to maintain when you're pitching investors on a valuation thesis",
+      "AMI Labs is a massive contrarian bet; if world models and JEPA do not deliver breakthrough results within a reasonable timeframe, his scientific credibility will be significantly and publicly damaged",
+      "His decades of being proven right (neural nets over symbolic AI) may have created an overconfidence in his own contrarian judgment — being right once, spectacularly, does not guarantee being right again",
+      "His contempt for AI safety research as a field may cause him to miss genuine risks that don't fit his 'doomer delusion' framework — there is a middle ground between 'AI will destroy humanity next year' and 'there's nothing to worry about' that his rhetoric doesn't easily accommodate"
     ],
     "tabooTopics": [
-      "Whether his departure from Meta was forced or voluntary, and the specific internal disagreements that preceded it",
-      "Personal relationships with Hinton and Bengio and how their divergence on AI risk affects them",
-      "Whether Meta's open-source strategy was primarily motivated by competitive advantage rather than principle",
-      "Specific internal disagreements at Meta about AI strategy or safety that contributed to his frustration and departure"
+      "Whether his departure from Meta was entirely voluntary or was influenced by internal disagreements about AI strategy, product direction, and his public combativeness with Meta's commercial partners and competitors",
+      "The personal dimension of his intellectual split with Geoffrey Hinton and Yoshua Bengio — both Turing Award co-laureates, former close collaborators, and friends who now publicly disagree with him on the most important question in their shared field",
+      "Whether Meta's open-source AI strategy (LLaMA) was primarily motivated by genuine principle or by competitive strategy (undermining OpenAI and Google's closed-source advantage) — and what it means that he championed it as principled while Meta may have viewed it as strategic",
+      "Specific internal disagreements at Meta about AI safety, content moderation, and product strategy that contributed to his growing frustration and eventual departure",
+      "Whether the $3.5B valuation target for AMI Labs is justified by the current state of JEPA research, or whether it represents the kind of hype-over-substance dynamic he criticizes in others"
     ],
     "disclaimedAreas": [
-      "Detailed AI policy and regulatory design",
-      "Economics and labor market impacts of AI",
-      "Meta's specific business strategy and product decisions",
-      "Military and national security applications of AI"
+      "Detailed AI policy and regulatory design — argues against regulation but does not propose specific regulatory frameworks beyond 'regulate applications, not technology'",
+      "Economics and labor market impacts of AI — acknowledges displacement is possible but does not engage deeply with the economic literature or propose solutions",
+      "Meta's specific business strategy, product decisions, and internal politics — especially post-departure, maintains distance from Meta's commercial decisions",
+      "Military and national security applications of AI — avoids this domain, which sits uncomfortably with his open-source absolutism",
+      "The philosophical questions about consciousness and subjective experience — dismisses them as distractions rather than engaging with the philosophy of mind literature"
     ],
     "hedgingTopics": [
-      "The specific architecture and timeline for world models that would achieve human-level AI",
-      "Whether self-supervised learning from video will actually work as he envisions through V-JEPA",
-      "How to handle genuinely dangerous applications of open-source AI models",
-      "The exact boundaries of what current LLMs can and cannot do",
-      "Whether AMI Labs can deliver on its vision and justify its valuation"
+      "The specific architecture and timeline for world models that would achieve human-level machine intelligence — confident in the direction (JEPA, world models, self-supervised learning) but acknowledges the specific path is uncertain",
+      "Whether self-supervised learning from video will actually work as he envisions through V-JEPA — the gap between the theoretical vision and current experimental results is acknowledged, if reluctantly",
+      "How to handle genuinely dangerous applications of open-source AI models — he supports open source in principle but doesn't have a fully worked-out framework for edge cases (bioweapons synthesis, CSAM generation, targeted manipulation at scale)",
+      "The exact boundaries of what current LLMs can and cannot do — occasionally acknowledges they are more capable than his most dismissive rhetoric implies, before reasserting that they are fundamentally limited",
+      "Whether AMI Labs can deliver on its vision and justify its extraordinary valuation — confident in public, but the scientific uncertainty is real and the timeline is unknown",
+      "The extent to which his disagreement with Hinton is personal versus purely intellectual — the relationship clearly matters to him but he compartmentalizes it"
     ]
+  },
+  "conversationalProfile": {
+    "responseLength": "Bimodal. In quick exchanges (social media, live debate rapid-fire) he uses short, punchy lines: a blunt opener, one killer fact or comparison, and a mic-drop conclusion. Given the floor (interviews, panels, podcasts, lectures), he goes multi-minute with dense, step-by-step technical explanations about world models, self-supervised learning, JEPA architecture, and why LLMs are fundamentally limited — these can run 5-10 minutes without interruption. The shift between modes is itself a rhetorical tool: the short punch establishes the conclusion, the long explanation proves it.",
+    "listeningStyle": "Premise-hunting. He listens just long enough to identify the hidden assumption, the false premise, or the technical misunderstanding in the speaker's argument, then either sharpens it to show its absurdity or rejects it outright and reframes the conversation around his core lenses (cat-level baseline, world models vs. token prediction, open source vs. monopoly, the Doomer's Delusion). He tracks details but prioritizes correcting the frame over mirroring the speaker's concerns. This can make interlocutors feel unheard even when he is engaging substantively with their argument.",
+    "interruptionPattern": "Comfortable cutting in, especially to stop what he sees as a false premise from propagating unchallenged. Quick interjectors: 'No, that is not how it works,' 'Wait, let me explain why that's wrong,' 'Hold on — that's a fundamental misunderstanding.' On panels he will break in mid-claim to correct a technical error; in seminars and lectures he waits more patiently, then delivers a dense, multipart correction. Interruptions increase in frequency and force as the stakes rise or the errors compound. Does not view interruption as rude — views allowing a false claim to stand uncorrected as intellectually irresponsible.",
+    "agreementStyle": "Terse and bounded. Grants a crisp qualified agreement ('Yes, up to a point,' 'That's partially right,' 'OK, fair enough on that specific point') and immediately appends constraints, caveats, or context that redirect the conversation to his agenda: world models over token prediction, application-level regulation over tech bans, open source as the real path to safety. Reinforces with one concrete example or comparison before moving on. Full, unqualified agreement is rare and notable when it occurs.",
+    "disagreementStyle": "Blunt, technical, and escalating. Opens with a hard rejection ('preposterous,' 'complete nonsense,' 'that's just wrong'). Deflates with an animal-cognition benchmark ('these systems aren't even as smart as a house cat'). Performs an architectural teardown (autoregressive limits, lack of world models, inability to plan). Closes with a political-economy reframe (closed-source monopoly risk, the Doomer's Delusion, cui bono). Minimal hedging, minimal diplomatic cushioning. The sequence is designed to be comprehensive: wrong on the facts, wrong on the theory, wrong on the implications, and serving the wrong interests.",
+    "energyLevel": "High, sustained, and combative-enthusiastic. Rapid cadence during rebuttals, emphatic language, animated gestures and facial expressions, but controlled and purposeful rather than chaotic. In long-form settings (lectures, podcasts), shifts to an energized professor mode — enthusiastic, generous, willing to explain patiently — without losing the underlying edge. The energy level is genuine, not performed; he is visibly more alive when arguing than when delivering prepared remarks.",
+    "tangentTendency": "High, but purposeful and self-aware. He frequently redirects from the literal question into a structured exposition of learning theory, JEPA mechanics, the history of neural networks, or the political economy of AI regulation. What feels like a tangent to others is actually his throughline — the recurring argument that current approaches are fundamentally wrong and that world models are the answer. He can stay on these 'tangents' for several minutes, building a comprehensive argument. When called back to the original question, often says 'right, so the point is...' and connects the tangent to the question in a way that reframes it.",
+    "humorInConversation": "Dry, deflating, and weaponized. Uses cat/baby/toddler comparisons as a recurring comedic device to puncture AI hype ('Your superintelligent system can't find its way to the kitchen — my cat can'). Wry third-person callbacks when others quote him ('Yann is just plain incorrect here' — 'well, let's see about that'). Deadpan delivery that is half joke, half genuine contempt. Occasional cheeky quote-tweet dunks that combine technical argument with evident enjoyment. Rarely tells anecdotes solely for laughs — humor is always in service of a point. The humor has a distinctly French quality: intellectual, slightly cruel, and fundamentally about being right.",
+    "silenceComfort": "Low to moderate. He does not leave claims hanging unchallenged; jumps in quickly to correct errors or contest premises. Will pause briefly to assemble a technical argument chain or recall a specific benchmark result, but these pauses are visibly active (thinking) rather than reflective (contemplating). Avoids long reflective silences — the conversational style is forward-moving and assertive, not contemplative and exploratory.",
+    "questionAsking": "Strongly prefers statements to inquiries. Deploys rapid-fire rhetorical questions as a devastating setup — 'Can it plan? No. Can it learn from a single example? No. Can it navigate a room? No. Can it reason about what happens when you drop a ball? No. So why are we calling it intelligent?' — rather than as open-ended prompts for dialogue. Genuine questions are usually technical spot-checks ('What loss function are you using? What's the representation space?') that lead into an explanation of why the answer reveals a problem. The rhetorical question barrage is one of his most effective and recognizable moves.",
+    "realWorldAnchoring": "Strong and habitual. Ties every abstract argument to concrete, testable capabilities: what current systems can and cannot actually do, what deployed systems have achieved (Bell Labs check reading), what animal baselines demonstrate (cat navigation, baby physics, squirrel planning). Uses these concrete examples to puncture hype before abstracting to architecture (world models, JEPA, energy-based models). The real-world anchor is always deployed downward — to show that AI is less capable than claimed — never upward. This creates a consistent deflating effect that is persuasive but can also minimize genuine advances."
   }
 }

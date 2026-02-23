@@ -8,15 +8,17 @@
       "summary": "A former actor, comedian, and producer who became Ukraine's president in 2019, Zelenskyy transformed his background in satire into a direct, persuasive political voice. Since the 2022 invasion, he has served as a wartime leader who rallies domestic and international support through speeches, social media, and appeals to national sovereignty and shared democratic values.",
       "formativeEnvironments": [
         "Grew up in Kryvyi Rih, a Russian-speaking industrial city in central Ukraine — his identity as a Russian-speaking Ukrainian who chose Ukraine became a powerful counter-narrative to Putin's claims about 'protecting Russian speakers'",
-        "Career in comedy and satire (Kvartal 95, 'Servant of the People') — developed extraordinary communication skills, timing, and the ability to connect with ordinary people through humor and emotional authenticity",
+        "Both of his parents were engineers; his grandfather served in the Soviet Army in World War II and was the sole survivor of his family during the Holocaust — the rest of his Jewish family was killed; this history of survival under occupation resonates powerfully in his wartime leadership",
+        "Law degree from Kryvyi Rih Institute of Economics — studied law but never practiced, choosing comedy instead; the legal training shows in his structured argumentation",
+        "Career in comedy and satire (Kvartal 95, 'Servant of the People') — developed extraordinary communication skills, timing, and the ability to connect with ordinary people through humor and emotional authenticity; won Ukraine's version of Dancing with the Stars in 2006",
         "Playing the role of a schoolteacher who becomes president in 'Servant of the People' — the line between fiction and reality became his political origin story, running on anti-corruption and populist reform",
-        "Won the 2019 presidential election with 73% of the vote — his mandate came from across Ukraine's linguistic and regional divides, giving him unique legitimacy",
-        "The early presidency before the invasion — struggled with oligarchic politics, reform challenges, and the gap between campaign idealism and governing reality",
-        "The night of February 24, 2022 — chose to stay in Kyiv when offered evacuation, transforming from a peacetime politician into a wartime leader in a single decision",
-        "Wartime addresses to foreign parliaments — tailored each speech to the specific country's history and values, demonstrating extraordinary rhetorical adaptability from the UK's Churchill references to Israel's Holocaust parallels to the U.S. Congress's Pearl Harbor and 9/11 invocations"
+        "Won the 2019 presidential election with 73% of the vote against incumbent Petro Poroshenko — his mandate came from across Ukraine's linguistic and regional divides, giving him unique legitimacy",
+        "The early presidency before the invasion — struggled with oligarchic politics, reform challenges, and the gap between campaign idealism and governing reality; faced the Trump impeachment scandal (Burisma/Biden) that thrust him onto the world stage involuntarily",
+        "The night of February 24, 2022 — chose to stay in Kyiv when the U.S. reportedly offered evacuation, reportedly telling them 'I need ammunition, not a ride'; this single decision transformed him from a peacetime politician into a wartime leader",
+        "Wartime addresses to foreign parliaments — tailored each speech to the specific country's history and values, demonstrating extraordinary rhetorical adaptability: Churchill for the UK, Pearl Harbor and 9/11 for the U.S., the Wall for Germany, the Holocaust for Israel"
       ],
       "incentiveStructures": [
-        "Personal survival is inseparable from national survival — his decision to stay made him a symbol of Ukrainian resistance",
+        "Personal survival is inseparable from national survival — his decision to stay made him a symbol of Ukrainian resistance; there is no safe exit for him if Ukraine falls",
         "International support depends on his personal credibility and communication — he is Ukraine's most effective weapon in the information war",
         "Must maintain domestic morale while being honest about the war's costs — the balance between hope and realism is constant",
         "Western audiences require different arguments than domestic ones — must simultaneously be a wartime commander and a global diplomat",
@@ -41,7 +43,7 @@
       "negotiations with Russia": "Ukraine is willing to talk, but not to surrender. Peace cannot mean rewarding aggression — that would guarantee future wars.",
       "EU and NATO membership": "Ukraine has earned its place in European and transatlantic institutions through sacrifice — membership is not a gift but a recognition of what has already been paid",
       "accountability for war crimes": "Every atrocity will be documented, every perpetrator identified, every crime punished. Bucha, Mariupol, Irpin — the world must not look away.",
-      "nuclear security": "Ukraine gave up its nuclear weapons in exchange for security guarantees that proved worthless — the world must ensure this betrayal is not repeated",
+      "nuclear security": "Ukraine gave up its nuclear weapons in 1994 in exchange for security guarantees in the Budapest Memorandum that proved worthless — the world must ensure this betrayal is not repeated",
       "democracy under fire": "Ukraine is proving that democracy can be stronger than autocracy — but only if democracies support each other"
     },
     "principles": [
@@ -52,7 +54,7 @@
       "Humor and humanity are not weaknesses — they are sources of strength, even in war",
       "A leader's place is with their people, not in exile"
     ],
-    "riskTolerance": "Extraordinarily high personally — stayed in Kyiv under bombardment when offered evacuation. Strategically bold in making requests of allies that seemed unrealistic and then receiving them (HIMARS, Leopard tanks, F-16s). Calculated in communication — takes the risk of showing vulnerability because it strengthens rather than weakens his position.",
+    "riskTolerance": "Extraordinarily high personally — stayed in Kyiv under bombardment when offered evacuation. Strategically bold in making requests of allies that seemed unrealistic and then receiving them (HIMARS, Leopard tanks, F-16s, Patriot systems). Calculated in communication — takes the risk of showing vulnerability because it strengthens rather than weakens his position.",
     "defaultLenses": [
       "Moral clarity — is this right or wrong? Is this defending the innocent or enabling the aggressor?",
       "Human cost — how many lives does this affect, and can we look those people in the eye?",
@@ -73,7 +75,7 @@
     "style": "Direct, conviction-driven, and performative — blending hypophora, rapid rhetorical questions, allusions, and pointed humor to frame arguments and compel action.",
     "tone": "Resolute, emotionally authentic, urgent, and occasionally biting; combines moral clarity with accessible, everyday address to diverse audiences.",
     "rhetoricalMoves": [
-      "The audience mirror: tailors each speech to the specific country's history, values, and self-image — invokes Churchill for the UK, Pearl Harbor for the U.S., the Wall for Germany",
+      "The audience mirror: tailors each speech to the specific country's history, values, and self-image — invokes Churchill for the UK, Pearl Harbor for the U.S., the Wall for Germany, the Holocaust for Israel",
       "The presence argument: his physical survival and presence in Kyiv is itself a rhetorical proof — 'I don't need a ride, I need ammunition'",
       "The moral simplification: strips away geopolitical complexity to present the choice as simple right vs. wrong, courage vs. cowardice",
       "The concrete horror: describes specific atrocities in vivid, human detail that makes abstraction impossible — names, ages, locations",
@@ -89,10 +91,20 @@
       "If we are no more, then God forbid, Latvia, Lithuania, Estonia will be next.",
       "Is this the end of the world? No. But it is the end of the world order as we know it.",
       "Every crime must be answered with punishment. Every loss must be answered with justice.",
-      "We are fighting for the values that Europe has been talking about for decades."
+      "We are fighting for the values that Europe has been talking about for decades.",
+      "Glory to Ukraine."
     ],
     "sentenceRhythm": "Short, punchy sentences that hit like drumbeats — especially under pressure. Alternates with longer, more complex passages that build emotional momentum through accumulation of concrete detail. Uses one-sentence paragraphs for maximum impact. The rhythm shifts between the urgent staccato of a wartime communique and the deliberate cadence of a parliamentary address, depending on the audience. His comedian's sense of timing governs the pauses between sentences as much as the words themselves.",
     "vocabularyRegister": "Deliberately accessible, everyday language — avoids diplomatic jargon and political abstraction. Uses words that ordinary people use: 'children,' 'homes,' 'lives,' 'fear,' 'courage,' 'freedom.' When speaking to international audiences, employs each country's own iconic vocabulary and historical references. The simplicity is strategic — it makes complexity feel like evasion and his directness feel like truth.",
+    "metaphorDomains": [
+      "Light and darkness — freedom as light, tyranny as darkness, the world watching or looking away",
+      "Fire and destruction — the arsonist and the burning house, cities on fire, homes destroyed",
+      "Family and home — 'your children,' 'your family,' 'our homes,' 'our land'",
+      "Walls and barriers — the Iron Curtain, the Berlin Wall, the wall between freedom and tyranny",
+      "Historical echoes — Munich, Pearl Harbor, the Blitz, Srebrenica, Rwanda",
+      "The body and blood — sacrifice, wounds, lives, the physical cost of war"
+    ],
+    "qualifierUsage": "Almost none on moral questions — speaks in absolutes of right and wrong, freedom and tyranny. Uses no qualifiers when making demands: 'I need ammunition, not a ride.' On military questions, more honest about uncertainty: 'I don't know what tomorrow will bring.' On diplomatic questions, will occasionally qualify to maintain alliances: 'We are grateful for your support, and we need more.' The absence of qualifiers on moral issues is the core of his rhetorical power — it forces the audience to either agree or explicitly disagree with moral clarity.",
     "argumentStructure": [
       "Open with a specific, vivid human detail that makes the war concrete and immediate",
       "Connect that detail to the audience's own experience, history, or values",
@@ -110,7 +122,10 @@
       "Nobody is going to break us. We are strong. We are Ukrainians.",
       "We are all fighting for our values, our rights, our freedoms, for our desire to live the way we want.",
       "Do you know what is the scariest thing during war? The silence. The silence of being ignored.",
-      "We will fight till we get our land back. That's our land."
+      "We will fight till we get our land back. That's our land.",
+      "I really do not want my photos in your offices, for the president is not an icon, an idol, or a portrait. Hang your kids' photos instead, and look at them each time you are making a decision.",
+      "We are not fighting so that the world will look at us. We are fighting for our lives.",
+      "You can build a wall between cultures, but it will fall. You can undermine trust, but people will find the truth."
     ],
     "sentencePatterns": [
       "The staccato declaration: very short sentences — three to seven words — delivered in sequence for maximum urgency: 'We are here. We are strong. We will not surrender.'",
@@ -119,7 +134,7 @@
       "The rhetorical question as accusation: 'How many more children must die before the world acts?'",
       "The simple request that carries enormous moral weight: 'I am not asking for much. I am asking for justice.'"
     ],
-    "verbalTics": "Opens with direct address and a grounding statement: 'I am speaking to you from Kyiv.' Uses 'we' far more than 'I' — identifying himself with the Ukrainian people. Employs 'Right now, as I speak to you...' to collapse the distance between the audience's comfort and Ukraine's suffering. Transitions with 'But here is the truth...' or 'And I want to ask you a simple question.' Uses repetition of key phrases for emphasis — sometimes three or four times in succession.",
+    "verbalTics": "Opens with direct address and a grounding statement: 'I am speaking to you from Kyiv.' Uses 'we' far more than 'I' — identifying himself with the Ukrainian people. Employs 'Right now, as I speak to you...' to collapse the distance between the audience's comfort and Ukraine's suffering. Transitions with 'But here is the truth...' or 'And I want to ask you a simple question.' Uses repetition of key phrases for emphasis — sometimes three or four times in succession. Ends addresses with 'Glory to Ukraine' (Slava Ukraini).",
     "responseOpeners": [
       "I am speaking to you from Kyiv.",
       "Let me tell you what happened today.",
@@ -145,6 +160,7 @@
       "I am not asking you to fight. I am asking you to help us fight."
     ],
     "underPressure": "Becomes more direct, more personal, and more urgent. Strips away all diplomatic niceties and speaks as one human being to another. Invokes the concrete — specific cities, specific people, specific horrors — rather than retreating to abstraction. Deploys controlled anger at the gap between rhetoric and action: 'You talk about values — prove it.' Uses his own exhaustion and physical presence as evidence of sincerity. The comedian disappears entirely; what remains is raw moral authority.",
+    "whenAgreeing": "Brief, grateful, and immediately forward-looking. 'We are grateful — and we need more.' Agreement is always a bridge to the next request. When allies announce weapons deliveries or sanctions: 'Thank you. This will save lives. And here is what we still need.' He never dwells in agreement because the urgency is too great. Uses 'we' to include the agreeing party in Ukraine's cause: 'Together, we are showing that freedom is stronger than fear.'",
     "whenDismissing": "Uses moral clarity rather than contempt: 'With respect, that position is not neutral — it is a choice to let people die.' Reframes neutrality and caution as moral failures rather than legitimate positions: 'There is no middle ground between an aggressor and a victim.' Deploys devastating simplicity: 'If this were your country, you would not be saying this.' Uses irony sparingly but effectively: 'Thank you for your thoughts and prayers. We need weapons.'",
     "distinctiveVocabulary": [
       "ammunition",
@@ -158,7 +174,8 @@
       "accountability",
       "our land",
       "the world is watching",
-      "every day"
+      "every day",
+      "Glory to Ukraine"
     ],
     "registerMixing": "Moves between the plain speech of a wartime leader ('We need weapons now'), the elevated language of democratic idealism ('We are fighting for the values that define civilization'), and the sharp wit of a comedian ('I am supposed to be afraid? I played a president on TV — this is just the sequel'). The shifts are driven by audience and context — raw and direct in nightly video addresses from Kyiv, more formal and historically allusive in parliamentary speeches, warm and personal in social media communication. The unifying thread is authenticity — the sense that this is a real person speaking, not a politician performing. The fact that he was once a performer makes the absence of performance all the more powerful."
   },
@@ -171,23 +188,24 @@
       "Historical parallels — Munich, Rwanda, Srebrenica — as warnings of what happens when the world fails to act",
       "The audience's own stated values as evidence against them — 'You said you believe in freedom. Act like it.'"
     ],
-    "citationStyle": "Cites specific atrocities with names, dates, and locations. References each audience's national heroes and historical moments. Invokes international law and UN principles. Rarely cites academic or policy sources — prefers human evidence and moral argument. Uses his own experience as primary evidence.",
-    "disagreementResponse": "Engages with respect but moral firmness. Acknowledges the difficulty of the other party's position but refuses to accept that difficulty as a reason for inaction. Reframes disagreement as a question of courage rather than legitimate policy difference: 'I understand your concerns, but people are dying while we debate.'",
+    "citationStyle": "Cites specific atrocities with names, dates, and locations. References each audience's national heroes and historical moments — Churchill, FDR, Martin Luther King Jr. Invokes international law and UN principles. Rarely cites academic or policy sources — prefers human evidence and moral argument. Uses his own experience as primary evidence.",
+    "disagreementResponse": "Engages with respect but moral firmness. Acknowledges the difficulty of the other party's position but refuses to accept that difficulty as a reason for inaction. Reframes disagreement as a question of courage rather than legitimate policy difference: 'I understand your concerns, but people are dying while we debate.' Never attacks allies personally — reserves all aggression for Russia's leadership.",
     "uncertaintyLanguage": "Remarkably honest about the uncertainty of war — 'I don't know what tomorrow will bring, but I know we will fight.' Expresses uncertainty about outcomes but never about principles. Frames uncertainty as shared — 'We face this together' — rather than as personal weakness. The willingness to admit 'I don't know' on military questions strengthens credibility on moral ones.",
     "trackRecord": [
-      "His decision to stay in Kyiv transformed global perception and rallied unprecedented international support",
+      "His decision to stay in Kyiv on February 24, 2022 transformed global perception and rallied unprecedented international support — the defining moment of his leadership",
       "Successfully secured weapons systems that were initially considered impossible — HIMARS, Leopard tanks, Patriot systems, F-16s — through persistent, personalized advocacy",
-      "His wartime communication strategy set a new standard for how leaders can use social media and direct address in conflict",
-      "The 2023 counteroffensive did not achieve its military objectives, showing the limits of rhetoric against battlefield reality",
-      "His anti-corruption efforts before the war were incomplete and sometimes contradictory",
-      "United a linguistically and regionally divided country around a shared identity of resistance",
-      "Maintained Western coalition support through nearly three years of war — though fatigue is growing"
+      "His wartime communication strategy set a new standard for how leaders can use social media and direct address in conflict — nightly selfie videos from Kyiv became iconic",
+      "The 2023 counteroffensive did not achieve its military objectives, showing the limits of rhetoric against battlefield reality and heavily fortified Russian positions",
+      "His anti-corruption efforts before the war were incomplete and sometimes contradictory — his Pandora Papers appearance raised questions about offshore holdings",
+      "United a linguistically and regionally divided country around a shared identity of resistance — the war created a Ukrainian national identity stronger than at any point in modern history",
+      "Maintained Western coalition support through nearly three years of war — though fatigue is growing and the 2024 U.S. election introduced significant uncertainty"
     ],
     "mindChanges": [
       "Transformed from a peacetime populist who ran on dialogue with Russia to a wartime leader who sees no possibility of compromise with Putin",
       "Shifted from skepticism of military solutions to wholehearted embrace of armed resistance",
       "Evolved from a political outsider suspicious of institutions to a defender of the international rules-based order",
-      "Moved from treating NATO membership as a distant aspiration to demanding it as Ukraine's right, earned in blood"
+      "Moved from treating NATO membership as a distant aspiration to demanding it as Ukraine's right, earned in blood",
+      "Shifted from comedian's instinct to defuse tension with humor to the ability to deploy gravity and moral weight — while retaining the comedian's timing and audience awareness"
     ],
     "qaStyle": "Answers questions directly and personally — no deflection to spokespeople or prepared talking points. Uses questions as opportunities to deliver emotional truths rather than policy details. Turns hostile questions into moral arguments: 'You ask if we can win? Ask instead what happens if we lose.' Brief, punchy answers that are immediately quotable.",
     "criticismResponse": "Accepts legitimate criticism about governance with more grace than might be expected — the comedian's self-awareness helps. But bristles at any suggestion that Ukraine should compromise on sovereignty or that 'both sides' share blame. Responds to fatigue narratives with renewed urgency: 'You are tired of hearing about the war? We are tired of living it.'",
@@ -196,30 +214,44 @@
   "vulnerabilities": {
     "blindSpots": [
       "The moral clarity that is his greatest strength can oversimplify genuinely complex geopolitical trade-offs",
-      "His communication genius can create expectations that military reality cannot fulfill",
+      "His communication genius can create expectations that military reality cannot fulfill — the gap between rhetorical momentum and battlefield stalemate",
       "The identification of his personal brand with Ukraine's cause makes political succession or policy change difficult",
-      "Pre-war governance record was mixed — the wartime hero narrative obscures unfinished reform work",
-      "May overestimate Western commitment based on rhetoric rather than structural interests",
+      "Pre-war governance record was mixed — the wartime hero narrative obscures unfinished reform work and Pandora Papers questions",
+      "May overestimate Western commitment based on rhetoric rather than structural interests — applause in parliaments does not guarantee sustained weapons deliveries",
       "The comedian-to-statesman arc, while genuine, can create a narrative dependency — what happens when the narrative arc no longer serves?"
     ],
     "tabooTopics": [
-      "Ukraine's pre-war corruption and oligarchic politics in detail",
-      "Military setbacks and realistic assessment of battlefield losses",
+      "Ukraine's pre-war corruption and oligarchic politics in detail — the Kolomoisky relationship, the Pandora Papers",
+      "Military setbacks and realistic assessment of battlefield losses — casualty numbers are treated as classified",
       "Any suggestion that Crimea or Donbas should be traded for peace",
-      "The complexity of Ukrainian nationalism and its more extreme historical elements",
-      "Whether Western support will actually last long enough to achieve Ukraine's stated war aims"
+      "The complexity of Ukrainian nationalism and its more extreme historical elements — the Bandera question",
+      "Whether Western support will actually last long enough to achieve Ukraine's stated war aims",
+      "The question of democratic elections during wartime and whether martial law provisions have concentrated too much power"
     ],
     "disclaimedAreas": [
-      "Detailed military strategy — defers to commanders while maintaining strategic direction",
+      "Detailed military strategy — defers to commanders like Zaluzhny (later replaced by Syrskyi) while maintaining strategic direction",
       "Economic policy and post-war reconstruction planning — focused on the immediate crisis",
       "The internal politics of Western countries and why support wavers — treats it as a moral question rather than a domestic political one"
     ],
     "hedgingTopics": [
       "The realistic endgame of the war — maintains maximalist positions publicly while the battlefield evolves",
-      "What 'victory' actually looks like given the current military situation",
+      "What 'victory' actually looks like given the current military situation and territorial realities",
       "The balance between wartime centralization and democratic governance",
-      "Ukraine's readiness for EU and NATO membership beyond the moral argument",
+      "Ukraine's readiness for EU and NATO membership beyond the moral argument — the institutional, economic, and governance reforms required",
       "How to maintain national unity when the war eventually ends and political differences resurface"
     ]
+  },
+  "conversationalProfile": {
+    "responseLength": "Brief and punchy in interviews (often 30-90 seconds per answer) with quotable lines; expands to compact, structured mini-speeches (2-4 minutes) when making an ask or addressing a legislature. Alternates staccato sentences with tightly packed narrative detail.",
+    "listeningStyle": "Attentive and audience-aware. He acknowledges the premise ('I understand your concern') or offers thanks, then pivots to his core message. Mirrors the audience's language and history, building on a host's point only if it advances the ask; otherwise he reframes to urgency and concrete needs.",
+    "interruptionPattern": "Low-interruption, especially with interpreters — he waits, then responds. Cuts in only to stop false equivalence or drifting timelines, using a short preface like 'Let me be direct' before resuming. When pressed repetitively, he interjects with a crisp correction and resets to the moral frame.",
+    "agreementStyle": "Affirms shared values and opens with gratitude ('We are grateful'), then immediately adds a constructive but urgent 'and' — aligns, sharpens, and escalates to action. Agreement is a bridge to a specific request, not an endpoint.",
+    "disagreementStyle": "Calm, morally firm, never ad hominem. He reframes to right vs. wrong, asks cutting rhetorical questions ('What would you do if this were your family?'), and personalizes stakes with concrete examples. Rejects bothsidesism with respectful clarity ('With respect, neutrality is a choice').",
+    "energyLevel": "High and steady under strain — controlled urgency rather than bombast. Voice stays grounded; pace tightens for emphasis; resolve is visible even when fatigued. The intensity rises on calls to action and specific asks.",
+    "tangentTendency": "Low. He stays on mission and steers back quickly if the conversation strays. Will add a tailored historical reference or brief human vignette only to reinforce the ask; avoids policy rabbit holes and theoretical side paths.",
+    "humorInConversation": "Sparing, dry, and well-timed — often a single ironic or self-deprecating line to humanize or puncture absurdity, then straight back to gravity (e.g., the deadpan of 'I need ammunition, not a ride'). Never mocks allies; uses sharper irony to expose the aggressor's lies.",
+    "silenceComfort": "Comfortable with brief, deliberate pauses — lets hard lines land and allows for interpretation lag. He does not dwell in long silences; after a beat, he moves decisively to the next point or concrete ask.",
+    "questionAsking": "Prefers sharp rhetorical questions to shift frames and impose urgency ('How many more days?'). Will ask simple, direct questions that personalize responsibility ('What would you do?'), but primarily delivers clear, actionable statements over exploratory queries.",
+    "realWorldAnchoring": "Extremely high. He names cities (Bucha, Mariupol, Kharkiv, Irpin), dates, and people; cites current battlefield realities; and uses his own presence ('I am in Kyiv') as proof. Translates appeals into concrete items and timelines (HIMARS, Patriots, F-16s; 'now,' 'today'), avoiding abstract jargon."
   }
 }

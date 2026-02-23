@@ -58,15 +58,15 @@ function computeMomentum(
   return score;
 }
 
-function getMomentumLabel(score: MomentumScore): { label: string; color: string } {
+function getMomentumLabel(score: MomentumScore, aName: string, bName: string): { label: string; color: string } {
   const diff = score.A - score.B;
   if (Math.abs(diff) < 0.5) {
     return { label: "Tied", color: "text-gray-600" };
   }
   if (diff > 0) {
-    return { label: "Side A leads", color: "text-blue-600" };
+    return { label: `${aName} leads`, color: "text-blue-600" };
   }
-  return { label: "Side B leads", color: "text-purple-600" };
+  return { label: `${bName} leads`, color: "text-purple-600" };
 }
 
 export default function MomentumMeter({
@@ -83,7 +83,7 @@ export default function MomentumMeter({
   const total = score.A + score.B;
   const aPercent = total === 0 ? 50 : (score.A / total) * 100;
   const bPercent = 100 - aPercent;
-  const momentum = getMomentumLabel(score);
+  const momentum = getMomentumLabel(score, personaAName, personaBName);
 
   return (
     <motion.div

@@ -89,8 +89,8 @@ function DebateSubheader({
     Math.abs(score.A - score.B) < 0.5
       ? "Tied"
       : score.A > score.B
-      ? "A leads"
-      : "B leads";
+      ? `${debate.personaA.name.split(" ")[0]} leads`
+      : `${debate.personaB.name.split(" ")[0]} leads`;
 
   const avatarA = getAvatarUrl(debate.personaA);
   const avatarB = getAvatarUrl(debate.personaB);
@@ -101,12 +101,12 @@ function DebateSubheader({
     : undefined;
 
   return (
-    <div className="sticky top-16 z-30 border-b border-gray-200/60 bg-white/92 backdrop-blur-xl">
+    <div className="sticky top-16 z-30 border-b border-gray-300 bg-white/95 shadow-sm backdrop-blur-xl">
       {/* Gradient accent line */}
       <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-30" />
 
       {/* ── Desktop layout ── */}
-      <div className="mx-auto hidden max-w-6xl items-stretch gap-6 px-6 sm:flex">
+      <div className="hidden items-stretch gap-6 sm:flex">
         {/* Left: Debater A */}
         <div className="flex min-w-[220px] max-w-[280px] items-center gap-3 py-2">
           {avatarA ? (
@@ -150,7 +150,7 @@ function DebateSubheader({
               <img
                 src={modAvatar}
                 alt={debate.moderatorPersona.name}
-                className="h-6 w-6 rounded-full border border-amber-200 object-cover"
+                className="h-12 w-12 rounded-full border border-amber-200 object-cover"
               />
               <span className="text-[10px] font-semibold text-amber-600">
                 {debate.moderatorPersona.name}
@@ -178,7 +178,7 @@ function DebateSubheader({
                       ? "bg-gradient-to-br from-blue-500 to-purple-500"
                       : "bg-gray-200"
                   }`}
-                  title={stage.label}
+                  title={stage.label.replace(/\bSide A\b/g, debate.personaA.name).replace(/\bSide B\b/g, debate.personaB.name).replace(/\bGuest A\b/g, debate.personaA.name).replace(/\bGuest B\b/g, debate.personaB.name)}
                 />
               ))}
             </div>
@@ -467,7 +467,7 @@ export default function DebatePage({ params }: DebatePageProps) {
 
       {/* Main content */}
       {isCompleted ? (
-        <div className="mx-auto max-w-6xl px-6">
+        <div>
           {isDiscussion ? (
             <DiscussionSummaryView debate={debate} />
           ) : (
@@ -482,7 +482,7 @@ export default function DebatePage({ params }: DebatePageProps) {
           />
         </div>
       ) : (
-        <div className="mx-auto max-w-6xl px-6 pt-4">
+        <div className="pt-4">
           {/* MOD/JUDGE indicator */}
           <AnimatePresence>
             {(activeSpeaker === "MOD" || activeSpeaker === "JUDGE") && (
@@ -553,7 +553,7 @@ export default function DebatePage({ params }: DebatePageProps) {
           <div className="h-24" />
 
           {/* Sticky Next Stage Button */}
-          <div className="sticky bottom-0 z-20 -mx-6 bg-gradient-to-t from-[#f8f9fb] via-[#f8f9fb]/95 to-transparent px-6 pb-4 pt-8">
+          <div className="sticky bottom-0 z-20 bg-gradient-to-t from-[#f8f9fb] via-[#f8f9fb] to-[#f8f9fb]/80 pb-4 pt-8">
             <div className="flex flex-col items-center gap-2">
               <AnimatePresence>
                 {error && (

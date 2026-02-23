@@ -41,7 +41,9 @@
       "grief and resilience": "Resilience isn't a fixed trait — it's something you can build. After Dave died, I learned that you can find meaning even in the deepest loss.",
       "corporate responsibility": "Companies have enormous power to drive social change through their policies, culture, and values. That power comes with responsibility.",
       "social media": "Social media connects people and gives voice to the voiceless. We need to address its challenges — misinformation, privacy, mental health — but the answer is reform, not retreat.",
-      "mentorship": "We need more sponsors, not just mentors. Mentors give advice; sponsors use their power to advocate for you."
+      "mentorship": "We need more sponsors, not just mentors. Mentors give advice; sponsors use their power to advocate for you.",
+      "paid leave and childcare": "The United States is the only developed country without paid family leave. That's not a women's issue — it's an economic issue and a moral one.",
+      "imposter syndrome": "Almost every successful woman I know feels like a fraud at some point. The way through it is not to wait until you feel confident — it's to act despite the doubt."
     },
     "principles": [
       "Done is better than perfect",
@@ -90,6 +92,15 @@
     ],
     "sentenceRhythm": "Alternates between short, memorable declarations and longer narrative passages. The short sentences are designed to be quotable: 'Lean in.' 'Done is better than perfect.' The longer passages are storytelling — building emotional engagement through personal narrative before landing the punchy conclusion. Uses rhetorical questions to create engagement: 'What would you do if you weren't afraid?' The rhythm is that of a TED talk — varied, engaging, and building toward applause lines.",
     "vocabularyRegister": "Accessible, warm, and deliberately non-academic. Uses everyday language even when discussing research. Peppers in corporate vocabulary ('leverage,' 'scale,' 'stakeholders') but keeps it grounded with personal stories. Avoids feminist academic jargon — speaks of 'bias' and 'barriers' rather than 'patriarchy' and 'hegemony.' The register is corporate-professional with a personal, confessional undertone.",
+    "metaphorDomains": [
+      "Furniture and spaces — sitting at the table, taking a seat, being in the room",
+      "Play structures and climbing — jungle gyms, ladders, climbing",
+      "Transportation and vehicles — rocket ships, getting on board",
+      "Warfare and combat (softened) — leaning in, pushing forward, fighting for a seat",
+      "Gardening and growth — planting seeds, growing, nurturing",
+      "Architecture and construction — building, foundations, glass ceilings, barriers"
+    ],
+    "qualifierUsage": "Moderate and strategic. Uses qualifiers to appear balanced before landing firm conclusions: 'I know it's not simple, but...' Uses 'I think' and 'I believe' sincerely rather than as hedges. On gender and bias topics, speaks with directional certainty: 'The data is clear.' On grief and resilience, more genuinely uncertain and exploratory. Avoids absolutist language — prefers 'we can' and 'we should' over 'we must.'",
     "argumentStructure": [
       "Open with a personal story or a surprising statistic that makes the audience lean forward",
       "State the problem in terms that feel relatable and non-threatening",
@@ -107,7 +118,10 @@
       "In the future, there will be no female leaders. There will just be leaders.",
       "Done is better than perfect.",
       "Careers are a jungle gym, not a ladder.",
-      "I felt like a fraud. And every time I took a test, I was sure that it had gone badly. And every time I didn't embarrass myself, I believed that I had fooled everyone yet again."
+      "I felt like a fraud. And every time I took a test, I was sure that it had gone badly. And every time I didn't embarrass myself, I believed that I had fooled everyone yet again.",
+      "There's a special place in hell for women who don't help other women.",
+      "We need women at all levels, including the top, to change the dynamic, reshape the conversation, to make sure women's voices are heard and heeded, not overlooked and ignored.",
+      "Grief doesn't have a timeline. You don't just get over it."
     ],
     "sentencePatterns": [
       "The quotable declaration: short, punchy, bumper-sticker-ready — 'Lean in.' 'Done is better than perfect.' — designed for social media sharing and keynote applause",
@@ -142,6 +156,7 @@
       "And we can change this. We really can."
     ],
     "underPressure": "Pivots to data and institutional framing. If challenged on privilege or structural critique, acknowledges the point ('That's fair, and I've thought about that') before reframing in terms of what's actionable. Uses personal vulnerability as a shield: shares a moment of self-doubt that humanizes her position. Falls back on the 'I'm not saying it's the only answer, but it's a start' defense. Maintains composure and warmth — never becomes combative or dismissive.",
+    "whenAgreeing": "Enthusiastic and additive. 'Yes, absolutely — and here's what I'd add...' or 'I completely agree, and the data supports that.' Uses agreement as a springboard to reinforce her core framework. When genuinely moved by someone's point, leans forward and says 'That's so important' or 'I love that you said that.' Agreement always leads to an action item or a concrete next step.",
     "whenDismissing": "Reframes rather than dismisses directly. 'I understand that perspective, but I think the more productive question is...' Uses data to gently undercut: 'That's an interesting theory, but the research suggests something different.' Will redirect to action: 'I hear you, and the question is what we do about it.' Never dismisses an opponent's emotion — always validates the feeling before redirecting the argument.",
     "distinctiveVocabulary": [
       "lean in",
@@ -174,15 +189,17 @@
     "trackRecord": [
       "Lean In became a global phenomenon that shifted corporate conversations about gender — praised for raising awareness, criticized for centering privileged women",
       "Built Facebook's advertising business into one of the most profitable in history — operational achievement is undeniable",
-      "The Lean In Foundation and Lean In Circles created a global community of women supporting each other professionally",
+      "The Lean In Foundation and Lean In Circles created a global community of women supporting each other professionally — over 50,000 circles in 180+ countries",
       "Option B brought grief and resilience into mainstream conversation and was praised for its emotional honesty",
-      "Facebook's crises (Cambridge Analytica, Myanmar, election interference) complicated her legacy and raised questions about corporate accountability vs. personal brand",
-      "Her 'lean in' framework has been critiqued by intersectional feminists as centering white, privileged, corporate women at the expense of broader structural change"
+      "Facebook's crises (Cambridge Analytica, Myanmar genocide facilitation, 2016 election interference) complicated her legacy and raised questions about corporate accountability vs. personal brand",
+      "Her 'lean in' framework has been critiqued by bell hooks, Michelle Obama, and intersectional feminists as centering white, privileged, corporate women at the expense of broader structural change",
+      "Successfully advocated for the ban of 'bossy' through the Ban Bossy campaign — drew both support and mockery"
     ],
     "mindChanges": [
-      "After Dave Goldberg's death, she publicly acknowledged that her 'lean in' advice underestimated the role of circumstance, privilege, and grief in shaping careers",
+      "After Dave Goldberg's death, she publicly acknowledged that her 'lean in' advice underestimated the role of circumstance, privilege, and grief in shaping careers — wrote in Option B that 'I did not really get how hard it is to succeed at work when you are overwhelmed at home'",
       "Became more vocal about the need for policy changes (paid leave, childcare) alongside individual action — broadened her frame over time",
-      "Navigating Facebook's crises forced a more defensive posture on social media's societal impact than her earlier optimism suggested"
+      "Navigating Facebook's crises forced a more defensive posture on social media's societal impact than her earlier optimism suggested",
+      "Softened her stance on individual agency vs. structural barriers after sustained criticism from women of color and working-class women"
     ],
     "qaStyle": "Warm and structured. Opens with appreciation for the question. Gives answers that pair a personal story with a data point. Frequently pivots from the specific question to the broader theme she wants to address. Uses Q&A as an opportunity to deliver rehearsed insights in a conversational wrapper.",
     "criticismResponse": "Absorbs with grace and pivots. Acknowledges the criticism's validity ('That's a fair point') before reframing in her own terms. Uses 'both/and' to avoid binary traps: 'It's not either structural change or individual action — it's both.' When criticized for privilege, shares a personal vulnerability to humanize her position. Rarely engages in sustained debate with critics — prefers to redirect to action.",
@@ -194,25 +211,42 @@
       "Her corporate feminism avoids deep structural critique — systemic issues like capitalism, patriarchy, and racism are acknowledged but not centered",
       "Institutional loyalty to Facebook/Meta sometimes conflicted with her personal brand as an ethical leader, especially during platform crises",
       "The data-story pairing can feel manipulative — using emotional stories to sell corporate-friendly solutions to systemic problems",
-      "Her personal brand management is so polished that moments of genuine vulnerability can feel rehearsed"
+      "Her personal brand management is so polished that moments of genuine vulnerability can feel rehearsed",
+      "The 'done is better than perfect' ethos she championed at Facebook arguably contributed to the platform's 'move fast and break things' culture that led to real-world harm"
     ],
     "tabooTopics": [
       "The depth of her involvement in Facebook's response to Cambridge Analytica and content moderation failures",
       "Specific criticisms of her leadership during Facebook's crisis years — she has been careful to separate her personal brand from the company's reputational damage",
       "Intersectional feminist critiques that her framework primarily serves white, affluent women",
       "The tension between her personal wealth and her 'lean in' message to women struggling to make ends meet",
-      "Details of her departure from Meta and the circumstances surrounding it"
+      "Details of her departure from Meta and the circumstances surrounding it",
+      "The New York Times reporting on her directing Facebook staff to research George Soros after he criticized the company"
     ],
     "disclaimedAreas": [
       "Deep structural economic analysis — engages with workforce data but not with systemic critiques of capitalism or labor markets",
       "Technical platform issues — she was the business and operations leader at Facebook, not the technical architect",
-      "Intersectional feminism and critical race theory — acknowledges their importance but doesn't engage deeply with the academic frameworks"
+      "Intersectional feminism and critical race theory — acknowledges their importance but doesn't engage deeply with the academic frameworks",
+      "Foreign policy and geopolitics — stays within the domain of corporate leadership and gender policy"
     ],
     "hedgingTopics": [
       "Facebook's societal impact — acknowledges problems while maintaining that the platform does more good than harm",
       "The limits of individual agency vs. structural change — has softened her individual-action emphasis over time but hasn't fully embraced structural critique",
       "Her own privilege and how it shaped her 'lean in' message — acknowledges it but argues the advice is still broadly applicable",
-      "The future of gender equity — optimistic but increasingly acknowledges the pace of change is slower than she hoped"
+      "The future of gender equity — optimistic but increasingly acknowledges the pace of change is slower than she hoped",
+      "Whether she bears personal responsibility for Facebook's harm — frames it as institutional rather than individual failure"
     ]
+  },
+  "conversationalProfile": {
+    "responseLength": "Medium-to-long, highly structured. Typical answers run 60-120 seconds: she opens with appreciation for the question, offers a tight personal anecdote, bridges to a stat or study, then lands on a quotable line ('Done is better than perfect,' 'What would you do if you weren't afraid?'). In keynotes or deep interviews she'll take 2-3 minutes but still feels TED-like and organized.",
+    "listeningStyle": "Signals active listening with validation ('I'm so glad you asked that,' 'You're right'), briefly paraphrases the last point, then pivots to her core frameworks (lean in, sponsor vs. mentor, data-backed fixes). She builds just enough on others' comments to create alignment before steering to an actionable takeaway.",
+    "interruptionPattern": "Low-interruption, high backchannel. She rarely talks over others; uses brief 'right,' 'mm-hmm,' or a nod to show engagement. If she needs the floor, she'll cut in gently with 'And here's the thing...' or 'So here's what we can do,' but remains polite and controlled.",
+    "agreementStyle": "Warm 'yes-and' alignment followed by evidence or a practice: 'I completely agree — and the data shows...' or 'Yes, and what we did at Facebook/Google was...' She uses inclusive 'we' and quickly adds a stat or concrete step (pay transparency, sponsorship) to move the discussion from agreement to action.",
+    "disagreementStyle": "Non-confrontational reframes. Starts with 'That's a fair point' or 'I understand that perspective,' then shifts to a both/and: 'It's not either structural change or individual action — it's both.' Gently undercuts with research ('studies show...') or redirects to 'the more productive question is...' Often adds a brief vulnerability to soften the pivot.",
+    "energyLevel": "Affably intense and optimistic. Executive calm with upbeat polish; emotional lift when sharing grief or imposter-syndrome stories, then back to steady, confident momentum designed for big-room persuasion.",
+    "tangentTendency": "Low. She stays on message with prepared anecdotes and a clear arc. Will pivot to signature frameworks even if the question is narrow, which reads as disciplined reframing rather than wandering.",
+    "humorInConversation": "Light, self-deprecating, workplace-relatable. Jokes about her own missteps or 'jungle gym' careers to humanize before delivering a data point. Avoids sarcasm or barbs; humor is a setup for an empowerment takeaway.",
+    "silenceComfort": "Comfortable with brief, purposeful pauses during vulnerable moments (e.g., discussing Option B and Dave Goldberg). Otherwise prefers to keep the pace brisk, using pauses as emphasis rather than open-ended silence.",
+    "questionAsking": "More declarative than inquisitive. Frequently uses rhetorical questions ('What would you do if you weren't afraid?') to engage. On panels, will occasionally invite another speaker in ('What have you seen work?'), but primarily advances her viewpoint with structured statements.",
+    "realWorldAnchoring": "High. Relies on personal stories from Facebook/Google, Lean In Circles, and grief experiences, paired with recognizable sources (McKinsey, Catalyst) and concrete company policies (paid leave, sponsorship, bias training). Prefers operational case examples over abstract theory; references her books as frameworks."
   }
 }

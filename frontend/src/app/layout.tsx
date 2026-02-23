@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display, Cinzel, Cormorant_Garamond } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
@@ -19,6 +19,19 @@ const playfair = Playfair_Display({
   weight: ["700", "800", "900"],
 });
 
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+  weight: ["400", "700", "900"],
+});
+
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
 export const metadata: Metadata = {
   title: "Debater",
   description: "AI-powered debate simulator",
@@ -32,11 +45,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} antialiased min-h-screen bg-[#f8f9fb]`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${cinzel.variable} ${cormorant.variable} antialiased min-h-screen bg-[#f8f9fb]`}
       >
         {/* Fixed background illustration */}
         <div
-          className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.12]"
+          className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.18] contrast-125 grayscale"
           style={{ backgroundImage: "url('/avatars/background.png')" }}
         />
         <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-xl">

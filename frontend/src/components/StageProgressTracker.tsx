@@ -8,6 +8,8 @@ interface StageProgressTrackerProps {
   stages: StageConfig[];
   completedCount: number;
   isCompleted: boolean;
+  personaAName?: string;
+  personaBName?: string;
 }
 
 const speakerColors: Record<Speaker, string> = {
@@ -28,7 +30,16 @@ export default function StageProgressTracker({
   stages,
   completedCount,
   isCompleted,
+  personaAName = "Side A",
+  personaBName = "Side B",
 }: StageProgressTrackerProps) {
+  function humanizeLabel(label: string): string {
+    return label
+      .replace(/\bSide A\b/g, personaAName)
+      .replace(/\bSide B\b/g, personaBName)
+      .replace(/\bGuest A\b/g, personaAName)
+      .replace(/\bGuest B\b/g, personaBName);
+  }
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const totalStages = stages.length;
   const progressPercent = isCompleted
@@ -141,7 +152,7 @@ export default function StageProgressTracker({
                   isComplete || isCurrent ? "text-gray-600" : "text-gray-300"
                 }`}
               >
-                {stage.id.replace("_", "\n")}
+                {humanizeLabel(stage.label).split(" ").slice(0, 2).join("\n")}
               </span>
 
               {/* Hover tooltip */}
@@ -154,12 +165,12 @@ export default function StageProgressTracker({
                     transition={{ duration: 0.15 }}
                     className="absolute -top-16 z-20 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-lg"
                   >
-                    <p className="text-xs font-bold text-gray-900">{stage.label}</p>
+                    <p className="text-xs font-bold text-gray-900">{humanizeLabel(stage.label)}</p>
                     <p className={`text-[10px] ${speakerTextColors[stage.speaker]}`}>
                       {stage.speaker === "A"
-                        ? "Side A"
+                        ? personaAName
                         : stage.speaker === "B"
-                        ? "Side B"
+                        ? personaBName
                         : stage.speaker}
                       {stage.maxWords ? ` - ${stage.maxWords} max words` : ""}
                     </p>

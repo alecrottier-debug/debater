@@ -73,12 +73,20 @@ export interface SideAnalysis {
   keyMomentRef: string;
 }
 
+export interface SideScores {
+  clarity: number;
+  strength: number;
+  responsiveness: number;
+  weighing: number;
+  [key: string]: number;
+}
+
 export interface JudgeDecision {
   id: string;
   debateId: string;
   winner: string;
-  scores: Record<string, { A: number; B: number }>;
-  ballot: { stageRef: string; reason: string }[];
+  scores: { A: SideScores; B: SideScores };
+  ballot: { refs: string[]; reason: string }[];
   bestLines: { A: string; B: string };
   /** New in judge_v2 — may be absent for older debates */
   detailedScores?: { A: DetailedSubScores; B: DetailedSubScores };
@@ -104,7 +112,7 @@ export interface Debate {
   personaA: Persona;
   personaB: Persona;
   moderatorPersona: Persona | null;
-  turns: Turn[];
+  turns?: Turn[];
   judgeDecision: JudgeDecision | null;
 }
 

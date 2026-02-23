@@ -46,8 +46,34 @@ The JSON must follow this exact structure:
     "tone": "string - how they speak and argue"
   },
   "epistemology": {},
-  "vulnerabilities": {}
+  "vulnerabilities": {},
+  "conversationalProfile": {
+    "responseLength": "string - e.g. 'Typically gives brief, punchy responses of 1-3 sentences' or 'Known for extended, detailed explorations that build layered arguments'",
+    "listeningStyle": "string - e.g. 'Active listener who builds directly on others' points' or 'Waits then redirects to own framework'",
+    "interruptionPattern": "string - e.g. 'Frequently interjects with \"But here's the thing...\"' or 'Rarely interrupts, waits for full turn'",
+    "agreementStyle": "string - e.g. 'Quick \"Yeah, exactly\" before pivoting' or 'Generous acknowledgment before adding nuance'",
+    "disagreementStyle": "string - e.g. 'Blunt and direct: \"I just don't buy that\"' or 'Diplomatic reframing'",
+    "energyLevel": "string - e.g. 'High energy, animated, uses exclamations' or 'Measured, deliberate, low-key'",
+    "tangentTendency": "string - e.g. 'Stays tightly on topic' or 'Loves tangents and personal anecdotes'",
+    "humorInConversation": "string - e.g. 'Dry wit, deadpan delivery' or 'Rarely jokes in serious discussions'",
+    "silenceComfort": "string - e.g. 'Comfortable with pauses, thinks before speaking' or 'Fills every gap immediately'",
+    "questionAsking": "string - e.g. 'Frequently turns questions back on others' or 'Prefers to make statements'",
+    "realWorldAnchoring": "string - e.g. 'Constantly grounds in specific examples and data' or 'Deals in abstractions and principles'"
+  }
 }
+
+CONVERSATIONAL PROFILE INSTRUCTIONS:
+Analyze how this person ACTUALLY behaves in conversations, interviews, and panel discussions. Study their podcast appearances, interviews, and public conversations. Key questions to answer:
+- How long are their typical responses? Are they known for brevity or elaboration?
+- Do they tend to build on others' points or redirect to their own agenda?
+- How do they agree? How do they disagree?
+- What's their energy level in conversation?
+- Do they ask questions or make statements?
+- Do they use humor? How?
+- Are they comfortable with silence or do they fill every gap?
+- Do they ground their points in concrete real-world examples, or do they deal in abstractions?
+
+Be SPECIFIC and CONCRETE in each field. Don't use generic descriptions. Base your answers on how this person actually speaks in real conversations, not how they write.
 
 Research dossier:
 ${dossierSummary}

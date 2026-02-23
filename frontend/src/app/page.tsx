@@ -145,6 +145,24 @@ export default function SetupPage() {
     }
   }
 
+  const [shuffling, setShuffling] = useState(false);
+
+  function shuffleDebater(exclude?: string): string {
+    const pool = debaterPersonas.filter((p) => p.id !== exclude);
+    if (pool.length === 0) return "";
+    return pool[Math.floor(Math.random() * pool.length)].id;
+  }
+
+  function handleShuffleBoth() {
+    if (debaterPersonas.length < 2) return;
+    setShuffling(true);
+    const newA = shuffleDebater();
+    const newB = shuffleDebater(newA);
+    setPersonaAId(newA);
+    setPersonaBId(newB);
+    setTimeout(() => setShuffling(false), 400);
+  }
+
   const selectedA = debaterPersonas.find((p) => p.id === personaAId);
   const selectedB = debaterPersonas.find((p) => p.id === personaBId);
   const selectedMod = moderatorPersonas.find((p) => p.id === moderatorPersonaId);
@@ -155,7 +173,7 @@ export default function SetupPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl"
+        className={`w-full ${isDiscussion ? "max-w-5xl" : "max-w-2xl"}`}
       >
         {/* Header */}
         <div className="mb-8 text-center">
@@ -163,7 +181,7 @@ export default function SetupPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl"
+            className="font-[var(--font-cinzel)] text-5xl font-black tracking-tight text-gray-900 sm:text-6xl"
           >
             Set Up Your{" "}
             <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
@@ -180,7 +198,20 @@ export default function SetupPage() {
               ? "Choose a topic, pick your guests and moderator, and let the conversation unfold."
               : "Choose a motion, pick your debaters, and let the arguments fly."}
           </motion.p>
-
+          {/* Classical divider */}
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="mx-auto mt-4 flex items-center gap-3"
+            style={{ maxWidth: "16rem" }}
+          >
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-300" />
+            <svg className="h-3 w-3 text-gray-300" viewBox="0 0 12 12" fill="currentColor">
+              <path d="M6 0L7.5 4.5L12 6L7.5 7.5L6 12L4.5 7.5L0 6L4.5 4.5Z" />
+            </svg>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-gray-300" />
+          </motion.div>
         </div>
 
         {/* Form Card */}
@@ -195,11 +226,11 @@ export default function SetupPage() {
             y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.8 },
           }}
           onSubmit={handleSubmit}
-          className="rounded-2xl border-2 border-purple-200/60 bg-white/85 p-6 shadow-2xl shadow-purple-500/15 ring-1 ring-purple-100/40 backdrop-blur-xl sm:p-8"
+          className="relative overflow-hidden rounded-2xl border-2 border-gray-900/10 bg-white/90 p-6 shadow-2xl shadow-gray-900/10 backdrop-blur-xl sm:p-8 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-blue-500 before:via-purple-500 before:to-blue-500"
         >
           {/* Format Toggle */}
           <div className="mb-6">
-            <label className="mb-2 block text-sm font-semibold uppercase tracking-wider text-gray-500">
+            <label className="mb-2 block font-[var(--font-cinzel)] text-sm font-semibold uppercase tracking-wider text-gray-500">
               Format
             </label>
             <div className="flex gap-3">
@@ -239,7 +270,7 @@ export default function SetupPage() {
             <div className="mb-2 flex items-center justify-between">
               <label
                 htmlFor="motion"
-                className="block text-sm font-semibold uppercase tracking-wider text-gray-500"
+                className="block font-[var(--font-cinzel)] text-sm font-semibold uppercase tracking-wider text-gray-500"
               >
                 {isDiscussion ? "Topic" : "Motion"}
               </label>
@@ -277,11 +308,37 @@ export default function SetupPage() {
             />
           </div>
 
-          {/* Persona Pickers */}
-          <div className="mb-6 grid gap-6 sm:grid-cols-2">
+          {/* Shuffle Both button */}
+          {debaterPersonas.length >= 2 && (
+            <div className="mb-4 flex justify-center">
+              <motion.button
+                type="button"
+                onClick={handleShuffleBoth}
+                animate={shuffling ? { rotate: [0, -10, 10, -10, 10, 0] } : {}}
+                transition={{ duration: 0.4 }}
+                className="inline-flex items-center gap-2 rounded-lg border border-dashed border-gray-300 px-4 py-2 text-sm font-medium text-gray-500 transition-all hover:border-purple-400 hover:text-purple-500"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-2.25-1.313M21 7.5v2.25m0-2.25-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3 2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75 2.25-1.313M12 21.75V19.5m0 2.25-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25" />
+                </svg>
+                Shuffle Both
+              </motion.button>
+            </div>
+          )}
+
+          {/* Persona Pickers — 3-col for discussion (Guest 1 | Moderator | Guest 2), 2-col for debate */}
+          <div className={`relative mb-6 grid gap-6 ${isDiscussion ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
+            {/* Vertical divider ornaments (visible on sm+) */}
+            {!isDiscussion && (
+              <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden -translate-x-1/2 sm:flex sm:flex-col sm:items-center sm:justify-center">
+                <div className="h-full w-px bg-gradient-to-b from-transparent via-gray-200 to-transparent" />
+                <div className="absolute top-1/2 -translate-y-1/2 h-2 w-2 rotate-45 border border-gray-200 bg-white" />
+              </div>
+            )}
+
             {/* Side A / Guest 1 */}
             <div>
-              <label className="mb-2 block text-sm font-semibold uppercase tracking-wider text-blue-500">
+              <label className="mb-2 block font-[var(--font-cinzel)] text-sm font-semibold uppercase tracking-wider text-blue-500">
                 {isDiscussion ? "Guest 1" : "Side A"}
               </label>
               <PersonaPicker
@@ -298,9 +355,179 @@ export default function SetupPage() {
               </AnimatePresence>
             </div>
 
+            {/* Moderator — center column, discussion only */}
+            {isDiscussion && moderatorPersonas.length > 0 && (
+              <div>
+                <label className="mb-2 block font-[var(--font-cinzel)] text-sm font-semibold uppercase tracking-wider text-amber-600">
+                  Moderator
+                </label>
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    if (!selectedMod) {
+                      const el = document.getElementById("mod-picker");
+                      if (el) el.classList.toggle("hidden");
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      if (!selectedMod) {
+                        const el = document.getElementById("mod-picker");
+                        if (el) el.classList.toggle("hidden");
+                      }
+                    }
+                  }}
+                  className={`w-full cursor-pointer rounded-xl border px-4 py-3 text-left transition-all ${
+                    selectedMod
+                      ? "border-amber-300 bg-amber-50"
+                      : "border-gray-200 bg-white hover:border-gray-300"
+                  }`}
+                >
+                  {selectedMod ? (
+                    <div className="flex items-center gap-3">
+                      {getAvatarUrl(selectedMod) && (
+                        <img
+                          src={getAvatarUrl(selectedMod)}
+                          alt={selectedMod.name}
+                          className="h-10 w-10 rounded-lg border border-gray-200 object-cover"
+                        />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-semibold text-gray-900">
+                          {selectedMod.name}
+                        </div>
+                        <div className="text-xs italic text-gray-500 line-clamp-1">
+                          {selectedMod.tagline}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setModeratorPersonaId("");
+                        }}
+                        className="shrink-0 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                      >
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-400">
+                        Select moderator...
+                      </span>
+                      <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+
+                {/* Inline moderator list */}
+                <div
+                  id="mod-picker"
+                  className={`mt-2 grid max-h-64 grid-cols-1 gap-2 overflow-y-auto rounded-xl border border-gray-200 bg-gray-50 p-3 ${
+                    selectedMod ? "hidden" : ""
+                  }`}
+                >
+                  {moderatorPersonas.map((mod) => {
+                    const avatar = getAvatarUrl(mod);
+                    const profile = (mod.personaJson as Record<string, unknown>)
+                      .confrontationProfile as Record<string, unknown> | undefined;
+                    const baseline = (profile?.baselineLevel as number) ?? 3;
+
+                    return (
+                      <button
+                        key={mod.id}
+                        type="button"
+                        onClick={() => {
+                          setModeratorPersonaId(mod.id);
+                          document.getElementById("mod-picker")?.classList.add("hidden");
+                        }}
+                        className={`flex items-center gap-2 rounded-lg border p-2 text-left transition-all hover:border-amber-300 hover:bg-amber-50 ${
+                          moderatorPersonaId === mod.id
+                            ? "border-amber-400 bg-amber-50"
+                            : "border-gray-200 bg-white"
+                        }`}
+                      >
+                        {avatar && (
+                          <img
+                            src={avatar}
+                            alt={mod.name}
+                            className="h-9 w-9 shrink-0 rounded-lg border border-gray-200 object-cover"
+                          />
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-semibold text-gray-900 line-clamp-1">
+                            {mod.name}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="text-[10px] text-gray-400 line-clamp-1">
+                              {mod.tagline}
+                            </div>
+                            <span
+                              className={`shrink-0 rounded px-1 py-0.5 text-[9px] font-bold ${
+                                baseline <= 2
+                                  ? "bg-blue-100 text-blue-600"
+                                  : baseline <= 3
+                                  ? "bg-gray-100 text-gray-600"
+                                  : "bg-red-100 text-red-600"
+                              }`}
+                            >
+                              {baseline}/5
+                            </span>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Confrontation Level Slider — when moderator selected */}
+                {selectedMod && (
+                  <div className="mt-4">
+                    <label className="mb-2 block font-[var(--font-cinzel)] text-xs font-semibold uppercase tracking-wider text-gray-500">
+                      Confrontation
+                    </label>
+                    <div className="px-1">
+                      <input
+                        type="range"
+                        min={1}
+                        max={5}
+                        step={1}
+                        value={confrontationLevel}
+                        onChange={(e) =>
+                          setConfrontationLevel(Number(e.target.value))
+                        }
+                        className="w-full cursor-pointer accent-purple-500"
+                      />
+                      <div className="mt-1 flex justify-between">
+                        {CONFRONTATION_LABELS.map((c) => (
+                          <span
+                            key={c.level}
+                            className={`text-[9px] font-medium transition-all ${
+                              confrontationLevel === c.level
+                                ? `${c.color} font-bold scale-110`
+                                : "text-gray-300"
+                            }`}
+                          >
+                            {c.label}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Side B / Guest 2 */}
             <div>
-              <label className="mb-2 block text-sm font-semibold uppercase tracking-wider text-purple-500">
+              <label className="mb-2 block font-[var(--font-cinzel)] text-sm font-semibold uppercase tracking-wider text-purple-500">
                 {isDiscussion ? "Guest 2" : "Side B"}
               </label>
               <PersonaPicker
@@ -317,176 +544,6 @@ export default function SetupPage() {
               </AnimatePresence>
             </div>
           </div>
-
-          {/* Moderator Picker — discussion only */}
-          {isDiscussion && moderatorPersonas.length > 0 && (
-            <div className="mb-6">
-              <label className="mb-2 block text-sm font-semibold uppercase tracking-wider text-amber-600">
-                Moderator
-              </label>
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  if (!selectedMod) {
-                    const el = document.getElementById("mod-picker");
-                    if (el) el.classList.toggle("hidden");
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    if (!selectedMod) {
-                      const el = document.getElementById("mod-picker");
-                      if (el) el.classList.toggle("hidden");
-                    }
-                  }
-                }}
-                className={`w-full cursor-pointer rounded-xl border px-4 py-3 text-left transition-all ${
-                  selectedMod
-                    ? "border-amber-300 bg-amber-50"
-                    : "border-gray-200 bg-white hover:border-gray-300"
-                }`}
-              >
-                {selectedMod ? (
-                  <div className="flex items-center gap-3">
-                    {getAvatarUrl(selectedMod) && (
-                      <img
-                        src={getAvatarUrl(selectedMod)}
-                        alt={selectedMod.name}
-                        className="h-10 w-10 rounded-lg border border-gray-200 object-cover"
-                      />
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {selectedMod.name}
-                      </div>
-                      <div className="text-xs italic text-gray-500 line-clamp-1">
-                        {selectedMod.tagline}
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setModeratorPersonaId("");
-                      }}
-                      className="shrink-0 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-                    >
-                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-400">
-                      Select moderator...
-                    </span>
-                    <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
-                    </svg>
-                  </div>
-                )}
-              </div>
-
-              {/* Inline moderator grid */}
-              <div
-                id="mod-picker"
-                className={`mt-2 grid max-h-64 grid-cols-2 gap-2 overflow-y-auto rounded-xl border border-gray-200 bg-gray-50 p-3 ${
-                  selectedMod ? "hidden" : ""
-                }`}
-              >
-                {moderatorPersonas.map((mod) => {
-                  const avatar = getAvatarUrl(mod);
-                  const profile = (mod.personaJson as Record<string, unknown>)
-                    .confrontationProfile as Record<string, unknown> | undefined;
-                  const baseline = (profile?.baselineLevel as number) ?? 3;
-
-                  return (
-                    <button
-                      key={mod.id}
-                      type="button"
-                      onClick={() => {
-                        setModeratorPersonaId(mod.id);
-                        document.getElementById("mod-picker")?.classList.add("hidden");
-                      }}
-                      className={`flex items-center gap-2 rounded-lg border p-2 text-left transition-all hover:border-amber-300 hover:bg-amber-50 ${
-                        moderatorPersonaId === mod.id
-                          ? "border-amber-400 bg-amber-50"
-                          : "border-gray-200 bg-white"
-                      }`}
-                    >
-                      {avatar && (
-                        <img
-                          src={avatar}
-                          alt={mod.name}
-                          className="h-9 w-9 shrink-0 rounded-lg border border-gray-200 object-cover"
-                        />
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <div className="text-xs font-semibold text-gray-900 line-clamp-1">
-                          {mod.name}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div className="text-[10px] text-gray-400 line-clamp-1">
-                            {mod.tagline}
-                          </div>
-                          <span
-                            className={`shrink-0 rounded px-1 py-0.5 text-[9px] font-bold ${
-                              baseline <= 2
-                                ? "bg-blue-100 text-blue-600"
-                                : baseline <= 3
-                                ? "bg-gray-100 text-gray-600"
-                                : "bg-red-100 text-red-600"
-                            }`}
-                          >
-                            {baseline}/5
-                          </span>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Confrontation Level Slider — discussion only, when moderator selected */}
-          {isDiscussion && selectedMod && (
-            <div className="mb-6">
-              <label className="mb-2 block text-sm font-semibold uppercase tracking-wider text-gray-500">
-                Confrontation Level
-              </label>
-              <div className="px-1">
-                <input
-                  type="range"
-                  min={1}
-                  max={5}
-                  step={1}
-                  value={confrontationLevel}
-                  onChange={(e) =>
-                    setConfrontationLevel(Number(e.target.value))
-                  }
-                  className="w-full cursor-pointer accent-purple-500"
-                />
-                <div className="mt-1 flex justify-between">
-                  {CONFRONTATION_LABELS.map((c) => (
-                    <span
-                      key={c.level}
-                      className={`text-[10px] font-medium transition-all ${
-                        confrontationLevel === c.level
-                          ? `${c.color} font-bold scale-110`
-                          : "text-gray-300"
-                      }`}
-                    >
-                      {c.label}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Validation Message */}
           <AnimatePresence>
@@ -505,7 +562,7 @@ export default function SetupPage() {
           {/* Mode Selector (hidden for discussions) */}
           {!isDiscussion && (
             <div className="mb-8">
-              <label className="mb-2 block text-sm font-semibold uppercase tracking-wider text-gray-500">
+              <label className="mb-2 block font-[var(--font-cinzel)] text-sm font-semibold uppercase tracking-wider text-gray-500">
                 Mode
               </label>
               <div className="flex gap-3">
@@ -558,7 +615,7 @@ export default function SetupPage() {
             disabled={!isValid || submitting}
             whileHover={isValid && !submitting ? { scale: 1.01 } : {}}
             whileTap={isValid && !submitting ? { scale: 0.99 } : {}}
-            className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4 text-lg font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+            className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4 font-[var(--font-cinzel)] text-lg font-bold text-white shadow-lg shadow-blue-500/25 ring-1 ring-blue-400/20 transition-all hover:shadow-blue-500/40 hover:ring-purple-400/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:ring-0"
           >
             {submitting ? (
               <span className="flex items-center justify-center gap-2">

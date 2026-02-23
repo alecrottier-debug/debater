@@ -128,7 +128,7 @@ export default function SpeechCard({
         )}
 
         <div
-          className={`overflow-hidden rounded-2xl border ${colors.border} ${colors.bg} shadow-sm ${
+          className={`overflow-hidden rounded-2xl border-2 ${colors.border} ${colors.bg} shadow-md ring-1 ring-black/5 ${
             isLeft ? "rounded-bl-sm" : isRight ? "rounded-br-sm" : ""
           }`}
         >

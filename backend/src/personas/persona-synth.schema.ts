@@ -84,6 +84,20 @@ const VulnerabilitiesSchema = z.object({
   hedgingTopics: z.array(z.string()).optional(),
 });
 
+const ConversationalProfileSchema = z.object({
+  responseLength: z.string().optional(),
+  listeningStyle: z.string().optional(),
+  interruptionPattern: z.string().optional(),
+  agreementStyle: z.string().optional(),
+  disagreementStyle: z.string().optional(),
+  energyLevel: z.string().optional(),
+  tangentTendency: z.string().optional(),
+  humorInConversation: z.string().optional(),
+  silenceComfort: z.string().optional(),
+  questionAsking: z.string().optional(),
+  realWorldAnchoring: z.string().optional(),
+});
+
 export const PersonaV2Schema = z.object({
   schemaVersion: z.literal(2),
   identity: IdentitySchema,
@@ -92,6 +106,7 @@ export const PersonaV2Schema = z.object({
   voiceCalibration: VoiceCalibrationSchema.optional(),
   epistemology: EpistemologySchema.optional(),
   vulnerabilities: VulnerabilitiesSchema.optional(),
+  conversationalProfile: ConversationalProfileSchema.optional(),
 });
 
 export type PersonaV2 = z.infer<typeof PersonaV2Schema>;

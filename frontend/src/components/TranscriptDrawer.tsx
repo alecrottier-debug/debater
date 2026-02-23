@@ -58,6 +58,14 @@ export default function TranscriptDrawer({
     }
   }
 
+  function humanizeStageLabel(label: string): string {
+    return label
+      .replace(/\bSide A\b/g, personaAName)
+      .replace(/\bSide B\b/g, personaBName)
+      .replace(/\bGuest A\b/g, personaAName)
+      .replace(/\bGuest B\b/g, personaBName);
+  }
+
   if (turns.length === 0) return null;
 
   return (
@@ -111,6 +119,7 @@ export default function TranscriptDrawer({
                 turns={turns}
                 stages={stages}
                 getSpeakerLabel={getSpeakerLabel}
+                humanizeStageLabel={humanizeStageLabel}
                 scrollToStage={scrollToStage}
                 onClose={() => setIsOpen(false)}
               />
@@ -132,6 +141,7 @@ export default function TranscriptDrawer({
                 turns={turns}
                 stages={stages}
                 getSpeakerLabel={getSpeakerLabel}
+                humanizeStageLabel={humanizeStageLabel}
                 scrollToStage={scrollToStage}
                 onClose={() => setIsOpen(false)}
               />
@@ -147,6 +157,7 @@ interface DrawerContentProps {
   turns: Turn[];
   stages: StageConfig[];
   getSpeakerLabel: (speaker: Speaker) => string;
+  humanizeStageLabel: (label: string) => string;
   scrollToStage: (stageId: string) => void;
   onClose: () => void;
 }
@@ -155,6 +166,7 @@ function DrawerContent({
   turns,
   stages,
   getSpeakerLabel,
+  humanizeStageLabel,
   scrollToStage,
   onClose,
 }: DrawerContentProps) {
@@ -216,7 +228,7 @@ function DrawerContent({
                   {/* Stage info */}
                   <div className="min-w-0 flex-1">
                     <p className={`text-xs font-semibold ${isComplete ? "text-gray-900" : "text-gray-400"}`}>
-                      S{idx + 1}: {stage.label}
+                      S{idx + 1}: {humanizeStageLabel(stage.label)}
                     </p>
                     {isComplete && turn && (
                       <p className={`mt-0.5 text-[10px] font-medium ${speakerColor[stage.speaker]}`}>
