@@ -11,7 +11,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 RUN npx prisma generate
-RUN npm run build && ls -la dist/ && ls -la dist/main* || echo "NO MAIN FILE FOUND"
+RUN npm run build
 
 # Stage 3: Production image
 FROM node:22-slim AS run
@@ -25,4 +25,4 @@ COPY package.json ./
 
 EXPOSE 3001
 ENV PORT=3001
-CMD ["sh", "-c", "npx prisma migrate deploy --config prisma/prisma.config.ts && node dist/main"]
+CMD ["sh", "-c", "npx prisma migrate deploy --config prisma/prisma.config.ts && node dist/src/main"]
