@@ -115,6 +115,9 @@ export default function RootLayout({
               </Link>
             </div>
           </div>
+          <div className="border-t border-gray-100 bg-amber-50/80 px-4 py-1.5 text-center text-xs text-amber-700">
+            AI-generated simulation. Not real statements. Not endorsed by or affiliated with any person depicted.
+          </div>
         </header>
         <main className="relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           {children}
