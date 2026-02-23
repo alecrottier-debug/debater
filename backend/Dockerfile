@@ -11,7 +11,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 RUN npx prisma generate
-RUN npm run build
+RUN npm run build && ls -la dist/ && ls -la dist/main* || echo "NO MAIN FILE FOUND"
 
 # Stage 3: Production image
 FROM node:22-slim AS run
