@@ -17,12 +17,18 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Build and deploy to Container Apps
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          appSourcePath: ./backend
-          acrName: debateracr
-          containerAppName: debater-api
-          resourceGroup: debater-rg
-          containerAppEnvironment: debater-env
-          targetPort: 3001
+      - name: Log in to ACR
+        run: az acr login --name debateracr
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t debateracr.azurecr.io/debater-api:${{ github.sha }} -t debateracr.azurecr.io/debater-api:latest ./backend
+          docker push debateracr.azurecr.io/debater-api:${{ github.sha }}
+          docker push debateracr.azurecr.io/debater-api:latest
+
+      - name: Deploy to Container Apps
+        run: |
+          az containerapp update \
+            --name debater-api \
+            --resource-group debater-rg \
+            --image debateracr.azurecr.io/debater-api:${{ github.sha }}
