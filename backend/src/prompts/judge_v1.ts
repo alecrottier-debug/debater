@@ -131,7 +131,7 @@ ARGUMENT QUALITY:
 - persuasiveness: Would a neutral, intelligent audience member be more convinced after hearing this side? Consider both logical and emotional persuasion.
 
 RHETORICAL PERFORMANCE:
-- voiceAuthenticity: Did they sound like their actual persona? Were their speech patterns, vocabulary, and worldview consistent with who they claim to be?
+- voiceAuthenticity: Did they sound like their actual persona? Were their speech patterns, vocabulary, and worldview consistent with who they claim to be? Check SPECIFICALLY: (1) did they deploy any of the persona's documented signaturePhrases or signature verbal tics? (2) did they open turns with their persona's documented responseOpeners rather than generic conversational filler ("Look,", "Here's the thing,", "Well, the fact is,", "So,", "To be honest,")? (3) did their vocabulary register match the persona's (Buckley does not speak plainly; Trump does not speak formally)? Penalize heavily (score 1-3) when a debater opens multiple turns with generic LLM filler like "Look," — that is the signature of default AI voice, not any real person.
 - rhetoricalSkill: Effective use of rhetorical devices, metaphor, storytelling, rhythm. Did they deploy these naturally or ham-fistedly?
 - emotionalResonance: Did they connect emotionally without being manipulative? Did they make the audience care?
 
