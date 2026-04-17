@@ -325,13 +325,13 @@ export async function createPersona(data: {
 // Quick stage plan for client-side reference
 export const QUICK_STAGES: StageConfig[] = [
   { id: "MOD_SETUP", label: "Moderator Setup", speaker: "MOD", maxWords: 110, bullets: null, questionRequired: false, questionCount: 0 },
-  { id: "A_OPEN", label: "Side A Opening", speaker: "A", maxWords: 130, bullets: null, questionRequired: false, questionCount: 0 },
-  { id: "B_OPEN", label: "Side B Opening", speaker: "B", maxWords: 130, bullets: null, questionRequired: false, questionCount: 0 },
-  { id: "A_CHALLENGE", label: "Side A Challenge", speaker: "A", maxWords: 100, bullets: null, questionRequired: true, questionCount: 1 },
-  { id: "B_COUNTER", label: "Side B Counter", speaker: "B", maxWords: 110, bullets: null, questionRequired: true, questionCount: 1 },
-  { id: "A_COUNTER", label: "Side A Counter", speaker: "A", maxWords: 110, bullets: null, questionRequired: true, questionCount: 1 },
-  { id: "B_CLOSE", label: "Side B Closing", speaker: "B", maxWords: 85, bullets: null, questionRequired: false, questionCount: 0 },
-  { id: "A_CLOSE", label: "Side A Closing", speaker: "A", maxWords: 85, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "A_OPEN", label: "For Opening", speaker: "A", maxWords: 130, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "B_OPEN", label: "Against Opening", speaker: "B", maxWords: 130, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "A_CHALLENGE", label: "For Challenge", speaker: "A", maxWords: 100, bullets: null, questionRequired: true, questionCount: 1 },
+  { id: "B_COUNTER", label: "Against Counter", speaker: "B", maxWords: 110, bullets: null, questionRequired: true, questionCount: 1 },
+  { id: "A_COUNTER", label: "For Counter", speaker: "A", maxWords: 110, bullets: null, questionRequired: true, questionCount: 1 },
+  { id: "B_CLOSE", label: "Against Closing", speaker: "B", maxWords: 85, bullets: null, questionRequired: false, questionCount: 0 },
+  { id: "A_CLOSE", label: "For Closing", speaker: "A", maxWords: 85, bullets: null, questionRequired: false, questionCount: 0 },
   { id: "JUDGE", label: "Judge Decision", speaker: "JUDGE", maxWords: null, bullets: null, questionRequired: false, questionCount: 0 },
 ];
 

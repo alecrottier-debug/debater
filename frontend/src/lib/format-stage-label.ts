@@ -1,6 +1,6 @@
 /**
- * Replaces stage-label role placeholders ("Side A", "Guest B") with persona names.
- * Use for stage titles where role names appear case-sensitively.
+ * Replaces stage-label role placeholders ("For", "Against", legacy "Side A/B",
+ * or "Guest A/B" for discussions) with the persona names being shown.
  */
 export function formatStageLabel(
   label: string,
@@ -8,6 +8,8 @@ export function formatStageLabel(
   personaBName: string,
 ): string {
   return label
+    .replace(/\bFor\b/g, personaAName)
+    .replace(/\bAgainst\b/g, personaBName)
     .replace(/\bSide A\b/g, personaAName)
     .replace(/\bSide B\b/g, personaBName)
     .replace(/\bGuest A\b/g, personaAName)
@@ -15,9 +17,10 @@ export function formatStageLabel(
 }
 
 /**
- * Replaces every common A/B role reference in narrative prose with persona names.
- * Broader than {@link formatStageLabel}: covers case variants and additional
- * role nouns (Debater/Speaker/Participant) that show up in LLM-generated text.
+ * Replaces every common A/B role reference in narrative prose with persona
+ * names. Broader than {@link formatStageLabel}: covers case variants and
+ * additional role nouns (Debater/Speaker/Participant) that show up in
+ * LLM-generated text. Legacy "Side A/B" and new "For/Against" both covered.
  */
 export function humanizeNarrativeText(
   text: string,

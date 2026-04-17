@@ -286,10 +286,10 @@ Which debater should argue FOR and which AGAINST?`,
     lines.push('');
     lines.push(`**Mode:** ${debate.mode}`);
     lines.push(
-      `**${isDiscussion ? 'Guest A' : 'Side A'}:** ${debate.personaA.name}`,
+      `**${isDiscussion ? 'Guest A' : 'For'}:** ${debate.personaA.name}`,
     );
     lines.push(
-      `**${isDiscussion ? 'Guest B' : 'Side B'}:** ${debate.personaB.name}`,
+      `**${isDiscussion ? 'Guest B' : 'Against'}:** ${debate.personaB.name}`,
     );
     if (debate.moderatorPersona) {
       lines.push(`**Moderator:** ${debate.moderatorPersona.name}`);
@@ -390,7 +390,7 @@ Which debater should argue FOR and which AGAINST?`,
       // Scores
       lines.push('### Scores');
       lines.push('');
-      lines.push('| Category | Side A | Side B |');
+      lines.push('| Category | For | Against |');
       lines.push('|----------|--------|--------|');
       const scoreCategories = [
         'clarity',
@@ -411,7 +411,7 @@ Which debater should argue FOR and which AGAINST?`,
       if (detailedScores) {
         lines.push('### Detailed Scores');
         lines.push('');
-        lines.push('| Dimension | Side A | Side B |');
+        lines.push('| Dimension | For | Against |');
         lines.push('|-----------|--------|--------|');
         const detailedLabels = {
           logicalRigor: 'Logical Rigor',
@@ -451,7 +451,9 @@ Which debater should argue FOR and which AGAINST?`,
         for (const side of ['A', 'B'] as const) {
           const sideAnalysis = analysis[side];
           if (sideAnalysis) {
-            lines.push(`### Side ${side} Analysis`);
+            lines.push(
+              `### ${side === 'A' ? 'For' : 'Against'} Analysis`,
+            );
             lines.push('');
             if (sideAnalysis.strengths?.length > 0) {
               lines.push('**Strengths:**');
@@ -490,11 +492,11 @@ Which debater should argue FOR and which AGAINST?`,
         lines.push('### Best Lines');
         lines.push('');
         if (bestLines.A) {
-          lines.push(`**Side A:** "${bestLines.A}"`);
+          lines.push(`**For:** "${bestLines.A}"`);
           lines.push('');
         }
         if (bestLines.B) {
-          lines.push(`**Side B:** "${bestLines.B}"`);
+          lines.push(`**Against:** "${bestLines.B}"`);
           lines.push('');
         }
       }
@@ -510,9 +512,9 @@ Which debater should argue FOR and which AGAINST?`,
   ): string {
     switch (speaker) {
       case 'A':
-        return `Side A (${nameA})`;
+        return `For (${nameA})`;
       case 'B':
-        return `Side B (${nameB})`;
+        return `Against (${nameB})`;
       case 'MOD':
         return 'Moderator';
       case 'JUDGE':

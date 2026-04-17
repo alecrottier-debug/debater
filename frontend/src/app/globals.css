@@ -71,6 +71,24 @@ html {
   50% { filter: drop-shadow(0 0 10px rgba(168,128,46,0.35)); }
 }
 
+/* Radix Dialog enter/exit animations (Tailwind arbitrary-class compatible). */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes dialog-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.96) translateY(10px); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1) translateY(0); }
+}
+@keyframes dialog-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1) translateY(0); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(0.96) translateY(10px); }
+}
+
 /* Skeleton shimmer for pre-TTFT loading states. */
 @keyframes shimmer {
   0% { background-position: -200% 0; }

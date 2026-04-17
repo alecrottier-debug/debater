@@ -7,6 +7,30 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { PerplexityService } from './perplexity.service.js';
 import { PersonaSynthesisService } from './persona-synthesis.service.js';
 
+/**
+ * Extract the "last name" for sorting. Handles common Western name conventions:
+ * strips trailing suffixes (Jr., Sr., III) then takes the final whitespace token.
+ * Falls back to the full name if parsing fails.
+ */
+function lastNameKey(fullName: string): string {
+  const cleaned = fullName
+    .replace(/\b(Jr\.?|Sr\.?|II|III|IV)\b\.?$/i, '')
+    .trim();
+  const parts = cleaned.split(/\s+/);
+  const last = parts[parts.length - 1] ?? fullName;
+  return last.toLowerCase();
+}
+
+function sortByLastName<T extends { name: string }>(rows: T[]): T[] {
+  return [...rows].sort((a, b) => {
+    const la = lastNameKey(a.name);
+    const lb = lastNameKey(b.name);
+    if (la !== lb) return la.localeCompare(lb);
+    // Tie-break by full name so duplicates stay deterministic.
+    return a.name.localeCompare(b.name);
+  });
+}
+
 @Injectable()
 export class PersonasService {
   constructor(
@@ -15,17 +39,16 @@ export class PersonasService {
     private readonly synthesisService: PersonaSynthesisService,
   ) {}
 
-  findAllTemplates() {
-    return this.prisma.persona.findMany({
+  async findAllTemplates() {
+    const rows = await this.prisma.persona.findMany({
       where: { isTemplate: true },
-      orderBy: { name: 'asc' },
     });
+    return sortByLastName(rows);
   }
 
-  findAll() {
-    return this.prisma.persona.findMany({
-      orderBy: { name: 'asc' },
-    });
+  async findAll() {
+    const rows = await this.prisma.persona.findMany();
+    return sortByLastName(rows);
   }
 
   async createPersona(data: {

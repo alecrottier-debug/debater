@@ -31,8 +31,8 @@ export default function StageProgressTracker({
   stages,
   completedCount,
   isCompleted,
-  personaAName = "Side A",
-  personaBName = "Side B",
+  personaAName = "For",
+  personaBName = "Against",
 }: StageProgressTrackerProps) {
   const humanizeLabel = (label: string) =>
     formatStageLabel(label, personaAName, personaBName);
