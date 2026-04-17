@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo } from "react";
+import { motion } from "framer-motion";
+import * as Dialog from "@radix-ui/react-dialog";
+import { X, Search } from "lucide-react";
 import type { Persona } from "@/lib/api";
 
 interface PersonaPickerProps {
@@ -159,20 +160,8 @@ export default function PersonaPicker({
 }: PersonaPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
-  // Close on Escape when the modal is open. Native dialog behavior expected
-  // by keyboard users; without this they're trapped.
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [isOpen]);
+  // Radix Dialog handles focus trap, Esc, scroll lock, ARIA roles, and portal
+  // out of the box — the previous hand-rolled modal is gone.
 
   const accentColor = side === "A" ? "blue" : "purple";
 
@@ -190,20 +179,23 @@ export default function PersonaPicker({
   }, [personas, search]);
 
   return (
-    <div>
-      {/* Trigger button */}
-      <button
-        type="button"
-        onClick={() => !loading && setIsOpen(true)}
-        disabled={loading}
-        className={`w-full rounded-xl border px-4 py-3 text-left transition-all ${
-          selected
-            ? accentColor === "blue"
-              ? "border-blue-300 bg-blue-50"
-              : "border-purple-300 bg-purple-50"
-            : "border-gray-200 bg-white hover:border-gray-300"
-        } ${loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
-      >
+    <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog.Trigger asChild>
+        <button
+          type="button"
+          disabled={loading}
+          className={`w-full rounded-xl border px-4 py-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+            accentColor === "blue"
+              ? "focus-visible:ring-blue-500"
+              : "focus-visible:ring-purple-500"
+          } ${
+            selected
+              ? accentColor === "blue"
+                ? "border-blue-300 bg-blue-50"
+                : "border-purple-300 bg-purple-50"
+              : "border-gray-200 bg-white hover:border-gray-300"
+          } ${loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+        >
         {loading ? (
           <span className="text-sm text-gray-400">Loading...</span>
         ) : selected ? (
@@ -266,87 +258,59 @@ export default function PersonaPicker({
             </svg>
           </div>
         )}
-      </button>
+        </button>
+      </Dialog.Trigger>
 
-      {/* Modal — portaled to document.body to escape parent overflow/transform */}
-      {mounted &&
-        createPortal(
-          <AnimatePresence>
-            {isOpen && (
-              <>
-                {/* Backdrop */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setIsOpen(false)}
-                  className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
-                />
-
-                {/* Panel */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.96, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.96, y: 10 }}
-                  transition={{ type: "spring", damping: 28, stiffness: 350 }}
-                  className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-2rem)] max-w-6xl max-h-[90vh] rounded-2xl border border-gray-200 bg-white shadow-2xl flex flex-col overflow-hidden sm:w-[calc(100vw-4rem)] lg:w-[90vw]"
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm data-[state=open]:animate-[fade-in_150ms] data-[state=closed]:animate-[fade-out_100ms]" />
+        <Dialog.Content
+          aria-describedby={undefined}
+          className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-2rem)] max-w-6xl max-h-[90vh] rounded-2xl border border-gray-200 bg-white shadow-2xl flex flex-col overflow-hidden sm:w-[calc(100vw-4rem)] lg:w-[90vw] data-[state=open]:animate-[dialog-in_200ms] data-[state=closed]:animate-[dialog-out_150ms]"
+        >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-1 min-h-0 flex-col"
+          >
+            {/* Header */}
+            <div
+              className={`flex items-center justify-between border-b px-4 py-3 sm:px-6 sm:py-4 ${
+                accentColor === "blue"
+                  ? "border-blue-100 bg-blue-50/50"
+                  : "border-purple-100 bg-purple-50/50"
+              }`}
+            >
+              <div>
+                <Dialog.Title className="text-lg font-bold text-gray-900">
+                  Choose{" "}
+                  {pickerLabel === "guest"
+                    ? `Guest ${side === "A" ? "1" : "2"}`
+                    : side === "A"
+                    ? "For Side Debater"
+                    : "Against Side Debater"}
+                </Dialog.Title>
+                <p className="mt-0.5 text-xs text-gray-500">
+                  {templates.length + custom.length} personas available
+                </p>
+              </div>
+              <Dialog.Close asChild>
+                <button
+                  type="button"
+                  aria-label="Close"
+                  className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 >
-                  {/* Header */}
-                  <div
-                    className={`flex items-center justify-between border-b px-4 py-3 sm:px-6 sm:py-4 ${
-                      accentColor === "blue"
-                        ? "border-blue-100 bg-blue-50/50"
-                        : "border-purple-100 bg-purple-50/50"
-                    }`}
-                  >
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-900">
-                        Choose{" "}
-                        {pickerLabel === "guest"
-                          ? `Guest ${side === "A" ? "1" : "2"}`
-                          : `Side ${side} Debater`}
-                      </h3>
-                      <p className="mt-0.5 text-xs text-gray-500">
-                        {templates.length + custom.length} personas available
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setIsOpen(false)}
-                      className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-                    >
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={2}
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
+                  <X aria-hidden className="h-5 w-5" />
+                </button>
+              </Dialog.Close>
+            </div>
 
                   {/* Search */}
                   <div className="border-b border-gray-100 px-4 py-3 sm:px-6">
                     <div className="relative">
-                      <svg
+                      <Search
+                        aria-hidden
                         className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={2}
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                        />
-                      </svg>
+                      />
                       <input
                         type="text"
                         placeholder="Search by name or topic..."
@@ -430,20 +394,17 @@ export default function PersonaPicker({
                       </div>
                     )}
 
-                    {templates.length === 0 && custom.length === 0 && (
-                      <div className="py-12 text-center">
-                        <p className="text-sm text-gray-400">
-                          No personas match &ldquo;{search}&rdquo;
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              </>
+            {templates.length === 0 && custom.length === 0 && (
+              <div className="py-12 text-center">
+                <p className="text-sm text-gray-400">
+                  No personas match &ldquo;{search}&rdquo;
+                </p>
+              </div>
             )}
-          </AnimatePresence>,
-          document.body,
-        )}
-    </div>
+              </div>
+            </motion.div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
   );
 }

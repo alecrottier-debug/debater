@@ -184,7 +184,7 @@ export default function SetupPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-[var(--font-cinzel)] text-3xl font-black tracking-tight text-gray-900 sm:text-5xl md:text-6xl"
+            className="font-[var(--font-playfair)] text-3xl font-black tracking-tight text-gray-900 sm:text-5xl md:text-6xl"
           >
             Set Up Your{" "}
             <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
@@ -332,10 +332,10 @@ export default function SetupPage() {
               </div>
             )}
 
-            {/* Side A / Guest 1 */}
+            {/* For / Guest 1 */}
             <div>
               <label className="mb-2 block font-[var(--font-cinzel)] text-sm font-semibold uppercase tracking-wider text-blue-500">
-                {isDiscussion ? "Guest 1" : "Side A"}
+                {isDiscussion ? "Guest 1" : "For"}
               </label>
               <PersonaPicker
                 personas={debaterPersonas}
@@ -360,24 +360,22 @@ export default function SetupPage() {
                 <div
                   role="button"
                   tabIndex={0}
+                  aria-label={selectedMod ? `Change moderator (currently ${selectedMod.name})` : "Choose moderator"}
                   onClick={() => {
-                    if (!selectedMod) {
-                      const el = document.getElementById("mod-picker");
-                      if (el) el.classList.toggle("hidden");
-                    }
+                    // Always open the picker — the inline × handles clearing.
+                    const el = document.getElementById("mod-picker");
+                    if (el) el.classList.toggle("hidden");
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      if (!selectedMod) {
-                        const el = document.getElementById("mod-picker");
-                        if (el) el.classList.toggle("hidden");
-                      }
+                      const el = document.getElementById("mod-picker");
+                      if (el) el.classList.toggle("hidden");
                     }
                   }}
-                  className={`w-full cursor-pointer rounded-xl border px-4 py-3 text-left transition-all ${
+                  className={`w-full cursor-pointer rounded-xl border px-4 py-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 ${
                     selectedMod
-                      ? "border-amber-300 bg-amber-50"
+                      ? "border-amber-300 bg-amber-50 hover:border-amber-400"
                       : "border-gray-200 bg-white hover:border-gray-300"
                   }`}
                 >
@@ -521,10 +519,10 @@ export default function SetupPage() {
               </div>
             )}
 
-            {/* Side B / Guest 2 */}
+            {/* Against / Guest 2 */}
             <div>
               <label className="mb-2 block font-[var(--font-cinzel)] text-sm font-semibold uppercase tracking-wider text-purple-500">
-                {isDiscussion ? "Guest 2" : "Side B"}
+                {isDiscussion ? "Guest 2" : "Against"}
               </label>
               <PersonaPicker
                 personas={debaterPersonas}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Cinzel, Cormorant_Garamond } from "next/font/google";
 import Link from "next/link";
+import { Brain, Plus, HelpCircle, History as HistoryIcon } from "lucide-react";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -62,19 +63,7 @@ export default function RootLayout({
           <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-3 sm:px-6 lg:px-8">
             <Link href="/" className="flex shrink-0 items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
-                <svg
-                  className="h-4 w-4 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2.5}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"
-                  />
-                </svg>
+                <Brain aria-hidden className="h-4 w-4 text-white" strokeWidth={2.5} />
               </div>
               <span className="hidden text-xl font-bold tracking-tight text-gray-900 sm:inline">
                 Debater
@@ -86,19 +75,7 @@ export default function RootLayout({
                 aria-label="Create Persona"
                 className="inline-flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-2 text-xs font-medium text-gray-500 transition-all hover:border-blue-400 hover:text-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:h-auto sm:px-3 sm:py-1.5"
               >
-                <svg
-                  className="h-4 w-4 sm:h-3.5 sm:w-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
-                  />
-                </svg>
+                <Plus aria-hidden className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                 <span className="hidden sm:inline">Create Persona</span>
               </Link>
               <Link
@@ -106,19 +83,7 @@ export default function RootLayout({
                 aria-label="FAQ"
                 className="inline-flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:h-auto sm:px-3 sm:py-1.5"
               >
-                <svg
-                  className="h-5 w-5 sm:h-4 sm:w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
-                  />
-                </svg>
+                <HelpCircle aria-hidden className="h-5 w-5 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">FAQ</span>
               </Link>
               <Link
@@ -126,19 +91,7 @@ export default function RootLayout({
                 aria-label="History"
                 className="inline-flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:h-auto sm:px-3 sm:py-1.5"
               >
-                <svg
-                  className="h-5 w-5 sm:h-4 sm:w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                  />
-                </svg>
+                <HistoryIcon aria-hidden className="h-5 w-5 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">History</span>
               </Link>
             </nav>

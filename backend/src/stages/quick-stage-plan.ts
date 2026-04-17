@@ -14,7 +14,7 @@ export const QUICK_STAGE_PLAN: StagePlan = {
     },
     {
       id: 'A_OPEN',
-      label: 'Side A Opening',
+      label: 'For Opening',
       speaker: 'A',
       maxWords: 130,
       bullets: null,
@@ -23,7 +23,7 @@ export const QUICK_STAGE_PLAN: StagePlan = {
     },
     {
       id: 'B_OPEN',
-      label: 'Side B Opening',
+      label: 'Against Opening',
       speaker: 'B',
       maxWords: 130,
       bullets: null,
@@ -32,7 +32,7 @@ export const QUICK_STAGE_PLAN: StagePlan = {
     },
     {
       id: 'A_CHALLENGE',
-      label: 'Side A Challenge',
+      label: 'For Challenge',
       speaker: 'A',
       maxWords: 100,
       bullets: null,
@@ -41,7 +41,7 @@ export const QUICK_STAGE_PLAN: StagePlan = {
     },
     {
       id: 'B_COUNTER',
-      label: 'Side B Counter',
+      label: 'Against Counter',
       speaker: 'B',
       maxWords: 110,
       bullets: null,
@@ -50,7 +50,7 @@ export const QUICK_STAGE_PLAN: StagePlan = {
     },
     {
       id: 'A_COUNTER',
-      label: 'Side A Counter',
+      label: 'For Counter',
       speaker: 'A',
       maxWords: 110,
       bullets: null,
@@ -59,7 +59,7 @@ export const QUICK_STAGE_PLAN: StagePlan = {
     },
     {
       id: 'B_CLOSE',
-      label: 'Side B Closing',
+      label: 'Against Closing',
       speaker: 'B',
       maxWords: 85,
       bullets: null,
@@ -68,7 +68,7 @@ export const QUICK_STAGE_PLAN: StagePlan = {
     },
     {
       id: 'A_CLOSE',
-      label: 'Side A Closing',
+      label: 'For Closing',
       speaker: 'A',
       maxWords: 85,
       bullets: null,

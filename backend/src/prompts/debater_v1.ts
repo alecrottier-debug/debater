@@ -134,7 +134,7 @@ ${JSON.stringify(ctx.opponentPersona, null, 2)}
 Transcript so far:
 ${transcriptText}
 
-Now deliver your ${ctx.stage.label} for Side ${ctx.speaker}.`;
+Now deliver your ${ctx.stage.label} as the ${ctx.speaker === 'A' ? 'FOR' : 'AGAINST'} side.`;
 
   return { system, user };
 }

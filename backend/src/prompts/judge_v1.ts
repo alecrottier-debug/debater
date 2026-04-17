@@ -201,10 +201,10 @@ Output ONLY valid JSON. No markdown, no explanation, no text before or after the
 
   const user = `Motion: "${ctx.motion}"
 
-Side A Persona (full):
+FOR (Side A) Persona (full):
 ${JSON.stringify(ctx.personaA, null, 2)}
 
-Side B Persona (full):
+AGAINST (Side B) Persona (full):
 ${JSON.stringify(ctx.personaB, null, 2)}
 
 Full Debate Transcript:

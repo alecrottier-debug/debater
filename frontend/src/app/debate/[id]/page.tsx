@@ -308,8 +308,16 @@ function DebateSubheader({
 
         {/* Motion + progress row */}
         <div className="text-center">
-          <div className="font-[var(--font-playfair)] text-[15px] font-extrabold tracking-tight text-gray-900 line-clamp-1">
-            &ldquo;{debate.motion}&rdquo;
+          <div className="flex items-baseline justify-center gap-1.5">
+            <span
+              aria-label="AI simulated content"
+              className="shrink-0 rounded-sm bg-amber-100 px-1 py-0.5 font-[var(--font-cinzel)] text-[8px] font-bold uppercase tracking-[0.15em] text-amber-700"
+            >
+              Sim
+            </span>
+            <div className="font-[var(--font-playfair)] text-[15px] font-extrabold tracking-tight text-gray-900 line-clamp-1">
+              &ldquo;{debate.motion}&rdquo;
+            </div>
           </div>
           <div className="mt-1 flex items-center justify-center gap-2">
             <div className="flex items-center gap-0.5">

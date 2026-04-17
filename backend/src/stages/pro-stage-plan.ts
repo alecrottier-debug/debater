@@ -13,60 +13,60 @@ export const PRO_STAGE_PLAN: StagePlan = {
       questionRequired: false,
       questionCount: 0,
     },
-    // 2. Side A Opening Statement
+    // 2. For Opening Statement
     {
       id: 'A_OPEN',
-      label: 'Side A Opening Statement',
+      label: 'For Opening Statement',
       speaker: 'A',
       maxWords: 240,
       bullets: null,
       questionRequired: false,
       questionCount: 0,
     },
-    // 3. Side B Opening Statement
+    // 3. Against Opening Statement
     {
       id: 'B_OPEN',
-      label: 'Side B Opening Statement',
+      label: 'Against Opening Statement',
       speaker: 'B',
       maxWords: 240,
       bullets: null,
       questionRequired: false,
       questionCount: 0,
     },
-    // 4. Side A Cross-Examination of B
+    // 4. For Cross-Examination of B
     {
       id: 'A_CROSSEX',
-      label: 'Side A Cross-Examination',
+      label: 'For Cross-Examination',
       speaker: 'A',
       maxWords: null,
       bullets: null,
       questionRequired: true,
       questionCount: 2,
     },
-    // 5. Side B Cross-Examination of A
+    // 5. Against Cross-Examination of A
     {
       id: 'B_CROSSEX',
-      label: 'Side B Cross-Examination',
+      label: 'Against Cross-Examination',
       speaker: 'B',
       maxWords: null,
       bullets: null,
       questionRequired: true,
       questionCount: 2,
     },
-    // 6. Side A Rebuttal
+    // 6. For Rebuttal
     {
       id: 'A_REBUTTAL',
-      label: 'Side A Rebuttal',
+      label: 'For Rebuttal',
       speaker: 'A',
       maxWords: 190,
       bullets: null,
       questionRequired: false,
       questionCount: 0,
     },
-    // 7. Side B Rebuttal
+    // 7. Against Rebuttal
     {
       id: 'B_REBUTTAL',
-      label: 'Side B Rebuttal',
+      label: 'Against Rebuttal',
       speaker: 'B',
       maxWords: 190,
       bullets: null,
@@ -76,7 +76,7 @@ export const PRO_STAGE_PLAN: StagePlan = {
     // 8. Second Cross-Ex: A examines B
     {
       id: 'A_CROSSEX_2',
-      label: 'Side A Cross-Examination Round 2',
+      label: 'For Cross-Examination Round 2',
       speaker: 'A',
       maxWords: null,
       bullets: null,
@@ -86,47 +86,47 @@ export const PRO_STAGE_PLAN: StagePlan = {
     // 9. Second Cross-Ex: B examines A
     {
       id: 'B_CROSSEX_2',
-      label: 'Side B Cross-Examination Round 2',
+      label: 'Against Cross-Examination Round 2',
       speaker: 'B',
       maxWords: null,
       bullets: null,
       questionRequired: true,
       questionCount: 2,
     },
-    // 10. Side A Counter-Rebuttal
+    // 10. For Counter-Rebuttal
     {
       id: 'A_COUNTER',
-      label: 'Side A Counter-Rebuttal',
+      label: 'For Counter-Rebuttal',
       speaker: 'A',
       maxWords: 170,
       bullets: null,
       questionRequired: true,
       questionCount: 1,
     },
-    // 11. Side B Counter-Rebuttal
+    // 11. Against Counter-Rebuttal
     {
       id: 'B_COUNTER',
-      label: 'Side B Counter-Rebuttal',
+      label: 'Against Counter-Rebuttal',
       speaker: 'B',
       maxWords: 170,
       bullets: null,
       questionRequired: true,
       questionCount: 1,
     },
-    // 12. Side B Closing Statement
+    // 12. Against Closing Statement
     {
       id: 'B_CLOSE',
-      label: 'Side B Closing Statement',
+      label: 'Against Closing Statement',
       speaker: 'B',
       maxWords: 145,
       bullets: null,
       questionRequired: false,
       questionCount: 0,
     },
-    // 13. Side A Closing Statement
+    // 13. For Closing Statement
     {
       id: 'A_CLOSE',
-      label: 'Side A Closing Statement',
+      label: 'For Closing Statement',
       speaker: 'A',
       maxWords: 145,
       bullets: null,
