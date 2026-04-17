@@ -376,20 +376,20 @@ export default function StatsDashboard({
   const stats = useMemo(() => computeStats(debates), [debates]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Hero stats */}
       <HeroStatsBar stats={stats} />
 
       {/* Main grid */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Left column */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <Leaderboard leaderboard={stats.leaderboard} onPersonaClick={onPersonaClick} />
           <PopularTopics topics={stats.topics} />
         </div>
 
         {/* Right column */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <BestQuotesWall quotes={stats.quotes} />
         </div>
       </div>

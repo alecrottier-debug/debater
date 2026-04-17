@@ -318,7 +318,7 @@ export default function HistoryPage() {
   return (
     <div className="min-h-[calc(100vh-5rem)]">
       {/* Page header + view toggle */}
-      <div className="mb-5 grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
+      <div className="mb-3 grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
         {/* Left: title + subtitle */}
         <div className="text-center sm:text-left">
           <motion.h1
@@ -402,7 +402,7 @@ export default function HistoryPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="mb-5 flex flex-wrap items-center gap-3"
+        className="mb-3 flex flex-wrap items-center gap-3"
       >
         {/* Tabs */}
         <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">

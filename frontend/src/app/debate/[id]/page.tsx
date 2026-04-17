@@ -604,7 +604,7 @@ export default function DebatePage({ params }: DebatePageProps) {
           />
         </div>
       ) : (
-        <div className="pt-4">
+        <div className="pt-2 sm:pt-0">
           {/* MOD/JUDGE indicator */}
           <AnimatePresence>
             {(activeSpeaker === "MOD" || activeSpeaker === "JUDGE") && (

@@ -34,7 +34,7 @@ export default function CreatePersonaPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-8">
+      <div className="mb-5">
         <Link
           href="/"
           className="inline-flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-gray-700"
@@ -44,14 +44,14 @@ export default function CreatePersonaPage() {
           </svg>
           Back to Setup
         </Link>
-        <h1 className="mt-4 text-3xl font-bold text-gray-900">Create New Persona</h1>
-        <p className="mt-2 text-gray-500">
+        <h1 className="mt-3 text-3xl font-bold text-gray-900">Create New Persona</h1>
+        <p className="mt-1 text-gray-500">
           Build a custom debater persona using AI research or manual entry.
         </p>
       </div>
 
       {/* Tab Switcher */}
-      <div className="mb-8 flex rounded-lg border border-gray-200 bg-gray-50 p-1">
+      <div className="mb-5 flex rounded-lg border border-gray-200 bg-gray-50 p-1">
         <button
           onClick={() => setTab("ai")}
           className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
@@ -153,7 +153,7 @@ function AiWizard() {
       )}
 
       {/* Step indicators */}
-      <div className="mb-8 flex items-center gap-2">
+      <div className="mb-5 flex items-center gap-2">
         {(["Describe", "Generate", "Review"] as const).map((label, i) => {
           const stepMap: Record<string, number> = {
             input: 0,

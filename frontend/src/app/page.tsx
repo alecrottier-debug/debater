@@ -8,42 +8,68 @@ import { DEFAULT_CONFRONTATION_LEVEL } from "@/lib/debate-constants";
 import PersonaPicker from "@/components/PersonaPicker";
 import PersonaPreview from "@/components/PersonaPreview";
 
+// Motions deliberately span the political spectrum so the simulator exercises
+// steelmanning on both sides rather than rehearsing a single worldview.
 const SUGGESTED_DEBATE_MOTIONS = [
+  // Tech / future
   "AI will replace more jobs than it creates within 10 years",
   "Social media has done more harm than good to democracy",
+  "The US should break up Big Tech monopolies",
+  "Cryptocurrency is a net negative for society",
+  "Autonomous weapons should be banned under international law",
+  "Smartphones should be banned for children under 16",
+  "Genetic engineering of human embryos should be legal",
+  "Colonizing Mars is a waste of money while Earth has unsolved problems",
+  // Economy / governance (progressive-leaning framings)
   "Billionaires should be banned from owning media companies",
   "Universal basic income is inevitable and necessary",
-  "The US should break up Big Tech monopolies",
   "Voting should be mandatory in all democracies",
+  "The electoral college should be abolished",
+  "A global carbon tax is the only way to stop climate change",
+  "The death penalty should be abolished worldwide",
+  "All drugs should be decriminalized",
+  // Economy / governance (conservative-leaning framings)
+  "Strict border enforcement is essential to a functioning nation-state",
+  "The federal government has grown too large and should devolve power to states",
+  "Free-market capitalism has lifted more people from poverty than any alternative system",
+  "The national debt is a greater long-term threat to America than climate change",
+  "Tariffs on strategic industries are justified to protect American workers",
+  // Culture / society (conservative-leaning framings)
+  "Parents should have ultimate authority over their children's school curricula",
+  "Traditional two-parent families produce measurably better outcomes for children",
+  "The decline of religious belief has weakened Western civilization",
+  "Meritocracy must take precedence over diversity in hiring and admissions",
+  "Cancel culture has done more damage to public discourse than misinformation",
+  "Second Amendment rights are essential to a free society",
+  // Mixed / neutral framings
   "Nuclear energy is the only realistic path to net zero",
   "Remote work is destroying company culture and innovation",
-  "The electoral college should be abolished",
-  "Cryptocurrency is a net negative for society",
   "College degrees are no longer worth the cost",
-  "Autonomous weapons should be banned under international law",
-  "China will overtake the US as the leading superpower by 2040",
-  "A global carbon tax is the only way to stop climate change",
   "Free speech should have no limits on the internet",
-  "Smartphones should be banned for children under 16",
-  "The death penalty should be abolished worldwide",
-  "Genetic engineering of human embryos should be legal",
-  "All drugs should be decriminalized",
-  "Colonizing Mars is a waste of money while Earth has unsolved problems",
+  "China will overtake the US as the leading superpower by 2040",
 ];
 
 const SUGGESTED_DISCUSSION_TOPICS = [
+  // Tech / future
   "What does the rise of AI mean for human creativity and purpose?",
-  "Is the American Dream still alive, or has inequality killed it?",
-  "How should we balance national security with individual privacy?",
   "What went wrong with social media, and can it be fixed?",
   "Should tech founders have as much political power as they do?",
-  "Is capitalism compatible with solving climate change?",
   "What does the future of work look like in an AI-first world?",
+  "What role should government play in regulating AI?",
+  "Is space colonization a real priority or a billionaire vanity project?",
+  // Society / values (mixed framings — invite both left and right perspectives)
+  "Is the American Dream still alive, or has inequality killed it?",
+  "How should we balance national security with individual privacy?",
+  "Is capitalism compatible with solving climate change?",
   "Are we in a new Cold War with China?",
   "Has the pursuit of safety culture gone too far?",
-  "What role should government play in regulating AI?",
   "How do we rebuild trust in media, government, and science?",
-  "Is space colonization a real priority or a billionaire vanity project?",
+  "What has been lost in the decline of religion, marriage, and local community?",
+  "Is modern masculinity in crisis — and what would a healthier version look like?",
+  "Have universities become ideologically monolithic, and does it matter?",
+  "Is equal opportunity enough, or must we also insist on equal outcomes?",
+  "Is there a coherent conservatism beyond grievance — and a coherent progressivism beyond elites?",
+  // Philosophical / open-ended
   "If you could have dinner with anyone in history, what would you argue about?",
   "Are humans fundamentally good or fundamentally selfish?",
   "What will people 100 years from now think we got completely wrong?",
@@ -171,7 +197,7 @@ export default function SetupPage() {
   const selectedMod = moderatorPersonas.find((p) => p.id === moderatorPersonaId);
 
   return (
-    <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center py-8">
+    <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center py-4 sm:py-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -179,12 +205,12 @@ export default function SetupPage() {
         className={`w-full ${isDiscussion ? "max-w-5xl" : "max-w-2xl"}`}
       >
         {/* Header */}
-        <div className="mb-8 text-center">
+        <div className="mb-5 text-center">
           <motion.h1
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-[var(--font-playfair)] text-3xl font-black tracking-tight text-gray-900 sm:text-5xl md:text-6xl"
+            className="font-[var(--font-playfair)] text-3xl font-black tracking-tight text-gray-900 sm:text-4xl md:text-5xl"
           >
             Set Up Your{" "}
             <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
@@ -195,7 +221,7 @@ export default function SetupPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="mt-3 text-base text-gray-500 sm:text-lg"
+            className="mt-2 text-base text-gray-500 sm:text-lg"
           >
             {isDiscussion
               ? "Choose a topic, pick your guests and moderator, and let the conversation unfold."
@@ -206,7 +232,7 @@ export default function SetupPage() {
             initial={{ opacity: 0, scaleX: 0 }}
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="mx-auto mt-4 flex max-w-xs items-center gap-3"
+            className="mx-auto mt-3 flex max-w-xs items-center gap-3"
           >
             <div className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-300" />
             <svg className="h-3 w-3 text-gray-300" viewBox="0 0 12 12" fill="currentColor">
@@ -222,10 +248,10 @@ export default function SetupPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
           onSubmit={handleSubmit}
-          className="relative overflow-hidden rounded-2xl border-2 border-gray-900/10 bg-white/90 p-6 shadow-2xl shadow-gray-900/10 backdrop-blur-xl sm:p-8 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-blue-500 before:via-purple-500 before:to-blue-500"
+          className="relative overflow-hidden rounded-2xl border-2 border-gray-900/10 bg-white/90 p-5 shadow-2xl shadow-gray-900/10 backdrop-blur-xl sm:p-6 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-blue-500 before:via-purple-500 before:to-blue-500"
         >
           {/* Format Toggle */}
-          <div className="mb-6">
+          <div className="mb-4">
             <label className="mb-2 block font-[var(--font-cinzel)] text-sm font-semibold uppercase tracking-wider text-gray-500">
               Format
             </label>
@@ -262,7 +288,7 @@ export default function SetupPage() {
           </div>
 
           {/* Motion/Topic Input */}
-          <div className="mb-6">
+          <div className="mb-4">
             <div className="mb-2 flex items-center justify-between">
               <label
                 htmlFor="motion"
@@ -323,7 +349,7 @@ export default function SetupPage() {
           )}
 
           {/* Persona Pickers — 3-col for discussion (Guest 1 | Moderator | Guest 2), 2-col for debate */}
-          <div className={`relative mb-6 grid gap-6 ${isDiscussion ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
+          <div className={`relative mb-4 grid gap-4 ${isDiscussion ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
             {/* Vertical divider ornaments (visible on sm+) */}
             {!isDiscussion && (
               <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden -translate-x-1/2 sm:flex sm:flex-col sm:items-center sm:justify-center">
@@ -555,7 +581,7 @@ export default function SetupPage() {
 
           {/* Mode Selector (hidden for discussions) */}
           {!isDiscussion && (
-            <div className="mb-8">
+            <div className="mb-5">
               <label className="mb-2 block font-[var(--font-cinzel)] text-sm font-semibold uppercase tracking-wider text-gray-500">
                 Mode
               </label>
@@ -587,7 +613,7 @@ export default function SetupPage() {
           )}
 
           {/* Spacer when mode selector hidden */}
-          {isDiscussion && <div className="mb-8" />}
+          {isDiscussion && <div className="mb-5" />}
 
           {/* Error Display */}
           <AnimatePresence>
