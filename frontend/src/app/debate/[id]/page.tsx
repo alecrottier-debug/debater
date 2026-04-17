@@ -383,11 +383,56 @@ interface StreamingTurnCardProps {
   avatarUrl?: string;
 }
 
-const ghostTones: Record<Speaker, { bg: string; border: string; ring: string; text: string }> = {
-  A: { bg: "bg-blue-50/80", border: "border-blue-200", ring: "ring-blue-300", text: "text-blue-900" },
-  B: { bg: "bg-purple-50/80", border: "border-purple-200", ring: "ring-purple-300", text: "text-purple-900" },
-  MOD: { bg: "bg-amber-50/80", border: "border-amber-200", ring: "ring-amber-300", text: "text-amber-900" },
-  JUDGE: { bg: "bg-emerald-50/80", border: "border-emerald-200", ring: "ring-emerald-300", text: "text-emerald-900" },
+// Matches SpeechCard's visual language exactly so the live → saved transition
+// is seamless. Only differences: "LIVE" chip in place of the role badge, and a
+// blinking caret at the end of the narrative.
+const streamingTone: Record<
+  Speaker,
+  {
+    border: string;
+    accentBorder: string;
+    headerBg: string;
+    avatarRing: string;
+    avatarFallback: string;
+    dropCap: string;
+  }
+> = {
+  A: {
+    border: "border-blue-200",
+    accentBorder: "border-l-blue-500",
+    headerBg:
+      "bg-gradient-to-r from-blue-50 via-blue-50/60 to-transparent",
+    avatarRing: "ring-blue-300",
+    avatarFallback: "bg-blue-100 text-blue-700",
+    dropCap: "text-blue-600",
+  },
+  B: {
+    border: "border-purple-200",
+    accentBorder: "border-l-purple-500",
+    headerBg:
+      "bg-gradient-to-r from-purple-50 via-purple-50/60 to-transparent",
+    avatarRing: "ring-purple-300",
+    avatarFallback: "bg-purple-100 text-purple-700",
+    dropCap: "text-purple-600",
+  },
+  MOD: {
+    border: "border-amber-200",
+    accentBorder: "border-l-amber-500",
+    headerBg:
+      "bg-gradient-to-r from-amber-50 via-amber-50/60 to-transparent",
+    avatarRing: "ring-amber-300",
+    avatarFallback: "bg-amber-100 text-amber-800",
+    dropCap: "text-amber-700",
+  },
+  JUDGE: {
+    border: "border-emerald-200",
+    accentBorder: "border-l-emerald-500",
+    headerBg:
+      "bg-gradient-to-r from-emerald-50 via-emerald-50/60 to-transparent",
+    avatarRing: "ring-emerald-300",
+    avatarFallback: "bg-emerald-100 text-emerald-800",
+    dropCap: "text-emerald-700",
+  },
 };
 
 function StreamingTurnCard({
@@ -397,42 +442,76 @@ function StreamingTurnCard({
   text,
   avatarUrl,
 }: StreamingTurnCardProps) {
-  const tone = (speaker && ghostTones[speaker]) || ghostTones.MOD;
+  const tone = (speaker && streamingTone[speaker]) || streamingTone.MOD;
+  const hasDropCap = text.length > 40;
+  const firstChar = text.trimStart().slice(0, 1);
+  const rest = text.trimStart().slice(1);
+
   return (
-    <motion.div
+    <motion.article
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className={`relative rounded-2xl border ${tone.border} ${tone.bg} p-3 shadow-sm sm:p-5`}
+      className={`relative overflow-hidden rounded-2xl border-l-4 border-y border-r shadow-sm ${tone.border} ${tone.accentBorder} bg-white ring-1 ring-black/5`}
     >
-      <div className="mb-2.5 flex items-center gap-2.5 sm:mb-3 sm:gap-3">
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute right-0 top-0 h-24 w-24 rounded-bl-full opacity-50 ${tone.headerBg}`}
+      />
+      {/* Header */}
+      <header
+        className={`relative flex items-center gap-3 border-b ${tone.border} px-4 py-3 sm:px-5`}
+      >
         {avatarUrl ? (
           <img
             src={avatarUrl}
             alt={speakerName}
-            className={`h-9 w-9 shrink-0 rounded-full object-cover ring-2 sm:h-10 sm:w-10 ${tone.ring}`}
+            className={`h-10 w-10 shrink-0 rounded-full object-cover ring-2 sm:h-11 sm:w-11 ${tone.avatarRing}`}
           />
         ) : (
           <div
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold ring-2 sm:h-10 sm:w-10 ${tone.ring} ${tone.text}`}
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ring-2 sm:h-11 sm:w-11 ${tone.avatarRing} ${tone.avatarFallback}`}
           >
             {speakerName ? speakerName.charAt(0) : "?"}
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <div className={`truncate text-sm font-bold ${tone.text}`}>{speakerName || "Generating…"}</div>
-          <div className="truncate text-[11px] uppercase tracking-wider text-gray-500">{stageLabel}</div>
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <h3 className="truncate text-[15px] font-bold leading-tight text-gray-900 sm:text-base">
+              {speakerName || "Generating…"}
+            </h3>
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-2 py-0.5 font-[var(--font-cinzel)] text-[9px] font-bold uppercase tracking-[0.12em] text-emerald-700 shadow-sm ring-1 ring-emerald-200">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+              Live
+            </span>
+          </div>
+          <p className="mt-0.5 truncate text-[11px] uppercase tracking-[0.15em] text-gray-400">
+            {stageLabel}
+          </p>
         </div>
-        <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-          live
-        </span>
+      </header>
+
+      {/* Body */}
+      <div className="relative px-4 py-4 sm:px-6 sm:py-5">
+        <p className="whitespace-pre-wrap text-[15px] leading-[1.65] text-gray-800 sm:text-[16px]">
+          {hasDropCap ? (
+            <>
+              <span
+                className={`float-left mr-1.5 mt-[2px] font-[var(--font-playfair)] text-[48px] font-black leading-[0.85] sm:text-[56px] ${tone.dropCap}`}
+                aria-hidden
+              >
+                {firstChar}
+              </span>
+              <span className="sr-only">{firstChar}</span>
+              {rest}
+            </>
+          ) : (
+            text
+          )}
+          <span className="ml-0.5 inline-block h-4 w-[2px] -translate-y-[1px] animate-pulse bg-gray-600 align-middle" />
+        </p>
       </div>
-      <p className={`whitespace-pre-wrap text-[15px] leading-relaxed ${tone.text}`}>
-        {text}
-        <span className="ml-0.5 inline-block h-4 w-[2px] -translate-y-[1px] animate-pulse bg-current align-middle" />
-      </p>
-    </motion.div>
+    </motion.article>
   );
 }
 
