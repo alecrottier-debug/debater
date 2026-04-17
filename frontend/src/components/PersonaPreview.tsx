@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import type { Persona } from "@/lib/api";
 
 interface PersonaPreviewProps {
@@ -19,12 +18,8 @@ export default function PersonaPreview({ persona, side }: PersonaPreviewProps) {
   const accentColor = side === "A" ? "blue" : "purple";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.2 }}
-      className={`mt-3 overflow-hidden rounded-xl border p-4 ${
+    <div
+      className={`enter-fade mt-3 overflow-hidden rounded-xl border p-4 ${
         accentColor === "blue"
           ? "border-blue-200 bg-blue-50/50"
           : "border-purple-200 bg-purple-50/50"
@@ -95,6 +90,6 @@ export default function PersonaPreview({ persona, side }: PersonaPreviewProps) {
           <p className="mt-0.5 text-xs text-gray-600 line-clamp-1">{json.tone}</p>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
