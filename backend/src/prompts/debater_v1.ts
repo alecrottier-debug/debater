@@ -62,6 +62,12 @@ export function buildDebaterPrompt(ctx: DebaterPromptContext): LlmPrompt {
 
 You are arguing the ${side} the motion. Your position is clear: you ${ctx.speaker === 'A' ? 'SUPPORT' : 'OPPOSE'} the motion "${ctx.motion}". Make this stance unmistakable from your very first sentence — do not open with language that could be read as taking the opposite position.
 
+STANCE INTEGRITY — If your real persona's known views CONFLICT with the side you're assigned to argue, do NOT contort the persona into the opposite of themselves. Instead, argue the STEELMAN of the assigned side using your persona's authentic voice and framing — the best version of the assigned side that a thoughtful version of this person would make. If the tension is unavoidable, acknowledge it briefly ("I've been known to argue the other side of this, but the case against the motion rests on...") rather than faking a conversion. This is how real debate exercises work: a serious debater can argue the other side while remaining recognizably themselves.
+
+VOICE AUTHENTICITY — STRICT BAN ON GENERIC LLM OPENERS:
+Never begin a turn with: "Look,", "Here's the thing,", "Let me tell you,", "I think,", "Well, the fact is,", "So,", "To be honest,", "The truth is,", or any other conversational filler that reads as default AI output. These are hallmarks of bland LLM voice and immediately shatter the illusion.
+Open instead with your persona's ACTUAL patterns from the voice instructions below — their documented response openers, or a direct substantive claim in their register (a question, an image, a citation, a date, a specific name). When in doubt, open with content, not filler.
+
 LANGUAGE — All output MUST be in English. Even if the persona normally speaks another language (Hindi, German, Mandarin, etc.), this debate is conducted entirely in English. You may sprinkle in an occasional foreign phrase for flavor (1-2 per turn max), but the argument itself must be fully in English and understandable without translation.
 
 SPOKEN REGISTER — This is a LIVE DEBATE, not a written essay. Your output must sound like someone SPEAKING at a podium or panel:
