@@ -10,6 +10,13 @@ interface TranscriptDrawerProps {
   stages: StageConfig[];
   personaAName: string;
   personaBName: string;
+  /**
+   * Optional externally-controlled open state. When provided, the drawer is
+   * controlled by the parent and the component's built-in mobile toggle FAB
+   * is hidden (parent is expected to render its own trigger).
+   */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const speakerColor: Record<Speaker, string> = {
@@ -31,8 +38,16 @@ export default function TranscriptDrawer({
   stages,
   personaAName,
   personaBName,
+  open,
+  onOpenChange,
 }: TranscriptDrawerProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const isControlled = open !== undefined && onOpenChange !== undefined;
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isOpen = isControlled ? open : internalOpen;
+  const setIsOpen = (v: boolean) => {
+    if (isControlled) onOpenChange(v);
+    else setInternalOpen(v);
+  };
 
   function scrollToStage(stageId: string) {
     const element = document.getElementById(`stage-${stageId}`);
@@ -66,15 +81,23 @@ export default function TranscriptDrawer({
 
   return (
     <>
-      {/* Toggle Button */}
+      {/* Toggle Button — desktop only when externally controlled. On mobile,
+          the parent page supplies its own trigger (in the sticky subheader)
+          to avoid crowding the thumb zone with two floating elements. */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? "Close transcript" : "Open transcript"}
-        style={{
-          bottom: "calc(env(safe-area-inset-bottom, 0px) + 5.25rem)",
-          right: "calc(env(safe-area-inset-right, 0px) + 1rem)",
-        }}
-        className="fixed z-40 flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white/95 text-gray-600 shadow-md backdrop-blur transition-all hover:border-blue-300 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 lg:bottom-auto lg:right-auto lg:left-4 lg:top-24 lg:h-10 lg:w-10 lg:border-0 lg:bg-gradient-to-r lg:from-blue-500 lg:to-purple-600 lg:text-white lg:shadow-lg lg:shadow-blue-500/25"
+        style={
+          isControlled
+            ? undefined
+            : {
+                bottom: "calc(env(safe-area-inset-bottom, 0px) + 5.25rem)",
+                right: "calc(env(safe-area-inset-right, 0px) + 1rem)",
+              }
+        }
+        className={`${
+          isControlled ? "hidden lg:flex" : "fixed flex"
+        } z-40 h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white/95 text-gray-600 shadow-md backdrop-blur transition-all hover:border-blue-300 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 lg:fixed lg:bottom-auto lg:right-auto lg:left-4 lg:top-24 lg:h-10 lg:w-10 lg:border-0 lg:bg-gradient-to-r lg:from-blue-500 lg:to-purple-600 lg:text-white lg:shadow-lg lg:shadow-blue-500/25`}
       >
         <svg
           className={`h-5 w-5 transition-transform ${isOpen ? "rotate-180" : ""}`}
