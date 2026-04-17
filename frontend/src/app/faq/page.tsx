@@ -189,17 +189,17 @@ export default function FAQPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl py-4">
-      <div className="mb-8 text-center">
+    <div className="mx-auto max-w-3xl py-3">
+      <div className="mb-5 text-center">
         <h1 className="text-2xl font-bold tracking-tight text-gray-900">
           Frequently Asked Questions
         </h1>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-500">
           How the debate system works under the hood
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-2">
         {sections.map((section, i) => {
           const isOpen = openSections.has(i);
           return (
@@ -209,7 +209,7 @@ export default function FAQPage() {
             >
               <button
                 onClick={() => toggle(i)}
-                className="flex w-full items-start gap-3 px-5 py-4 text-left transition-colors hover:bg-gray-50"
+                className="flex w-full items-start gap-3 px-5 py-3 text-left transition-colors hover:bg-gray-50"
               >
                 <span className="mt-0.5 shrink-0">{section.icon}</span>
                 <div className="min-w-0 flex-1">
@@ -222,7 +222,7 @@ export default function FAQPage() {
               </button>
 
               {isOpen && (
-                <div className="border-t border-gray-100 bg-gray-50/50 px-5 py-4 pl-13">
+                <div className="border-t border-gray-100 bg-gray-50/50 px-5 py-3 pl-13">
                   {section.details}
                 </div>
               )}

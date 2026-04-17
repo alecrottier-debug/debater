@@ -105,7 +105,7 @@ export default function RootLayout({
             AI-generated simulation. Not real statements. Not endorsed by or affiliated with any person depicted.
           </div>
         </header>
-        <main className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
+        <main className="relative z-10 mx-auto max-w-7xl px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
           {children}
         </main>
       </body>
