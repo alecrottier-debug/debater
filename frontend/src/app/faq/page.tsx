@@ -26,6 +26,47 @@ function ChevronIcon({ open }: { open: boolean }) {
 const sections: FAQSection[] = [
   {
     icon: (
+      <svg className="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
+      </svg>
+    ),
+    title: "Which AI Models Do What",
+    summary: (
+      <p className="text-sm leading-relaxed text-gray-600">
+        Debater stitches together four AI services — <strong>OpenAI GPT-5.4&nbsp;mini</strong> for every live debate turn, <strong>Perplexity Sonar</strong> for persona research, <strong>OpenAI GPT-5&nbsp;mini</strong> for initial persona synthesis, and <strong>Anthropic Claude Opus 4.6</strong> for deep persona enrichment. Each is chosen for a different cost/quality tradeoff.
+      </p>
+    ),
+    details: (
+      <div className="space-y-4 text-sm leading-relaxed text-gray-600">
+        <div>
+          <h4 className="mb-1 font-semibold text-gray-800">GPT-5.4&nbsp;mini — debate runtime</h4>
+          <p>Powers every stage of every debate: moderator intros, debater turns (opening, challenge, counter, closing), cross-examination Q&amp;A, the judge&apos;s verdict, discussion participants, and the wrap-up summary. It also decides which persona argues <em>For</em> vs <em>Against</em> a motion and classifies whether a closing turn introduces disallowed new arguments. Streamed token-by-token via Server-Sent Events so you see speeches type live. ~$0.75 / 1M input tokens, ~$4.50 / 1M output.</p>
+        </div>
+        <div>
+          <h4 className="mb-1 font-semibold text-gray-800">Perplexity Sonar — persona research</h4>
+          <p>When you create a custom persona, Perplexity fetches live web data: biographical background, recent statements, public positions, speaking style, signature phrases. This becomes the raw &ldquo;dossier&rdquo; for the next stage. No synthesis — just search-grade retrieval.</p>
+        </div>
+        <div>
+          <h4 className="mb-1 font-semibold text-gray-800">GPT-5&nbsp;mini — initial synthesis</h4>
+          <p>Transforms the Perplexity dossier into a first-pass V2 persona JSON: identity, biography, priorities, conversational profile. Runs once per persona, cached in Postgres. This pass is fast and cheap but optimizes for structure over depth.</p>
+        </div>
+        <div>
+          <h4 className="mb-1 font-semibold text-gray-800">Claude Opus 4.6 — deep enrichment</h4>
+          <p>A follow-up pass that deepens the synthesized persona: real quotes from the person&apos;s speeches/interviews, signature phrases they&apos;re actually known for, specific rhetorical moves, known stances on domain-specific topics, verbal tics, response openers, blind spots, and track record. Opus is used because its recall for specific real-world quotes and positions is the best available, and persona authenticity lives or dies on that level of detail. Run via <code className="rounded bg-gray-100 px-1 py-0.5 text-xs">backend/scripts/full-re-enrich.ts</code>.</p>
+        </div>
+        <div>
+          <h4 className="mb-1 font-semibold text-gray-800">Validation layer — Zod, not an LLM</h4>
+          <p>Every LLM response is validated against a strict Zod schema before being persisted. Invalid JSON triggers retries with exponential backoff; if it still fails the turn is rejected and the debate pauses so the issue is visible. This is not another model call — it&apos;s deterministic, offline, and free.</p>
+        </div>
+        <div>
+          <h4 className="mb-1 font-semibold text-gray-800">Why this split?</h4>
+          <p>Different models have different strengths. GPT-5.4&nbsp;mini is optimized for long-context multi-turn generation — staying in character across 8+ turns of streamed output. GPT-5&nbsp;mini is cheaper and fine for the one-shot synthesis step. Claude Opus 4.6 has strong recall for real quotes and specific stances, which is what makes the difference between a persona that sounds like Milton Friedman and a persona that sounds like a generic op-ed writer. Perplexity grounds research in current web sources — pure LLMs would hallucinate biographical details.</p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    icon: (
       <svg className="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
       </svg>
@@ -33,18 +74,18 @@ const sections: FAQSection[] = [
     title: "How Personas Work",
     summary: (
       <p className="text-sm leading-relaxed text-gray-600">
-        Each persona is a deeply researched AI character profile. The system uses <strong>Perplexity</strong> to gather up-to-date web information about real public figures, then <strong>Claude Opus 4.6</strong> synthesizes that research into a comprehensive structured behavioral model covering 12 dimensions of personality, rhetoric, and worldview.
+        Each persona is a deeply researched AI character profile. The system uses <strong>Perplexity Sonar</strong> to gather up-to-date web information about real public figures, then <strong>GPT-5&nbsp;mini</strong> synthesizes that research into a comprehensive structured behavioral model covering 12 dimensions of personality, rhetoric, and worldview.
       </p>
     ),
     details: (
       <div className="space-y-4 text-sm leading-relaxed text-gray-600">
         <div>
           <h4 className="mb-1 font-semibold text-gray-800">Research Phase</h4>
-          <p>Perplexity fetches current biographical data, recent statements, public positions, and speaking style for the subject.</p>
+          <p>Perplexity Sonar fetches current biographical data, recent statements, public positions, and speaking style for the subject.</p>
         </div>
         <div>
           <h4 className="mb-1 font-semibold text-gray-800">Synthesis Phase</h4>
-          <p>Claude Opus 4.6 transforms raw research into the structured V2 persona schema.</p>
+          <p>GPT-5&nbsp;mini transforms raw research into the structured V2 persona schema.</p>
         </div>
         <div>
           <h4 className="mb-2 font-semibold text-gray-800">Schema Overview (12 blocks)</h4>

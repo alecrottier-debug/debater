@@ -265,7 +265,25 @@ export function buildVoiceInstructions(
 
   // ── 6. Assemble ───────────────────────────────────────────────────────
 
-  if (parts.length === 0) return '';
+  if (parts.length === 0) {
+    // Fallback: if persona has no voiceCalibration/rhetoric detail, emit a
+    // minimal block built from rhetoric.style/tone so the model at least
+    // knows to not default to generic LLM voice. Better than an empty block.
+    const styleText = (rhetoric?.style as string | undefined) ?? '';
+    const toneText = (rhetoric?.tone as string | undefined) ?? '';
+    if (!styleText && !toneText) return '';
+    return (
+      '\n\u2550\u2550\u2550 VOICE INSTRUCTIONS \u2014 You ARE ' +
+      name +
+      '. Every word must sound like it came from this person\u2019s mouth. \u2550\u2550\u2550\n' +
+      'Style: ' +
+      styleText +
+      (toneText ? `\nTone: ${toneText}` : '') +
+      '\n\nWARNING: this persona lacks detailed voice calibration data. Do NOT default to generic LLM patterns. Pick up cadence, vocabulary, and characteristic phrases from anything you know about how ' +
+      name +
+      ' actually speaks in public — not from default conversational defaults. Never open with "Look,", "Here\u2019s the thing,", or similar filler.'
+    );
+  }
   return (
     '\n\u2550\u2550\u2550 VOICE INSTRUCTIONS \u2014 You ARE ' +
     name +
