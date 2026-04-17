@@ -53,6 +53,12 @@ jobs:
 
       - name: Run database migrations
         working-directory: backend
+        # Neon's serverless Postgres can be slow to acquire advisory locks,
+        # which times out `prisma migrate deploy` at the default 10s window.
+        # Disabling the lock is safe here: this workflow runs serially from a
+        # single branch with concurrency=1, so there are no concurrent migrators.
+        env:
+          PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK: "1"
         run: npx prisma migrate deploy --config prisma/prisma.config.ts
 
       - name: Deploy to Container Apps
