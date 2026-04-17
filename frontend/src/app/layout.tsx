@@ -37,6 +37,12 @@ export const metadata: Metadata = {
   description: "AI-powered debate simulator",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover" as const,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -53,9 +59,9 @@ export default function RootLayout({
           style={{ backgroundImage: "url('/avatars/background.png')" }}
         />
         <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-xl">
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-3 sm:px-6 lg:px-8">
+            <Link href="/" className="flex shrink-0 items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
                 <svg
                   className="h-4 w-4 text-white"
                   fill="none"
@@ -70,17 +76,18 @@ export default function RootLayout({
                   />
                 </svg>
               </div>
-              <span className="text-xl font-bold tracking-tight text-gray-900">
+              <span className="hidden text-xl font-bold tracking-tight text-gray-900 sm:inline">
                 Debater
               </span>
             </Link>
-            <div className="flex items-center gap-3">
+            <nav className="flex items-center gap-1 sm:gap-3">
               <Link
                 href="/personas/create"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-500 transition-all hover:border-blue-400 hover:text-blue-500"
+                aria-label="Create Persona"
+                className="inline-flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-2 text-xs font-medium text-gray-500 transition-all hover:border-blue-400 hover:text-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:h-auto sm:px-3 sm:py-1.5"
               >
                 <svg
-                  className="h-3.5 w-3.5"
+                  className="h-4 w-4 sm:h-3.5 sm:w-3.5"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={2}
@@ -92,14 +99,15 @@ export default function RootLayout({
                     d="M12 4.5v15m7.5-7.5h-15"
                   />
                 </svg>
-                Create Persona
+                <span className="hidden sm:inline">Create Persona</span>
               </Link>
               <Link
                 href="/faq"
-                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+                aria-label="FAQ"
+                className="inline-flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:h-auto sm:px-3 sm:py-1.5"
               >
                 <svg
-                  className="h-4 w-4"
+                  className="h-5 w-5 sm:h-4 sm:w-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
@@ -111,14 +119,15 @@ export default function RootLayout({
                     d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
                   />
                 </svg>
-                FAQ
+                <span className="hidden sm:inline">FAQ</span>
               </Link>
               <Link
                 href="/history"
-                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+                aria-label="History"
+                className="inline-flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:h-auto sm:px-3 sm:py-1.5"
               >
                 <svg
-                  className="h-4 w-4"
+                  className="h-5 w-5 sm:h-4 sm:w-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
@@ -130,15 +139,15 @@ export default function RootLayout({
                     d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                   />
                 </svg>
-                History
+                <span className="hidden sm:inline">History</span>
               </Link>
-            </div>
+            </nav>
           </div>
-          <div className="border-t border-gray-100 bg-amber-50/80 px-4 py-1.5 text-center text-xs text-amber-700">
+          <div className="border-t border-gray-100 bg-amber-50/80 px-4 py-1.5 text-center text-[11px] leading-tight text-amber-700 sm:text-xs">
             AI-generated simulation. Not real statements. Not endorsed by or affiliated with any person depicted.
           </div>
         </header>
-        <main className="relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <main className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
           {children}
         </main>
       </body>

@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { PerplexityService } from './perplexity.service.js';
 import { PersonaSynthesisService } from './persona-synthesis.service.js';
@@ -51,10 +55,8 @@ export class PersonasService {
       throw new BadRequestException('Subject is required');
     }
 
-    const { rawResponse, summary, query } = await this.perplexityService.research(
-      subject.trim(),
-      context?.trim(),
-    );
+    const { rawResponse, summary, query } =
+      await this.perplexityService.research(subject.trim(), context?.trim());
 
     const dossier = await this.prisma.researchDossier.create({
       data: {
@@ -97,8 +99,7 @@ export class PersonasService {
     );
 
     // Extract name/tagline from v2 (nested) or v1 (flat)
-    const name =
-      'identity' in persona ? persona.identity.name : persona.name;
+    const name = 'identity' in persona ? persona.identity.name : persona.name;
     const tagline =
       'identity' in persona ? persona.identity.tagline : persona.tagline;
 
@@ -112,5 +113,24 @@ export class PersonasService {
     });
 
     return created;
+  }
+
+  /**
+   * One-shot: research + synthesize in a single call so callers don't have to
+   * orchestrate two requests. Returns the created persona plus the dossier id
+   * and summary for the UI to display.
+   */
+  async researchAndSynthesize(
+    subject: string,
+    context?: string,
+    nameOverride?: string,
+  ) {
+    const dossier = await this.research(subject, context);
+    const persona = await this.synthesize(dossier.dossierId, nameOverride);
+    return {
+      persona,
+      dossierId: dossier.dossierId,
+      summary: dossier.summary,
+    };
   }
 }

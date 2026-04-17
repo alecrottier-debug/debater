@@ -26,6 +26,35 @@ jobs:
           docker push debateracr.azurecr.io/debater-api:${{ github.sha }}
           docker push debateracr.azurecr.io/debater-api:latest
 
+      # Migrations run here (once, pre-deploy) instead of on every container start.
+      # DATABASE_URL is pulled from the Container App's existing `database-url` secret
+      # so we don't have to duplicate it as a GitHub Actions secret.
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci
+
+      - name: Fetch DATABASE_URL from Container App
+        id: db
+        run: |
+          DB_URL=$(az containerapp secret show \
+            --name debater-api \
+            --resource-group debater-rg \
+            --secret-name database-url \
+            --query value -o tsv)
+          echo "::add-mask::$DB_URL"
+          echo "DATABASE_URL=$DB_URL" >> "$GITHUB_ENV"
+
+      - name: Run database migrations
+        working-directory: backend
+        run: npx prisma migrate deploy --config prisma/prisma.config.ts
+
       - name: Deploy to Container Apps
         run: |
           az containerapp update \

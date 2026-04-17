@@ -14,7 +14,8 @@ export interface CrossExPromptContext {
 }
 
 export function buildCrossExPrompt(ctx: CrossExPromptContext): LlmPrompt {
-  const side = ctx.speaker === 'A' ? 'proposition (FOR)' : 'opposition (AGAINST)';
+  const side =
+    ctx.speaker === 'A' ? 'proposition (FOR)' : 'opposition (AGAINST)';
 
   const transcriptText =
     ctx.transcript.length > 0

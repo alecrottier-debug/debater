@@ -82,7 +82,13 @@ export const JudgeOutputSchema = z.object({
   }),
   /** Momentum assessment — who finished stronger */
   momentum: z.object({
-    trajectory: z.enum(['A_BUILDING', 'B_BUILDING', 'EVEN', 'A_FADING', 'B_FADING']),
+    trajectory: z.enum([
+      'A_BUILDING',
+      'B_BUILDING',
+      'EVEN',
+      'A_FADING',
+      'B_FADING',
+    ]),
     description: z.string(),
   }),
   /** How close the debate was: "blowout" | "clear" | "narrow" | "razor-thin" */

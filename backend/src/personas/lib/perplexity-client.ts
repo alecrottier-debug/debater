@@ -47,7 +47,8 @@ export async function researchSubject(
   context: string | undefined,
   options: ResearchOptions,
 ): Promise<ResearchResult> {
-  const baseUrl = options.baseUrl ?? 'https://api.perplexity.ai/chat/completions';
+  const baseUrl =
+    options.baseUrl ?? 'https://api.perplexity.ai/chat/completions';
   const query = buildQuery(subject, context);
 
   const response = await fetch(baseUrl, {

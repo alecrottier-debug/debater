@@ -163,6 +163,17 @@ export default function PersonaPicker({
 
   useEffect(() => setMounted(true), []);
 
+  // Close on Escape when the modal is open. Native dialog behavior expected
+  // by keyboard users; without this they're trapped.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen]);
+
   const accentColor = side === "A" ? "blue" : "purple";
 
   const { templates, custom } = useMemo(() => {
@@ -282,7 +293,7 @@ export default function PersonaPicker({
                 >
                   {/* Header */}
                   <div
-                    className={`flex items-center justify-between border-b px-6 py-4 ${
+                    className={`flex items-center justify-between border-b px-4 py-3 sm:px-6 sm:py-4 ${
                       accentColor === "blue"
                         ? "border-blue-100 bg-blue-50/50"
                         : "border-purple-100 bg-purple-50/50"
@@ -321,7 +332,7 @@ export default function PersonaPicker({
                   </div>
 
                   {/* Search */}
-                  <div className="border-b border-gray-100 px-6 py-3">
+                  <div className="border-b border-gray-100 px-4 py-3 sm:px-6">
                     <div className="relative">
                       <svg
                         className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
@@ -342,13 +353,13 @@ export default function PersonaPicker({
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         autoFocus
-                        className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 outline-none transition-colors focus:border-blue-300 focus:ring-2 focus:ring-blue-100"
+                        className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-base text-gray-900 placeholder-gray-400 outline-none transition-colors focus:border-blue-300 focus:ring-2 focus:ring-blue-100 sm:text-sm"
                       />
                     </div>
                   </div>
 
                   {/* List */}
-                  <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+                  <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
                     {/* Templates section */}
                     {templates.length > 0 && (
                       <div className="mb-6">

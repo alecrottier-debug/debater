@@ -97,7 +97,11 @@ describe('ValidatorService', () => {
         'Healthcare reform, education policy, and environmental protection demand immediate attention in this congress.';
       const payload = makePayload({ narrative: closingNarrative });
       const stage = makeStage({ id: 'A_CLOSE', maxWords: 200 });
-      const result = service.validateDebaterTurn(payload, stage, priorNarratives);
+      const result = service.validateDebaterTurn(
+        payload,
+        stage,
+        priorNarratives,
+      );
       expect(result.violations).toContain('NEW_ARGUMENT_CLOSING');
     });
 
@@ -110,7 +114,11 @@ describe('ValidatorService', () => {
         'The economy and trade drive growth through innovation and technology.';
       const payload = makePayload({ narrative: closingNarrative });
       const stage = makeStage({ id: 'B_CLOSE', maxWords: 200 });
-      const result = service.validateDebaterTurn(payload, stage, priorNarratives);
+      const result = service.validateDebaterTurn(
+        payload,
+        stage,
+        priorNarratives,
+      );
       expect(result.violations).not.toContain('NEW_ARGUMENT_CLOSING');
     });
 
@@ -120,7 +128,11 @@ describe('ValidatorService', () => {
         'Healthcare reform, education policy, and environmental protection demand immediate attention.';
       const payload = makePayload({ narrative: closingNarrative });
       const stage = makeStage({ id: 'A_OPEN' });
-      const result = service.validateDebaterTurn(payload, stage, priorNarratives);
+      const result = service.validateDebaterTurn(
+        payload,
+        stage,
+        priorNarratives,
+      );
       expect(result.violations).not.toContain('NEW_ARGUMENT_CLOSING');
     });
   });
@@ -147,9 +159,7 @@ describe('ValidatorService', () => {
     });
 
     it('deduplicates words', () => {
-      const result = service.extractSignificantWords(
-        'economy economy economy',
-      );
+      const result = service.extractSignificantWords('economy economy economy');
       expect(result).toEqual(['economy']);
     });
   });
@@ -173,7 +183,9 @@ describe('ValidatorService', () => {
   });
 
   describe('CROSSEX_QUESTION_COUNT', () => {
-    function makeCrossExPayload(overrides: Partial<CrossExOutput> = {}): CrossExOutput {
+    function makeCrossExPayload(
+      overrides: Partial<CrossExOutput> = {},
+    ): CrossExOutput {
       return {
         questions: [
           { question: 'Q1?', answer: 'Short answer one.' },
@@ -184,7 +196,9 @@ describe('ValidatorService', () => {
       };
     }
 
-    function makeCrossExStage(overrides: Partial<StageConfig> = {}): StageConfig {
+    function makeCrossExStage(
+      overrides: Partial<StageConfig> = {},
+    ): StageConfig {
       return {
         id: 'A_CROSSEX',
         label: 'Side A Cross-Examination',
@@ -312,7 +326,9 @@ describe('ValidatorService', () => {
 
     it('returns violation when LLM says new arguments introduced', async () => {
       const mockLlm = {
-        generateText: jest.fn().mockResolvedValue('FAIL: Introduces healthcare as a new topic.'),
+        generateText: jest
+          .fn()
+          .mockResolvedValue('FAIL: Introduces healthcare as a new topic.'),
       } as any;
       const svc = new ValidatorService(mockLlm);
 
@@ -320,7 +336,9 @@ describe('ValidatorService', () => {
         'Healthcare is the key issue we must address.',
         ['The economy benefits from trade.'],
       );
-      expect(result).toBe('LLM classifier: Introduces healthcare as a new topic.');
+      expect(result).toBe(
+        'LLM classifier: Introduces healthcare as a new topic.',
+      );
     });
 
     it('falls back to heuristic when LLM throws', async () => {
@@ -366,7 +384,9 @@ describe('ValidatorService', () => {
 
     it('async validation flags new arguments via LLM', async () => {
       const mockLlm = {
-        generateText: jest.fn().mockResolvedValue('FAIL: New topic introduced.'),
+        generateText: jest
+          .fn()
+          .mockResolvedValue('FAIL: New topic introduced.'),
       } as any;
       const svc = new ValidatorService(mockLlm);
 

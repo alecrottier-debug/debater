@@ -74,9 +74,7 @@ describe('StagePlanService', () => {
       expect(() => service.getStageByIndex('quick', -1)).toThrow(
         'out of range',
       );
-      expect(() => service.getStageByIndex('quick', 9)).toThrow(
-        'out of range',
-      );
+      expect(() => service.getStageByIndex('quick', 9)).toThrow('out of range');
     });
   });
 

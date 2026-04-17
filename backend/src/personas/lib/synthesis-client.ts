@@ -1,4 +1,9 @@
-import { PersonaV2Schema, PersonaV2, SynthesizedPersonaSchema, SynthesizedPersona } from '../persona-synth.schema.js';
+import {
+  PersonaV2Schema,
+  PersonaV2,
+  SynthesizedPersonaSchema,
+  SynthesizedPersona,
+} from '../persona-synth.schema.js';
 
 interface OpenAiResponse {
   id: string;
@@ -7,7 +12,11 @@ interface OpenAiResponse {
     message: { role: string; content: string };
     finish_reason: string;
   }[];
-  usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
 }
 
 export interface SynthesisOptions {
@@ -113,7 +122,8 @@ async function callOpenAi(
   nameOverride: string | undefined,
   options: SynthesisOptions,
 ): Promise<string> {
-  const baseUrl = options.baseUrl ?? 'https://api.openai.com/v1/chat/completions';
+  const baseUrl =
+    options.baseUrl ?? 'https://api.openai.com/v1/chat/completions';
   const prompt = buildPrompt(dossierSummary, subject, nameOverride);
 
   const response = await fetch(baseUrl, {
@@ -168,7 +178,12 @@ export async function synthesizePersona(
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
-      const raw = await callOpenAi(dossierSummary, subject, nameOverride, options);
+      const raw = await callOpenAi(
+        dossierSummary,
+        subject,
+        nameOverride,
+        options,
+      );
       return parseAndValidate(raw);
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));

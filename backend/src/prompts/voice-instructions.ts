@@ -8,7 +8,10 @@
 // ─── Stage classification ────────────────────────────────────────────────
 
 export type DebateStagePhase = 'opening' | 'rebuttal' | 'closing';
-export type DiscussionStagePhase = 'first_response' | 'mid_discussion' | 'final';
+export type DiscussionStagePhase =
+  | 'first_response'
+  | 'mid_discussion'
+  | 'final';
 
 export type StagePhase = DebateStagePhase | DiscussionStagePhase;
 
@@ -66,9 +69,13 @@ export function buildVoiceInstructions(
   const identity = persona.identity as Record<string, unknown> | undefined;
   const rhetoric = persona.rhetoric as Record<string, unknown> | undefined;
   const voice = persona.voiceCalibration as Record<string, unknown> | undefined;
-  const epistemology = persona.epistemology as Record<string, unknown> | undefined;
+  const epistemology = persona.epistemology as
+    | Record<string, unknown>
+    | undefined;
   const positions = persona.positions as Record<string, unknown> | undefined;
-  const vulnerabilities = persona.vulnerabilities as Record<string, unknown> | undefined;
+  const vulnerabilities = persona.vulnerabilities as
+    | Record<string, unknown>
+    | undefined;
 
   const name = (identity?.name ?? 'this persona') as string;
 
@@ -124,7 +131,10 @@ export function buildVoiceInstructions(
     const quotes = voice.realQuotes as string[] | undefined;
     if (quotes?.length) {
       parts.push(
-        `VOICE CALIBRATION — These are real quotes from ${name}. Study the rhythm, word choice, and tone. Your output must sound like it belongs alongside these:\n${quotes.slice(0, 5).map((q) => `  "${q}"`).join('\n')}`,
+        `VOICE CALIBRATION — These are real quotes from ${name}. Study the rhythm, word choice, and tone. Your output must sound like it belongs alongside these:\n${quotes
+          .slice(0, 5)
+          .map((q) => `  "${q}"`)
+          .join('\n')}`,
       );
     }
 
@@ -136,7 +146,9 @@ export function buildVoiceInstructions(
 
     // Verbal tics
     if (voice.verbalTics)
-      parts.push(`VERBAL HABITS (use naturally — these make you sound real): ${voice.verbalTics}`);
+      parts.push(
+        `VERBAL HABITS (use naturally — these make you sound real): ${voice.verbalTics}`,
+      );
 
     // Response openers
     const openers = voice.responseOpeners as string[] | undefined;
@@ -155,9 +167,7 @@ export function buildVoiceInstructions(
     // NEW: Emphasis markers
     const emphasis = voice.emphasisMarkers as string[] | undefined;
     if (emphasis?.length)
-      parts.push(
-        `HOW YOU EMPHASIZE KEY POINTS: ${emphasis.join(' / ')}`,
-      );
+      parts.push(`HOW YOU EMPHASIZE KEY POINTS: ${emphasis.join(' / ')}`);
 
     // Pressure response
     if (voice.underPressure)
@@ -207,23 +217,37 @@ export function buildVoiceInstructions(
 
   // ── 4. Conversational profile — how this person actually behaves in discussions ──
 
-  const convo = persona.conversationalProfile as Record<string, string> | undefined;
+  const convo = persona.conversationalProfile as
+    | Record<string, string>
+    | undefined;
   if (convo && opts.mode === 'discussion') {
     parts.push('');
     parts.push('=== HOW YOU ACTUALLY TALK IN CONVERSATIONS ===');
-    parts.push('These are the MOST IMPORTANT voice instructions. They override everything else.');
+    parts.push(
+      'These are the MOST IMPORTANT voice instructions. They override everything else.',
+    );
     parts.push('');
-    if (convo.responseLength) parts.push(`RESPONSE LENGTH: ${convo.responseLength}. Match this precisely — do NOT pad your response to fill the word limit if this person would naturally be briefer.`);
-    if (convo.listeningStyle) parts.push(`LISTENING & ENGAGEMENT: ${convo.listeningStyle}`);
-    if (convo.agreementStyle) parts.push(`WHEN YOU AGREE: ${convo.agreementStyle}`);
-    if (convo.disagreementStyle) parts.push(`WHEN YOU DISAGREE: ${convo.disagreementStyle}`);
+    if (convo.responseLength)
+      parts.push(
+        `RESPONSE LENGTH: ${convo.responseLength}. Match this precisely — do NOT pad your response to fill the word limit if this person would naturally be briefer.`,
+      );
+    if (convo.listeningStyle)
+      parts.push(`LISTENING & ENGAGEMENT: ${convo.listeningStyle}`);
+    if (convo.agreementStyle)
+      parts.push(`WHEN YOU AGREE: ${convo.agreementStyle}`);
+    if (convo.disagreementStyle)
+      parts.push(`WHEN YOU DISAGREE: ${convo.disagreementStyle}`);
     if (convo.energyLevel) parts.push(`YOUR ENERGY: ${convo.energyLevel}`);
-    if (convo.tangentTendency) parts.push(`TOPIC DISCIPLINE: ${convo.tangentTendency}`);
-    if (convo.humorInConversation) parts.push(`HUMOR: ${convo.humorInConversation}`);
+    if (convo.tangentTendency)
+      parts.push(`TOPIC DISCIPLINE: ${convo.tangentTendency}`);
+    if (convo.humorInConversation)
+      parts.push(`HUMOR: ${convo.humorInConversation}`);
     if (convo.silenceComfort) parts.push(`PACING: ${convo.silenceComfort}`);
     if (convo.questionAsking) parts.push(`QUESTIONS: ${convo.questionAsking}`);
-    if (convo.realWorldAnchoring) parts.push(`GROUNDING: ${convo.realWorldAnchoring}`);
-    if (convo.interruptionPattern) parts.push(`INTERJECTION STYLE: ${convo.interruptionPattern}`);
+    if (convo.realWorldAnchoring)
+      parts.push(`GROUNDING: ${convo.realWorldAnchoring}`);
+    if (convo.interruptionPattern)
+      parts.push(`INTERJECTION STYLE: ${convo.interruptionPattern}`);
   }
 
   // ── 5. Stage-specific voice adaptation ────────────────────────────────
@@ -271,14 +295,18 @@ function buildStageAdaptation(
           `This is your opening salvo. Establish dominance and plant your strongest framing.`,
         );
         // Use firstAttackPatterns
-        const attackPatterns = positions?.firstAttackPatterns as string[] | undefined;
+        const attackPatterns = positions?.firstAttackPatterns as
+          | string[]
+          | undefined;
         if (attackPatterns?.length) {
           sections.push(
             `${name.toUpperCase()}'S OPENING ATTACK PATTERNS — Choose one or combine:\n${attackPatterns.map((p) => `  - ${p}`).join('\n')}`,
           );
         }
         // Use argument structure
-        const argStructure = rhetoric?.argumentStructure as string[] | undefined;
+        const argStructure = rhetoric?.argumentStructure as
+          | string[]
+          | undefined;
         if (argStructure?.length) {
           sections.push(
             `Follow your natural argument structure: begin with step 1 and build toward a memorable close.`,
@@ -307,7 +335,10 @@ function buildStageAdaptation(
         const blindSpots = vulnerabilities?.blindSpots as string[] | undefined;
         if (blindSpots?.length) {
           sections.push(
-            `VULNERABILITY AWARENESS — Your opponent may target these weak spots. Be prepared to defend or deflect:\n${blindSpots.slice(0, 3).map((b) => `  - ${b}`).join('\n')}`,
+            `VULNERABILITY AWARENESS — Your opponent may target these weak spots. Be prepared to defend or deflect:\n${blindSpots
+              .slice(0, 3)
+              .map((b) => `  - ${b}`)
+              .join('\n')}`,
           );
         }
         break;
@@ -342,7 +373,9 @@ function buildStageAdaptation(
           `This is your first contribution. Establish your perspective clearly and authentically.`,
         );
         // Use argument structure to set up initial framing
-        const argStructure = rhetoric?.argumentStructure as string[] | undefined;
+        const argStructure = rhetoric?.argumentStructure as
+          | string[]
+          | undefined;
         if (argStructure?.length) {
           sections.push(
             `Use your natural argument structure to frame your opening perspective.`,
@@ -411,14 +444,13 @@ export function buildVoiceAuthenticityBlock(
   // Detect whether this persona uses short or long sentences for a targeted instruction
   const lengthGuidance = buildSentenceLengthGuidance(sentenceRhythm);
 
-  const modeContext =
-    mode === 'debate'
-      ? 'debate prose'
-      : 'discussion prose';
+  const modeContext = mode === 'debate' ? 'debate prose' : 'discussion prose';
 
   if (mode === 'discussion') {
     // Check for conversationalProfile to override sentence length guidance
-    const convo = persona.conversationalProfile as Record<string, string> | undefined;
+    const convo = persona.conversationalProfile as
+      | Record<string, string>
+      | undefined;
     const responseLengthGuidance = convo?.responseLength
       ? `Match ${name}'s natural response length: ${convo.responseLength}. Do NOT force short responses if they naturally give longer, detailed answers, and do NOT pad responses if they are naturally brief.`
       : `Keep it short and natural. Even if ${name} writes long sentences, people talk in shorter ones. ${lengthGuidance}`;

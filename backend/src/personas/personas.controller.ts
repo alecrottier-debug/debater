@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { PersonasService } from './personas.service.js';
 import { ResearchDto } from './dto/research.dto.js';
 import { SynthesizeDto } from './dto/synthesize.dto.js';
+import { ResearchAndSynthesizeDto } from './dto/research-and-synthesize.dto.js';
 
 @Controller('personas')
 export class PersonasController {
@@ -36,5 +37,14 @@ export class PersonasController {
   @Post('synthesize')
   synthesize(@Body() body: SynthesizeDto) {
     return this.personasService.synthesize(body.dossierId, body.name);
+  }
+
+  @Post('research-and-synthesize')
+  researchAndSynthesize(@Body() body: ResearchAndSynthesizeDto) {
+    return this.personasService.researchAndSynthesize(
+      body.subject,
+      body.context,
+      body.name,
+    );
   }
 }

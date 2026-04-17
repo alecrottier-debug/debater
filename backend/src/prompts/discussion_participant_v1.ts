@@ -6,7 +6,8 @@ import {
   classifyDiscussionStage,
 } from './voice-instructions.js';
 
-export const DISCUSSION_PARTICIPANT_PROMPT_VERSION = 'discussion_participant_v1';
+export const DISCUSSION_PARTICIPANT_PROMPT_VERSION =
+  'discussion_participant_v1';
 
 export interface DiscussionParticipantPromptContext {
   topic: string;
@@ -33,7 +34,9 @@ export function buildDiscussionParticipantPrompt(
     ? '\nIMPORTANT: This is your FINAL thought. Be concise and reflective — distill your most important insight on this topic.'
     : '';
 
-  const turnCount = ctx.transcript.filter((t) => t.speaker === ctx.speaker).length;
+  const turnCount = ctx.transcript.filter(
+    (t) => t.speaker === ctx.speaker,
+  ).length;
 
   const stagePhase = classifyDiscussionStage(ctx.stage.id);
 
@@ -42,7 +45,10 @@ export function buildDiscussionParticipantPrompt(
     stagePhase,
   });
 
-  const authenticityBlock = buildVoiceAuthenticityBlock(ctx.persona, 'discussion');
+  const authenticityBlock = buildVoiceAuthenticityBlock(
+    ctx.persona,
+    'discussion',
+  );
 
   const identity = ctx.persona.identity as Record<string, unknown> | undefined;
   const personaName = (identity?.name ?? 'this persona') as string;
@@ -103,10 +109,16 @@ Before writing, scan ALL of your prior turns in the transcript. You are STRICTLY
 - Falling into verbal tics or catchphrases, even if they're characteristic — a real person varies their language in a live conversation
 
 CONVERSATIONAL EVOLUTION (Turn ${turnCount + 1}):
-Real conversations EVOLVE. Your responses should shift as the discussion deepens:${turnCount === 0 ? `
-- This is your FIRST response. Establish your perspective clearly. Share what drew you to this topic and what you find most important about it.` : turnCount === 1 ? `
-- The conversation is developing. Build on what has been said — find a thread from the other guest that surprised you or challenged your thinking. Show intellectual flexibility.` : `
-- The discussion is well underway. By now, you should be going DEEPER, not wider. Pick the most interesting tension or insight from the conversation so far and explore it with specificity. If you've been mostly agreeing, find a genuine point of divergence. If you've been mostly disagreeing, find unexpected common ground. The audience wants to see your thinking DEVELOP in real-time, not hear you restate your opening position.`}
+Real conversations EVOLVE. Your responses should shift as the discussion deepens:${
+    turnCount === 0
+      ? `
+- This is your FIRST response. Establish your perspective clearly. Share what drew you to this topic and what you find most important about it.`
+      : turnCount === 1
+        ? `
+- The conversation is developing. Build on what has been said — find a thread from the other guest that surprised you or challenged your thinking. Show intellectual flexibility.`
+        : `
+- The discussion is well underway. By now, you should be going DEEPER, not wider. Pick the most interesting tension or insight from the conversation so far and explore it with specificity. If you've been mostly agreeing, find a genuine point of divergence. If you've been mostly disagreeing, find unexpected common ground. The audience wants to see your thinking DEVELOP in real-time, not hear you restate your opening position.`
+  }
 - Adapt your rhetorical approach: if you started with big-picture framing, drill into specifics now. If you led with data, pivot to human stories. If you've been analytical, show passion. Real people shift registers as conversations deepen.
 
 You must output valid JSON matching this exact schema:

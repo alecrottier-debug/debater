@@ -10,6 +10,7 @@ import {
   type DiscussionWrapPayload,
   type Persona,
 } from "@/lib/api";
+import { humanizeNarrativeText } from "@/lib/format-stage-label";
 
 function getAvatarUrl(persona: Persona): string | undefined {
   const raw = persona.personaJson as Record<string, unknown>;
@@ -82,25 +83,7 @@ export default function DiscussionSummaryView({
 
   /** Replace any A/B placeholder references with actual participant names */
   function humanizeText(text: string): string {
-    return text
-      .replace(/\bSide A\b/g, nameA)
-      .replace(/\bSide B\b/g, nameB)
-      .replace(/\bside A\b/g, nameA)
-      .replace(/\bside B\b/g, nameB)
-      .replace(/\bGuest A\b/g, nameA)
-      .replace(/\bGuest B\b/g, nameB)
-      .replace(/\bguest A\b/g, nameA)
-      .replace(/\bguest B\b/g, nameB)
-      .replace(/\bDebater A\b/g, nameA)
-      .replace(/\bDebater B\b/g, nameB)
-      .replace(/\bdebater A\b/g, nameA)
-      .replace(/\bdebater B\b/g, nameB)
-      .replace(/\bSpeaker A\b/g, nameA)
-      .replace(/\bSpeaker B\b/g, nameB)
-      .replace(/\bspeaker A\b/g, nameA)
-      .replace(/\bspeaker B\b/g, nameB)
-      .replace(/\bParticipant A\b/g, nameA)
-      .replace(/\bParticipant B\b/g, nameB)
+    return humanizeNarrativeText(text, nameA, nameB)
       .replace(/\bparticipant A\b/g, nameA)
       .replace(/\bparticipant B\b/g, nameB)
       // Strip stage IDs

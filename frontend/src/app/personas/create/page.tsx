@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import {
-  researchPersona,
-  synthesizePersona,
+  researchAndSynthesizePersona,
   createPersona,
   type Persona,
 } from "@/lib/api";
@@ -82,47 +81,33 @@ export default function CreatePersonaPage() {
 
 /* ============================== AI WIZARD ============================== */
 
-type AiStep = "input" | "researching" | "dossier" | "synthesizing" | "preview" | "saved";
+type AiStep = "input" | "generating" | "preview" | "saved";
 
 function AiWizard() {
   const [step, setStep] = useState<AiStep>("input");
   const [subject, setSubject] = useState("");
   const [context, setContext] = useState("");
-  const [dossierId, setDossierId] = useState("");
   const [summary, setSummary] = useState("");
   const [persona, setPersona] = useState<Persona | null>(null);
   const [editFields, setEditFields] = useState<PersonaFields>(emptyFields);
   const [error, setError] = useState("");
   const [savedPersona, setSavedPersona] = useState<Persona | null>(null);
 
-  async function handleResearch() {
+  async function handleGenerate() {
     if (!subject.trim()) return;
     setError("");
-    setStep("researching");
+    setStep("generating");
     try {
-      const result = await researchPersona({
+      const result = await researchAndSynthesizePersona({
         subject: subject.trim(),
         context: context.trim() || undefined,
       });
-      setDossierId(result.dossierId);
       setSummary(result.summary);
-      setStep("dossier");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Research failed");
-      setStep("input");
-    }
-  }
-
-  async function handleSynthesize() {
-    setError("");
-    setStep("synthesizing");
-    try {
-      const result = await synthesizePersona({ dossierId });
-      setPersona(result);
-      const pj = result.personaJson as unknown as PersonaFields;
+      setPersona(result.persona);
+      const pj = result.persona.personaJson as unknown as PersonaFields;
       setEditFields({
-        name: pj.name || result.name,
-        tagline: pj.tagline || result.tagline,
+        name: pj.name || result.persona.name,
+        tagline: pj.tagline || result.persona.tagline,
         style: pj.style || "",
         priorities: pj.priorities?.length ? pj.priorities : [""],
         background: pj.background || "",
@@ -130,8 +115,8 @@ function AiWizard() {
       });
       setStep("preview");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Synthesis failed");
-      setStep("dossier");
+      setError(err instanceof Error ? err.message : "Failed to build persona");
+      setStep("input");
     }
   }
 
@@ -169,14 +154,12 @@ function AiWizard() {
 
       {/* Step indicators */}
       <div className="mb-8 flex items-center gap-2">
-        {(["Research", "Dossier", "Generate", "Review"] as const).map((label, i) => {
+        {(["Describe", "Generate", "Review"] as const).map((label, i) => {
           const stepMap: Record<string, number> = {
             input: 0,
-            researching: 0,
-            dossier: 1,
-            synthesizing: 2,
-            preview: 3,
-            saved: 4,
+            generating: 1,
+            preview: 2,
+            saved: 3,
           };
           const current = stepMap[step] ?? 0;
           const isActive = i <= current;
@@ -207,7 +190,7 @@ function AiWizard() {
       </div>
 
       {/* Step: Input */}
-      {(step === "input" || step === "researching") && (
+      {step === "input" && (
         <div className="space-y-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -219,7 +202,6 @@ function AiWizard() {
               onChange={(e) => setSubject(e.target.value)}
               placeholder='e.g. "Elon Musk on AI regulation" or "a veteran labor union organizer"'
               className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
-              disabled={step === "researching"}
             />
           </div>
           <div>
@@ -232,68 +214,37 @@ function AiWizard() {
               placeholder="Any additional context to guide the research..."
               rows={3}
               className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
-              disabled={step === "researching"}
             />
           </div>
           <button
-            onClick={handleResearch}
-            disabled={!subject.trim() || step === "researching"}
+            onClick={handleGenerate}
+            disabled={!subject.trim()}
             className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-3 font-medium text-white shadow-lg transition-all hover:shadow-blue-500/25 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {step === "researching" ? (
-              <>
-                <Spinner />
-                Researching...
-              </>
-            ) : (
-              <>
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                </svg>
-                Research
-              </>
-            )}
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+            </svg>
+            Build Persona
           </button>
         </div>
       )}
 
-      {/* Step: Dossier */}
-      {(step === "dossier" || step === "synthesizing") && (
-        <div className="space-y-4">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-3 flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100">
-                <svg className="h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-gray-900">Research Complete</h3>
-            </div>
-            <div className="max-h-64 overflow-y-auto whitespace-pre-wrap text-sm text-gray-600">
-              {summary}
-            </div>
+      {/* Step: Generating (single combined research + synthesis) */}
+      {step === "generating" && (
+        <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm">
+          <div className="flex items-center justify-center gap-3">
+            <Spinner />
+            <span className="text-base font-medium text-gray-700">
+              Researching &amp; synthesizing &ldquo;{subject}&rdquo;…
+            </span>
           </div>
-          <button
-            onClick={handleSynthesize}
-            disabled={step === "synthesizing"}
-            className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-3 font-medium text-white shadow-lg transition-all hover:shadow-blue-500/25 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {step === "synthesizing" ? (
-              <>
-                <Spinner />
-                Generating Persona...
-              </>
-            ) : (
-              <>
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
-                </svg>
-                Generate Persona
-              </>
-            )}
-          </button>
+          <p className="text-sm text-gray-500">
+            Pulling sources via Perplexity and structuring the persona via GPT-5-mini.
+            This usually takes 20–40 seconds.
+          </p>
         </div>
       )}
+
 
       {/* Step: Preview & Edit */}
       {step === "preview" && (
@@ -317,7 +268,7 @@ function AiWizard() {
               Save Persona
             </button>
             <button
-              onClick={() => setStep("dossier")}
+              onClick={handleGenerate}
               className="rounded-lg border border-gray-200 px-6 py-3 font-medium text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-50"
             >
               Re-generate
@@ -354,7 +305,6 @@ function AiWizard() {
                 setStep("input");
                 setSubject("");
                 setContext("");
-                setDossierId("");
                 setSummary("");
                 setPersona(null);
                 setEditFields(emptyFields);
@@ -590,7 +540,7 @@ function PersonaEditForm({
                 value={p}
                 onChange={(e) => updatePriority(i, e.target.value)}
                 placeholder={`Priority ${i + 1}`}
-                className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-base text-gray-900 placeholder-gray-400 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 sm:text-sm"
               />
               {fields.priorities.length > 1 && (
                 <button
@@ -647,7 +597,7 @@ function FormField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full rounded-lg border bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 ${
+        className={`w-full rounded-lg border bg-gray-50 px-4 py-2.5 text-base text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 sm:text-sm ${
           error
             ? "border-red-300 focus:border-red-400 focus:ring-red-100"
             : "border-gray-200 focus:border-blue-400 focus:ring-blue-100"
@@ -683,7 +633,7 @@ function FormTextarea({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={3}
-        className={`w-full rounded-lg border bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 ${
+        className={`w-full rounded-lg border bg-gray-50 px-4 py-2.5 text-base text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 sm:text-sm ${
           error
             ? "border-red-300 focus:border-red-400 focus:ring-red-100"
             : "border-gray-200 focus:border-blue-400 focus:ring-blue-100"
