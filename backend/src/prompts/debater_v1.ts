@@ -55,6 +55,10 @@ export function buildDebaterPrompt(ctx: DebaterPromptContext): LlmPrompt {
 
   const authenticityBlock = buildVoiceAuthenticityBlock(ctx.persona, 'debate');
 
+  const opponentTargetsBlock = buildOpponentTargetsBlock(ctx.opponentPersona);
+
+  const motionStancesBlock = buildMotionStancesBlock(ctx.persona, ctx.motion);
+
   const identity = ctx.persona.identity as Record<string, unknown> | undefined;
   const personaName = (identity?.name ?? 'this persona') as string;
 
@@ -76,9 +80,13 @@ SPOKEN REGISTER — This is a LIVE DEBATE, not a written essay. Your output must
 - Keep most sentences under 20 words. Real debaters use short sentences for impact.
 - NO essay transitions ("Furthermore," "Moreover," "Additionally") — use spoken connectors instead
 - Think: how would this person sound at a live Oxford Union debate or a televised political debate? Not how would they write an op-ed.
+${motionStancesBlock}
+
 ${voiceBlock}
 
 ${authenticityBlock}
+
+${opponentTargetsBlock}
 
 CRITICAL — ZERO REPETITION OF LANGUAGE OR DEVICES:
 Read the ENTIRE transcript before writing. Track every rhetorical device, transition phrase, and argumentative move you have already used. You are STRICTLY FORBIDDEN from:
@@ -143,4 +151,141 @@ ${transcriptText}
 Now deliver your ${ctx.stage.label} as the ${ctx.speaker === 'A' ? 'FOR' : 'AGAINST'} side.`;
 
   return { system, user };
+}
+
+/**
+ * Extract the opponent's documented weak points and surface them as explicit
+ * attack targets in the system prompt. The opponent's full persona JSON is
+ * already in the user message, but it's 200+ fields deep — the LLM won't
+ * reliably find vulnerabilities.blindSpots unless we put them up front.
+ */
+const STANCE_STOPWORDS = new Set([
+  'the',
+  'a',
+  'an',
+  'and',
+  'or',
+  'but',
+  'of',
+  'in',
+  'on',
+  'is',
+  'are',
+  'was',
+  'were',
+  'be',
+  'been',
+  'for',
+  'to',
+  'from',
+  'with',
+  'that',
+  'this',
+  'it',
+  'its',
+  'as',
+  'at',
+  'by',
+  'than',
+  'should',
+  'must',
+  'can',
+  'will',
+  'would',
+  'have',
+  'has',
+  'had',
+  'than',
+]);
+
+function motionTokens(motion: string): Set<string> {
+  return new Set(
+    motion
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, ' ')
+      .split(/\s+/)
+      .filter((w) => w.length > 2 && !STANCE_STOPWORDS.has(w)),
+  );
+}
+
+/**
+ * Scan the persona's knownStances for entries whose topic slug or stance text
+ * overlaps with the motion, and surface the top matches in the system prompt.
+ * This prevents the LLM from having to fish through 200 fields to find the
+ * relevant documented view — and it's the fix for the screenshot case where
+ * Thatcher argued *against* free markets because her stance on that topic
+ * was buried in the persona JSON.
+ */
+function buildMotionStancesBlock(
+  persona: Record<string, unknown>,
+  motion: string,
+): string {
+  const positions = persona.positions as
+    | { knownStances?: Record<string, string> }
+    | undefined;
+  const stances = positions?.knownStances;
+  if (!stances || Object.keys(stances).length === 0) return '';
+
+  const tokens = motionTokens(motion);
+  if (tokens.size === 0) return '';
+
+  const scored = Object.entries(stances).map(([topic, stance]) => {
+    const topicTokens = topic.toLowerCase().split(/[-_\s]+/);
+    const stanceTokens = stance.toLowerCase().split(/\s+/);
+    const topicHits = topicTokens.filter((t) => tokens.has(t)).length;
+    const stanceHits = stanceTokens.filter((t) => tokens.has(t)).length;
+    return { topic, stance, score: topicHits * 3 + stanceHits };
+  });
+  scored.sort((a, b) => b.score - a.score);
+  const top = scored.filter((s) => s.score > 0).slice(0, 3);
+  if (top.length === 0) return '';
+
+  return `MOTION-RELEVANT DOCUMENTED VIEWS — your own words on this topic:
+${top.map((s) => `  • [${s.topic}] ${s.stance}`).join('\n')}
+
+Anchor your argument in these positions. If your assigned side contradicts one, follow the STANCE INTEGRITY rule above — argue the steelman while acknowledging the tension in your own voice.`;
+}
+
+function buildOpponentTargetsBlock(opponentPersona: Record<string, unknown>): string {
+  const identity = opponentPersona.identity as { name?: string } | undefined;
+  const opponentName = identity?.name ?? 'your opponent';
+  const vulnerabilities = opponentPersona.vulnerabilities as
+    | {
+        blindSpots?: unknown;
+        hedgingTopics?: unknown;
+      }
+    | undefined;
+  const epistemology = opponentPersona.epistemology as
+    | { mindChanges?: unknown; trackRecord?: unknown }
+    | undefined;
+
+  const lines: string[] = [];
+  const blindSpots = vulnerabilities?.blindSpots;
+  if (Array.isArray(blindSpots) && blindSpots.length > 0) {
+    lines.push(
+      `Documented blind spots (attack here first):`,
+      ...blindSpots.slice(0, 4).map((b) => `  • ${String(b)}`),
+    );
+  }
+  const hedgingTopics = vulnerabilities?.hedgingTopics;
+  if (Array.isArray(hedgingTopics) && hedgingTopics.length > 0) {
+    lines.push(
+      `Topics they hedge on (press them for specifics):`,
+      ...hedgingTopics.slice(0, 3).map((h) => `  • ${String(h)}`),
+    );
+  }
+  const mindChanges = epistemology?.mindChanges;
+  if (Array.isArray(mindChanges) && mindChanges.length > 0) {
+    lines.push(
+      `Positions they've shifted on (cite their own prior words):`,
+      ...mindChanges.slice(0, 2).map((m) => `  • ${String(m)}`),
+    );
+  }
+
+  if (lines.length === 0) return '';
+
+  return `OPPONENT ATTACK TARGETS — ${opponentName}'s documented weaknesses:
+${lines.join('\n')}
+
+Use these when selecting what to challenge, what question to ask, and where to press. You don't have to hit all of them — pick the one most relevant to the current motion. But do not default to generic rebuttals when specific targets are available.`;
 }
