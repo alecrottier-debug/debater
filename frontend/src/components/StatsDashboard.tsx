@@ -70,7 +70,7 @@ function HeroStatsBar({ stats }: { stats: AllStats }) {
     "sm:col-span-2", // Most Active (wide)
   ];
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:auto-rows-[minmax(72px,auto)]">
+    <div className="grid grid-cols-1 gap-3 [@media(min-width:480px)]:grid-cols-2 sm:grid-cols-4 sm:auto-rows-[minmax(72px,auto)]">
       {cards.map((card, i) => {
         const span = bentoClasses[i] ?? "";
         const isHero = i === 0;
@@ -80,7 +80,7 @@ function HeroStatsBar({ stats }: { stats: AllStats }) {
             style={{ animationDelay: `${i * 50}ms` }}
             className={`enter-up cursor-pointer rounded-xl border border-gray-200/80 bg-white/80 shadow-sm backdrop-blur transition-colors hover:bg-gray-50 ${span} ${
               isHero
-                ? "flex flex-col justify-between bg-gradient-to-br from-white to-blue-50/40 px-4 py-4"
+                ? "flex flex-col justify-between bg-gradient-to-br from-white to-blue-50/40 px-4 py-3 sm:py-4"
                 : "px-3 py-2"
             }`}
           >

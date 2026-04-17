@@ -72,12 +72,16 @@ function DebateSubheader({
   stages,
   isCompleted,
   isDiscussion,
+  transcriptOpen,
+  onToggleTranscript,
 }: {
   debate: Debate;
   turns: Turn[];
   stages: StageConfig[];
   isCompleted: boolean;
   isDiscussion: boolean;
+  transcriptOpen: boolean;
+  onToggleTranscript: () => void;
 }) {
   const score = useMemo(() => computeMomentum(turns, stages), [turns, stages]);
   const total = score.A + score.B;
@@ -345,6 +349,21 @@ function DebateSubheader({
                 ✓ Done
               </span>
             )}
+            {/* Compact transcript toggle, mobile only (desktop has floating button on left).
+                Shown only once there's at least one turn to jump to. */}
+            {turns.length > 0 && (
+              <button
+                type="button"
+                onClick={onToggleTranscript}
+                aria-label={transcriptOpen ? "Close transcript" : "Open transcript"}
+                aria-expanded={transcriptOpen}
+                className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-500 transition-colors hover:border-blue-300 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -384,18 +403,18 @@ function StreamingTurnCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className={`relative rounded-2xl border ${tone.border} ${tone.bg} p-4 shadow-sm sm:p-5`}
+      className={`relative rounded-2xl border ${tone.border} ${tone.bg} p-3 shadow-sm sm:p-5`}
     >
-      <div className="mb-3 flex items-center gap-3">
+      <div className="mb-2.5 flex items-center gap-2.5 sm:mb-3 sm:gap-3">
         {avatarUrl ? (
           <img
             src={avatarUrl}
             alt={speakerName}
-            className={`h-10 w-10 shrink-0 rounded-full object-cover ring-2 ${tone.ring}`}
+            className={`h-9 w-9 shrink-0 rounded-full object-cover ring-2 sm:h-10 sm:w-10 ${tone.ring}`}
           />
         ) : (
           <div
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold ring-2 ${tone.ring} ${tone.text}`}
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold ring-2 sm:h-10 sm:w-10 ${tone.ring} ${tone.text}`}
           >
             {speakerName ? speakerName.charAt(0) : "?"}
           </div>
@@ -432,6 +451,8 @@ export default function DebatePage({ params }: DebatePageProps) {
   const [streamingNarrative, setStreamingNarrative] = useState<string>("");
   const [streamingSpeaker, setStreamingSpeaker] = useState<Speaker | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
   const autoStarted = useRef(false);
   const closeStreamRef = useRef<(() => void) | null>(null);
@@ -461,12 +482,35 @@ export default function DebatePage({ params }: DebatePageProps) {
     loadDebate();
   }, [loadDebate]);
 
-  // Auto-scroll to bottom when new turns arrive
+  // Auto-scroll to bottom when new turns arrive (only if user is already at bottom)
   useEffect(() => {
-    if (turns.length > 0 && bottomRef.current) {
+    if (turns.length > 0 && bottomRef.current && isAtBottom) {
       bottomRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }
+    // intentionally omitting isAtBottom from deps — we only want to trigger on new turn
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [turns.length]);
+
+  // During streaming, keep the ghost card in view — but only if the user hasn't
+  // scrolled up to look at prior turns (the "sticky-to-bottom unless scrolled" pattern).
+  useEffect(() => {
+    if (streamingNarrative && bottomRef.current && isAtBottom) {
+      bottomRef.current.scrollIntoView({ behavior: "auto", block: "end" });
+    }
+  }, [streamingNarrative, isAtBottom]);
+
+  // Track whether the bottom anchor is visible so we know if the user has
+  // scrolled up. When they scroll back to the bottom, auto-follow resumes.
+  useEffect(() => {
+    const anchor = bottomRef.current;
+    if (!anchor) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsAtBottom(entry.isIntersecting),
+      { threshold: 0, rootMargin: "120px 0px 0px 0px" },
+    );
+    observer.observe(anchor);
+    return () => observer.disconnect();
+  }, [debate?.id]);
 
   // Auto-start: skip the "Begin Debate" step and immediately generate the moderator setup
   useEffect(() => {
@@ -585,6 +629,8 @@ export default function DebatePage({ params }: DebatePageProps) {
         stages={stages}
         isCompleted={!!isCompleted}
         isDiscussion={!!isDiscussion}
+        transcriptOpen={transcriptOpen}
+        onToggleTranscript={() => setTranscriptOpen(!transcriptOpen)}
       />
 
       {/* Main content */}
@@ -601,6 +647,8 @@ export default function DebatePage({ params }: DebatePageProps) {
             stages={stages}
             personaAName={debate.personaA.name}
             personaBName={debate.personaB.name}
+            open={transcriptOpen}
+            onOpenChange={setTranscriptOpen}
           />
         </div>
       ) : (
@@ -717,6 +765,30 @@ export default function DebatePage({ params }: DebatePageProps) {
           {/* Spacer so content doesn't hide behind sticky button */}
           <div className="h-20 sm:h-24" />
 
+          {/* Jump-to-live pill — appears only while streaming and user has scrolled away from bottom. */}
+          <AnimatePresence>
+            {advancing && streamingNarrative && !isAtBottom && (
+              <motion.button
+                key="jump-to-live"
+                type="button"
+                onClick={() =>
+                  bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
+                }
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 12 }}
+                style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 5.5rem)" }}
+                className="fixed left-1/2 z-30 -translate-x-1/2 rounded-full border border-gray-200 bg-white/95 px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-lg backdrop-blur transition-colors hover:border-blue-300 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                  Jump to live
+                  <span aria-hidden>↓</span>
+                </span>
+              </motion.button>
+            )}
+          </AnimatePresence>
+
           {/* Sticky Next Stage Button */}
           <div
             style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
@@ -759,6 +831,8 @@ export default function DebatePage({ params }: DebatePageProps) {
             stages={stages}
             personaAName={debate.personaA.name}
             personaBName={debate.personaB.name}
+            open={transcriptOpen}
+            onOpenChange={setTranscriptOpen}
           />
         </div>
       )}
