@@ -59,27 +59,53 @@ function HeroStatsBar({ stats }: { stats: AllStats }) {
     },
   ];
 
+  // Bento layout: the first tile (Debates, the flagship metric) gets a
+  // larger footprint to create asymmetric visual rhythm. "Most Active" spans
+  // two columns because its text value needs the room.
+  const bentoClasses = [
+    "sm:col-span-2 sm:row-span-2", // Debates (hero)
+    "", // Discussions
+    "", // Completed
+    "", // Avg Closeness
+    "sm:col-span-2", // Most Active (wide)
+  ];
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-      {cards.map((card, i) => (
-        <motion.div
-          key={card.label}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.05 }}
-          className="cursor-pointer rounded-xl border border-gray-200/80 bg-white/80 px-3 py-2 shadow-sm backdrop-blur transition-colors hover:bg-gray-50"
-        >
-          <div className="flex items-center gap-2.5">
-            <div className="shrink-0">{card.icon}</div>
-            <div className="min-w-0">
-              <div className={`font-bold text-gray-900 ${card.isText ? "text-sm truncate" : "text-2xl tabular-nums"}`}>
-                {card.value}
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:auto-rows-[minmax(72px,auto)]">
+      {cards.map((card, i) => {
+        const span = bentoClasses[i] ?? "";
+        const isHero = i === 0;
+        return (
+          <div
+            key={card.label}
+            style={{ animationDelay: `${i * 50}ms` }}
+            className={`enter-up cursor-pointer rounded-xl border border-gray-200/80 bg-white/80 shadow-sm backdrop-blur transition-colors hover:bg-gray-50 ${span} ${
+              isHero
+                ? "flex flex-col justify-between bg-gradient-to-br from-white to-blue-50/40 px-4 py-4"
+                : "px-3 py-2"
+            }`}
+          >
+            <div className={isHero ? "flex items-start gap-3" : "flex items-center gap-2.5"}>
+              <div className="shrink-0">{card.icon}</div>
+              <div className="min-w-0">
+                <div
+                  className={`font-bold text-gray-900 ${
+                    card.isText
+                      ? "text-sm truncate sm:text-base"
+                      : isHero
+                      ? "text-4xl tabular-nums sm:text-5xl"
+                      : "text-2xl tabular-nums"
+                  }`}
+                >
+                  {card.value}
+                </div>
+                <div className={`text-gray-500 ${isHero ? "text-sm" : "text-xs"}`}>
+                  {card.label}
+                </div>
               </div>
-              <div className="text-xs text-gray-500">{card.label}</div>
             </div>
           </div>
-        </motion.div>
-      ))}
+        );
+      })}
     </div>
   );
 }

@@ -71,6 +71,40 @@ html {
   50% { filter: drop-shadow(0 0 10px rgba(168,128,46,0.35)); }
 }
 
+/* ================================
+   Enter animations (CSS replaces Framer Motion initial/animate props).
+   Use via Tailwind arbitrary classes: className="animate-[enter-fade_400ms_ease-out]"
+   or the shortcut utility classes `.enter-*` below.
+   ================================ */
+.enter-fade,
+.enter-up,
+.enter-down,
+.enter-scale {
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+.enter-fade { animation: enter-fade 400ms; }
+.enter-up { animation: enter-up 450ms; }
+.enter-down { animation: enter-down 450ms; }
+.enter-scale { animation: enter-scale 350ms; }
+
+@keyframes enter-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes enter-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes enter-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes enter-scale {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 /* Radix Dialog enter/exit animations (Tailwind arbitrary-class compatible). */
 @keyframes fade-in {
   from { opacity: 0; }

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Cinzel, Cormorant_Garamond } from "next/font/google";
 import Link from "next/link";
 import { Brain, Plus, HelpCircle, History as HistoryIcon } from "lucide-react";
+import { Suspense } from "react";
+import PostHogProvider from "@/components/PostHogProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -54,6 +56,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${cinzel.variable} ${cormorant.variable} antialiased min-h-screen bg-[#f8f9fb]`}
       >
+      <Suspense fallback={null}>
+        <PostHogProvider />
+      </Suspense>
         {/* Fixed background illustration */}
         <div
           className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.18] contrast-125 grayscale"
