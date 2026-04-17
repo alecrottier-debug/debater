@@ -1,26 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
 
 interface FAQSection {
   icon: React.ReactNode;
   title: string;
   summary: React.ReactNode;
   details: React.ReactNode;
-}
-
-function ChevronIcon({ open }: { open: boolean }) {
-  return (
-    <svg
-      className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={2}
-      stroke="currentColor"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-    </svg>
-  );
 }
 
 const sections: FAQSection[] = [
@@ -215,19 +203,9 @@ const sections: FAQSection[] = [
 ];
 
 export default function FAQPage() {
-  const [openSections, setOpenSections] = useState<Set<number>>(new Set());
-
-  function toggle(index: number) {
-    setOpenSections((prev) => {
-      const next = new Set(prev);
-      if (next.has(index)) {
-        next.delete(index);
-      } else {
-        next.add(index);
-      }
-      return next;
-    });
-  }
+  // Index of the open section, or null if none.
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const openSection = openIndex !== null ? sections[openIndex] : null;
 
   return (
     <div className="mx-auto max-w-3xl py-3">
@@ -236,41 +214,80 @@ export default function FAQPage() {
           Frequently Asked Questions
         </h1>
         <p className="mt-1 text-sm text-gray-500">
-          How the debate system works under the hood
+          How the debate system works under the hood — tap any card to open.
         </p>
       </div>
 
-      <div className="space-y-2">
-        {sections.map((section, i) => {
-          const isOpen = openSections.has(i);
-          return (
-            <div
-              key={i}
-              className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-            >
-              <button
-                onClick={() => toggle(i)}
-                className="flex w-full items-start gap-3 px-5 py-3 text-left transition-colors hover:bg-gray-50"
-              >
-                <span className="mt-0.5 shrink-0">{section.icon}</span>
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-base font-semibold text-gray-900">{section.title}</h3>
-                  <div className="mt-1">{section.summary}</div>
-                </div>
-                <span className="mt-1 shrink-0">
-                  <ChevronIcon open={isOpen} />
-                </span>
-              </button>
-
-              {isOpen && (
-                <div className="border-t border-gray-100 bg-gray-50/50 px-5 py-3 pl-13">
-                  {section.details}
-                </div>
-              )}
+      {/* Responsive grid of question cards */}
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {sections.map((section, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => setOpenIndex(i)}
+            className="group flex h-full items-start gap-3 rounded-xl border border-gray-200 bg-white px-5 py-4 text-left shadow-sm transition-all hover:-translate-y-px hover:border-blue-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          >
+            <span className="mt-0.5 shrink-0">{section.icon}</span>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-base font-semibold text-gray-900">
+                {section.title}
+              </h3>
+              <div className="mt-1 line-clamp-3">{section.summary}</div>
+              <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-blue-600 opacity-0 transition-opacity group-hover:opacity-100">
+                Read more
+                <span aria-hidden>→</span>
+              </span>
             </div>
-          );
-        })}
+          </button>
+        ))}
       </div>
+
+      {/* Shared modal — rendered once; content driven by openIndex */}
+      <Dialog.Root
+        open={openIndex !== null}
+        onOpenChange={(o) => !o && setOpenIndex(null)}
+      >
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm data-[state=open]:animate-[fade-in_150ms] data-[state=closed]:animate-[fade-out_100ms]" />
+          <Dialog.Content
+            aria-describedby={undefined}
+            className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-2rem)] max-w-2xl max-h-[85vh] rounded-2xl border border-gray-200 bg-white shadow-2xl flex flex-col overflow-hidden data-[state=open]:animate-[dialog-in_200ms] data-[state=closed]:animate-[dialog-out_150ms]"
+          >
+            {openSection && (
+              <>
+                {/* Header */}
+                <div className="flex items-start justify-between gap-3 border-b border-gray-100 bg-gray-50/60 px-5 py-4 sm:px-6">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <span className="mt-0.5 shrink-0">{openSection.icon}</span>
+                    <div className="min-w-0">
+                      <Dialog.Title className="text-lg font-bold text-gray-900">
+                        {openSection.title}
+                      </Dialog.Title>
+                      <div className="mt-1 text-sm text-gray-600">
+                        {openSection.summary}
+                      </div>
+                    </div>
+                  </div>
+                  <Dialog.Close asChild>
+                    <button
+                      type="button"
+                      aria-label="Close"
+                      className="shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    >
+                      <X aria-hidden className="h-5 w-5" />
+                    </button>
+                  </Dialog.Close>
+                </div>
+
+                {/* Body */}
+                <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 sm:px-6 sm:py-5">
+                  {openSection.details}
+                </div>
+              </>
+            )}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 }
