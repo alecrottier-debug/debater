@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchDebates } from "@/lib/api";
 import type { Debate } from "@/lib/api";
+import { humanizeNarrativeText } from "@/lib/format-stage-label";
+import Spinner from "@/components/Spinner";
 import StatsDashboard from "@/components/StatsDashboard";
 
 /* ── Helpers ── */
@@ -142,7 +145,7 @@ function DebateCard({
     | undefined;
   const nameA = debate.personaA.name;
   const nameB = debate.personaB.name;
-  const summary = ballot?.[0]?.reason
+  const summaryStripped = ballot?.[0]?.reason
     // Strip trailing references like "References: A_OPEN, A_CHALLENGE, ..."
     ?.replace(/\s*References?:\s*[A-Z_,;\s]+\.?\s*$/g, "")
     // Strip inline parenthesized stage refs
@@ -150,29 +153,19 @@ function DebateCard({
     // Strip bracketed stage refs like [A_CHALLENGE]
     .replace(/\[[A-Z][A-Z0-9_]+\]/g, "")
     // Replace bare stage IDs in prose
-    .replace(/\b[AB]_(?:OPEN|CHALLENGE|REBUTTAL|COUNTER|CLOSE|RESPOND_[12]|FINAL)\b/g, "")
-    // Named references — case variations
-    .replace(/\bSide A\b/g, nameA)
-    .replace(/\bSide B\b/g, nameB)
-    .replace(/\bside A\b/g, nameA)
-    .replace(/\bside B\b/g, nameB)
-    .replace(/\bDebater A\b/g, nameA)
-    .replace(/\bDebater B\b/g, nameB)
-    .replace(/\bdebater A\b/g, nameA)
-    .replace(/\bdebater B\b/g, nameB)
-    .replace(/\bSpeaker A\b/g, nameA)
-    .replace(/\bSpeaker B\b/g, nameB)
-    .replace(/\bspeaker A\b/g, nameA)
-    .replace(/\bspeaker B\b/g, nameB)
-    // Standalone "B" = debater ref
-    .replace(/\bB\b/g, nameB)
-    // Standalone "A" after punctuation
-    .replace(/(?<=[:;,]\s*)A\b/g, nameA)
-    .replace(/(?<=\.\s+)A\b/g, nameA)
-    .replace(/(?<![A-Za-z])\bA\b(?='s\b)/g, nameA)
-    // Clean up any double spaces left from stripping
-    .replace(/\s{2,}/g, " ")
-    .trim();
+    .replace(/\b[AB]_(?:OPEN|CHALLENGE|REBUTTAL|COUNTER|CLOSE|RESPOND_[12]|FINAL)\b/g, "");
+  const summary =
+    summaryStripped &&
+    humanizeNarrativeText(summaryStripped, nameA, nameB)
+      // Standalone "B" = debater ref
+      .replace(/\bB\b/g, nameB)
+      // Standalone "A" after punctuation
+      .replace(/(?<=[:;,]\s*)A\b/g, nameA)
+      .replace(/(?<=\.\s+)A\b/g, nameA)
+      .replace(/(?<![A-Za-z])\bA\b(?='s\b)/g, nameA)
+      // Clean up any double spaces left from stripping
+      .replace(/\s{2,}/g, " ")
+      .trim();
 
   const date = new Date(debate.createdAt).toLocaleDateString("en-US", {
     month: "short",
@@ -397,7 +390,7 @@ export default function HistoryPage() {
 
       {view === "dashboard" && loading && (
         <div className="flex items-center justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-3 border-gray-300 border-t-blue-500" />
+          <Spinner size="md" />
         </div>
       )}
 
@@ -456,7 +449,7 @@ export default function HistoryPage() {
       {/* Results */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-3 border-gray-300 border-t-blue-500" />
+          <Spinner size="md" />
         </div>
       ) : filtered.length === 0 ? (
         <motion.div
@@ -481,6 +474,13 @@ export default function HistoryPage() {
               <p className="mt-1 text-sm text-gray-400">
                 Start a new debate to see it here
               </p>
+              <Link
+                href="/"
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Set up your first debate
+                <span aria-hidden="true">→</span>
+              </Link>
             </>
           ) : (
             <>

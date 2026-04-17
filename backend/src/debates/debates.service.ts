@@ -5,13 +5,26 @@ import {
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
+import type { Prisma } from '@prisma/client';
+import {
+  DebateStatus,
+  DEFAULT_CONFRONTATION_LEVEL,
+} from '../common/debate-constants.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { StagePlanService } from '../stages/stage-plan.service.js';
 import { ValidatorService } from '../validators/validator.service.js';
 import { LLM_ADAPTER } from '../llm/llm-adapter.interface.js';
-import type { LlmAdapter, LlmPrompt } from '../llm/llm-adapter.interface.js';
+import type {
+  LlmAdapter,
+  LlmPrompt,
+  NarrativeStreamHandler,
+} from '../llm/llm-adapter.interface.js';
 import type { StageConfig } from '../stages/stage-plan.types.js';
-import type { DebaterOutput, ModeratorOutput, JudgeOutput } from '../llm/llm-schemas.js';
+import type {
+  DebaterOutput,
+  ModeratorOutput,
+  JudgeOutput,
+} from '../llm/llm-schemas.js';
 import {
   buildModeratorPrompt,
   MODERATOR_PROMPT_VERSION,
@@ -21,10 +34,7 @@ import {
   DEBATER_PROMPT_VERSION,
 } from '../prompts/debater_v1.js';
 import type { TranscriptEntry } from '../prompts/debater_v1.js';
-import {
-  buildJudgePrompt,
-  JUDGE_PROMPT_VERSION,
-} from '../prompts/judge_v1.js';
+import { buildJudgePrompt, JUDGE_PROMPT_VERSION } from '../prompts/judge_v1.js';
 import type { JudgeTranscriptEntry } from '../prompts/judge_v1.js';
 import {
   buildCrossExPrompt,
@@ -41,8 +51,8 @@ import {
 import type { DiscussionWrapOutput } from '../llm/llm-schemas.js';
 
 /** Helper to deep-clone an object into a Prisma-compatible JSON value. */
-function toJson(value: unknown): any {
-  return JSON.parse(JSON.stringify(value));
+function toJson(value: unknown): Prisma.InputJsonValue {
+  return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
 }
 
 export interface CreateDebateDto {
@@ -53,6 +63,15 @@ export interface CreateDebateDto {
   moderatorPersonaId?: string;
   confrontationLevel?: number;
 }
+
+export type StreamEvent =
+  | { type: 'stage'; stageId: string; speaker: string; label: string }
+  | { type: 'narrative'; text: string }
+  | {
+      type: 'done';
+      debate: Awaited<ReturnType<DebatesService['findOne']>>;
+    }
+  | { type: 'error'; message: string };
 
 /** Maximum age of a prefetch cache entry before it is evicted (10 minutes). */
 const PREFETCH_TTL_MS = 10 * 60 * 1000;
@@ -93,13 +112,20 @@ export class DebatesService {
       this.prisma.persona.findUnique({ where: { id: dto.personaBId } }),
     ]);
 
-    if (!personaA) throw new NotFoundException(`Persona A not found: ${dto.personaAId}`);
-    if (!personaB) throw new NotFoundException(`Persona B not found: ${dto.personaBId}`);
+    if (!personaA)
+      throw new NotFoundException(`Persona A not found: ${dto.personaAId}`);
+    if (!personaB)
+      throw new NotFoundException(`Persona B not found: ${dto.personaBId}`);
 
     // Validate moderator persona if provided
     if (dto.moderatorPersonaId) {
-      const modPersona = await this.prisma.persona.findUnique({ where: { id: dto.moderatorPersonaId } });
-      if (!modPersona) throw new NotFoundException(`Moderator persona not found: ${dto.moderatorPersonaId}`);
+      const modPersona = await this.prisma.persona.findUnique({
+        where: { id: dto.moderatorPersonaId },
+      });
+      if (!modPersona)
+        throw new NotFoundException(
+          `Moderator persona not found: ${dto.moderatorPersonaId}`,
+        );
     }
 
     let personaAId: string;
@@ -111,7 +137,11 @@ export class DebatesService {
       personaBId = dto.personaBId;
     } else {
       // Align sides for debates
-      const { forId, againstId } = await this.alignSides(dto.motion, personaA, personaB);
+      const { forId, againstId } = await this.alignSides(
+        dto.motion,
+        personaA,
+        personaB,
+      );
       personaAId = forId;
       personaBId = againstId;
     }
@@ -123,9 +153,9 @@ export class DebatesService {
         personaAId,
         personaBId,
         moderatorPersonaId: dto.moderatorPersonaId ?? null,
-        confrontationLevel: dto.confrontationLevel ?? 3,
+        confrontationLevel: dto.confrontationLevel ?? DEFAULT_CONFRONTATION_LEVEL,
         stageIndex: 0,
-        status: 'pending',
+        status: DebateStatus.Pending,
       },
       include: {
         personaA: true,
@@ -152,10 +182,17 @@ export class DebatesService {
       const bio = identity?.biography as Record<string, unknown> | undefined;
       const parts: string[] = [];
       if (bio?.summary) parts.push(`Background: ${bio.summary}`);
-      if (positions?.priorities) parts.push(`Priorities: ${(positions.priorities as string[]).join('; ')}`);
+      if (positions?.priorities)
+        parts.push(
+          `Priorities: ${(positions.priorities as string[]).join('; ')}`,
+        );
       if (positions?.knownStances) {
         const stances = positions.knownStances as Record<string, string>;
-        parts.push(`Known stances: ${Object.entries(stances).map(([k, v]) => `${k}: ${v}`).join('; ')}`);
+        parts.push(
+          `Known stances: ${Object.entries(stances)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join('; ')}`,
+        );
       }
       return parts.join('\n');
     };
@@ -175,19 +212,24 @@ Which debater should argue FOR and which AGAINST?`,
 
     try {
       const raw = await this.llm.generateText(prompt);
-      const cleaned = raw.trim().replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
+      const cleaned = raw
+        .trim()
+        .replace(/^```(?:json)?\s*/, '')
+        .replace(/\s*```$/, '');
       const result = JSON.parse(cleaned) as { for: string; reason: string };
       const forIsA = result.for === 'A';
       this.logger.log(
         `[Side alignment] ${forIsA ? personaA.name : personaB.name} argues FOR, ` +
-        `${forIsA ? personaB.name : personaA.name} argues AGAINST. Reason: ${result.reason}`,
+          `${forIsA ? personaB.name : personaA.name} argues AGAINST. Reason: ${result.reason}`,
       );
       return {
         forId: forIsA ? personaA.id : personaB.id,
         againstId: forIsA ? personaB.id : personaA.id,
       };
     } catch (err) {
-      this.logger.warn(`[Side alignment] Failed, keeping original order: ${(err as Error).message}`);
+      this.logger.warn(
+        `[Side alignment] Failed, keeping original order: ${(err as Error).message}`,
+      );
       return { forId: personaA.id, againstId: personaB.id };
     }
   }
@@ -243,11 +285,15 @@ Which debater should argue FOR and which AGAINST?`,
     lines.push(`# ${isDiscussion ? 'Discussion' : 'Debate'}: ${debate.motion}`);
     lines.push('');
     lines.push(`**Mode:** ${debate.mode}`);
-    lines.push(`**${isDiscussion ? 'Guest A' : 'Side A'}:** ${debate.personaA.name}`);
-    lines.push(`**${isDiscussion ? 'Guest B' : 'Side B'}:** ${debate.personaB.name}`);
-    if ((debate as any).moderatorPersona) {
-      lines.push(`**Moderator:** ${(debate as any).moderatorPersona.name}`);
-      lines.push(`**Confrontation Level:** ${(debate as any).confrontationLevel}/5`);
+    lines.push(
+      `**${isDiscussion ? 'Guest A' : 'Side A'}:** ${debate.personaA.name}`,
+    );
+    lines.push(
+      `**${isDiscussion ? 'Guest B' : 'Side B'}:** ${debate.personaB.name}`,
+    );
+    if (debate.moderatorPersona) {
+      lines.push(`**Moderator:** ${debate.moderatorPersona.name}`);
+      lines.push(`**Confrontation Level:** ${debate.confrontationLevel}/5`);
     }
     lines.push(`**Status:** ${debate.status}`);
     lines.push('');
@@ -259,7 +305,11 @@ Which debater should argue FOR and which AGAINST?`,
     lines.push('');
 
     for (const turn of debate.turns) {
-      const speakerLabel = this.getSpeakerLabel(turn.speaker, debate.personaA.name, debate.personaB.name);
+      const speakerLabel = this.getSpeakerLabel(
+        turn.speaker,
+        debate.personaA.name,
+        debate.personaB.name,
+      );
       lines.push(`### ${turn.stageId} - ${speakerLabel}`);
       lines.push('');
       lines.push(turn.renderedText);
@@ -272,40 +322,32 @@ Which debater should argue FOR and which AGAINST?`,
     }
 
     // Discussion wrap summary
-    if (isDiscussion && debate.status === 'completed') {
+    if (isDiscussion && debate.status === DebateStatus.Completed) {
       const wrapTurn = debate.turns.find((t) => t.stageId === 'MOD_WRAP');
       if (wrapTurn) {
-        const wrapPayload = wrapTurn.payload as Record<string, unknown>;
+        const wrapPayload = wrapTurn.payload as DiscussionWrapOutput;
         lines.push('---');
         lines.push('');
         lines.push('## Discussion Summary');
         lines.push('');
-        if (wrapPayload.keyTakeaways) {
+        if (wrapPayload.keyTakeaways?.length) {
           lines.push('### Key Takeaways');
-          for (const t of wrapPayload.keyTakeaways as string[]) {
-            lines.push(`- ${t}`);
-          }
+          for (const t of wrapPayload.keyTakeaways) lines.push(`- ${t}`);
           lines.push('');
         }
-        if (wrapPayload.areasOfAgreement) {
+        if (wrapPayload.areasOfAgreement?.length) {
           lines.push('### Areas of Agreement');
-          for (const a of wrapPayload.areasOfAgreement as string[]) {
-            lines.push(`- ${a}`);
-          }
+          for (const a of wrapPayload.areasOfAgreement) lines.push(`- ${a}`);
           lines.push('');
         }
-        if (wrapPayload.areasOfDisagreement) {
+        if (wrapPayload.areasOfDisagreement?.length) {
           lines.push('### Areas of Disagreement');
-          for (const d of wrapPayload.areasOfDisagreement as string[]) {
-            lines.push(`- ${d}`);
-          }
+          for (const d of wrapPayload.areasOfDisagreement) lines.push(`- ${d}`);
           lines.push('');
         }
-        if (wrapPayload.openQuestions) {
+        if (wrapPayload.openQuestions?.length) {
           lines.push('### Open Questions');
-          for (const q of wrapPayload.openQuestions as string[]) {
-            lines.push(`- ${q}`);
-          }
+          for (const q of wrapPayload.openQuestions) lines.push(`- ${q}`);
           lines.push('');
         }
       }
@@ -314,20 +356,27 @@ Which debater should argue FOR and which AGAINST?`,
     // Judge Decision
     if (!isDiscussion && debate.judgeDecision) {
       const decision = debate.judgeDecision;
-      const scores = decision.scores as Record<string, Record<string, number>>;
-      const ballot = decision.ballot as Array<{ reason: string; refs: string[] }>;
-      const bestLines = decision.bestLines as Record<string, string>;
-      const verdict = (decision as any).verdict as string | undefined;
-      const closeness = (decision as any).closeness as string | undefined;
-      const momentum = (decision as any).momentum as { trajectory: string; description: string } | undefined;
-      const analysis = (decision as any).analysis as Record<string, { strengths: string[]; weaknesses: string[]; keyMoment: string; keyMomentRef: string }> | undefined;
-      const detailedScores = (decision as any).detailedScores as Record<string, Record<string, number>> | undefined;
+      // JSON columns are opaque to Prisma; cast against the Zod-derived shapes.
+      const scores = decision.scores as JudgeOutput['scores'];
+      const ballot = decision.ballot as JudgeOutput['ballot'];
+      const bestLines = decision.bestLines as JudgeOutput['bestLines'];
+      const momentum =
+        (decision.momentum as JudgeOutput['momentum'] | null) ?? undefined;
+      const analysis =
+        (decision.analysis as JudgeOutput['analysis'] | null) ?? undefined;
+      const detailedScores =
+        (decision.detailedScores as JudgeOutput['detailedScores'] | null) ??
+        undefined;
+      const verdict = decision.verdict ?? undefined;
+      const closeness = decision.closeness ?? undefined;
 
       lines.push('---');
       lines.push('');
       lines.push('## Judge Decision');
       lines.push('');
-      lines.push(`**Winner:** ${decision.winner}${closeness ? ` (${closeness})` : ''}`);
+      lines.push(
+        `**Winner:** ${decision.winner}${closeness ? ` (${closeness})` : ''}`,
+      );
       lines.push('');
 
       // Verdict
@@ -343,10 +392,18 @@ Which debater should argue FOR and which AGAINST?`,
       lines.push('');
       lines.push('| Category | Side A | Side B |');
       lines.push('|----------|--------|--------|');
-      for (const category of ['clarity', 'strength', 'responsiveness', 'weighing']) {
+      const scoreCategories = [
+        'clarity',
+        'strength',
+        'responsiveness',
+        'weighing',
+      ] as const;
+      for (const category of scoreCategories) {
         const aScore = scores?.A?.[category] ?? '-';
         const bScore = scores?.B?.[category] ?? '-';
-        lines.push(`| ${category.charAt(0).toUpperCase() + category.slice(1)} | ${aScore} | ${bScore} |`);
+        lines.push(
+          `| ${category.charAt(0).toUpperCase() + category.slice(1)} | ${aScore} | ${bScore} |`,
+        );
       }
       lines.push('');
 
@@ -356,7 +413,7 @@ Which debater should argue FOR and which AGAINST?`,
         lines.push('');
         lines.push('| Dimension | Side A | Side B |');
         lines.push('|-----------|--------|--------|');
-        const detailedLabels: Record<string, string> = {
+        const detailedLabels = {
           logicalRigor: 'Logical Rigor',
           evidenceQuality: 'Evidence Quality',
           rebuttalEffectiveness: 'Rebuttal Effectiveness',
@@ -367,8 +424,13 @@ Which debater should argue FOR and which AGAINST?`,
           emotionalResonance: 'Emotional Resonance',
           framingControl: 'Framing Control',
           adaptability: 'Adaptability',
-        };
-        for (const [key, label] of Object.entries(detailedLabels)) {
+        } as const satisfies Record<
+          keyof JudgeOutput['detailedScores']['A'],
+          string
+        >;
+        for (const [key, label] of Object.entries(detailedLabels) as Array<
+          [keyof JudgeOutput['detailedScores']['A'], string]
+        >) {
           const aScore = detailedScores?.A?.[key] ?? '-';
           const bScore = detailedScores?.B?.[key] ?? '-';
           lines.push(`| ${label} | ${aScore} | ${bScore} |`);
@@ -402,7 +464,9 @@ Which debater should argue FOR and which AGAINST?`,
               lines.push('');
             }
             if (sideAnalysis.keyMoment) {
-              lines.push(`**Key Moment** (${sideAnalysis.keyMomentRef}): ${sideAnalysis.keyMoment}`);
+              lines.push(
+                `**Key Moment** (${sideAnalysis.keyMomentRef}): ${sideAnalysis.keyMoment}`,
+              );
               lines.push('');
             }
           }
@@ -414,7 +478,8 @@ Which debater should argue FOR and which AGAINST?`,
         lines.push('### Ballot');
         lines.push('');
         for (const entry of ballot) {
-          const refs = entry.refs?.length > 0 ? ` *(${entry.refs.join(', ')})*` : '';
+          const refs =
+            entry.refs?.length > 0 ? ` *(${entry.refs.join(', ')})*` : '';
           lines.push(`- ${entry.reason}${refs}`);
         }
         lines.push('');
@@ -438,7 +503,11 @@ Which debater should argue FOR and which AGAINST?`,
     return lines.join('\n');
   }
 
-  private getSpeakerLabel(speaker: string, nameA: string, nameB: string): string {
+  private getSpeakerLabel(
+    speaker: string,
+    nameA: string,
+    nameB: string,
+  ): string {
     switch (speaker) {
       case 'A':
         return `Side A (${nameA})`;
@@ -453,14 +522,94 @@ Which debater should argue FOR and which AGAINST?`,
     }
   }
 
+  /**
+   * Streaming counterpart to {@link advanceStage}. Generates the next stage
+   * while invoking `onEvent` with progress events suitable for forwarding over
+   * SSE. Bypasses the prefetch cache because the user wants to see live tokens.
+   *
+   * Emitted event shapes:
+   *   { type: 'stage', stageId, speaker, label }      — generation kicked off
+   *   { type: 'narrative', text }                      — cumulative text so far
+   *   { type: 'done', debate }                         — stage persisted
+   *   { type: 'error', message }                       — bubbled-up failure
+   */
+  async advanceStageStream(
+    debateId: string,
+    onEvent: (event: StreamEvent) => void,
+  ): Promise<void> {
+    const debate = await this.findOne(debateId);
+
+    if (debate.status === DebateStatus.Completed) {
+      throw new ConflictException('Debate is already completed');
+    }
+    if (debate.status === DebateStatus.Error) {
+      throw new ConflictException('Debate is in error state');
+    }
+
+    const stageCount = this.stagePlan.getStageCount(debate.mode);
+    if (debate.stageIndex >= stageCount) {
+      throw new ConflictException('All stages have been completed');
+    }
+
+    const stage = this.stagePlan.getStageByIndex(
+      debate.mode,
+      debate.stageIndex,
+    );
+    onEvent({
+      type: 'stage',
+      stageId: stage.id,
+      speaker: stage.speaker,
+      label: stage.label,
+    });
+
+    // Drop any cached prefetch for this exact stage so the streaming path runs
+    // fresh — we want live deltas, not a pre-baked turn. Also delete any turn
+    // that the prefetcher may have already persisted for this stage so we
+    // don't end up with duplicates.
+    this.prefetchCache.delete(`${debateId}:${debate.stageIndex}`);
+    await this.prisma.turn.deleteMany({
+      where: { debateId, stageId: stage.id },
+    });
+
+    try {
+      await this.generateStage(debate, (text) =>
+        onEvent({ type: 'narrative', text }),
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      onEvent({ type: 'error', message });
+      throw err;
+    }
+
+    const nextIndex = debate.stageIndex + 1;
+    const isCompleted = nextIndex >= stageCount;
+    await this.prisma.debate.update({
+      where: { id: debateId },
+      data: {
+        stageIndex: nextIndex,
+        status: isCompleted ? DebateStatus.Completed : DebateStatus.InProgress,
+      },
+    });
+
+    // Streaming mode skips prefetch: the user already gets live tokens, so
+    // pre-generating the next turn would just create stale output and risk
+    // duplicate persistence on the next stream call.
+    if (isCompleted) {
+      this.clearDebateCache(debateId);
+    }
+
+    const updated = await this.findOne(debateId);
+    onEvent({ type: 'done', debate: updated });
+  }
+
   async advanceStage(debateId: string) {
     const debate = await this.findOne(debateId);
 
-    if (debate.status === 'completed') {
+    if (debate.status === DebateStatus.Completed) {
       throw new ConflictException('Debate is already completed');
     }
 
-    if (debate.status === 'error') {
+    if (debate.status === DebateStatus.Error) {
       throw new ConflictException('Debate is in error state');
     }
 
@@ -492,7 +641,9 @@ Which debater should argue FOR and which AGAINST?`,
           await this.generateStage(debate);
         }
       } else {
-        this.logger.log(`[Prefetch] Cache entry for ${cacheKey} expired (age=${Math.round(age / 1000)}s), generating normally`);
+        this.logger.log(
+          `[Prefetch] Cache entry for ${cacheKey} expired (age=${Math.round(age / 1000)}s), generating normally`,
+        );
         await this.generateStage(debate);
       }
     } else {
@@ -507,7 +658,7 @@ Which debater should argue FOR and which AGAINST?`,
       where: { id: debateId },
       data: {
         stageIndex: nextIndex,
-        status: isCompleted ? 'completed' : 'in_progress',
+        status: isCompleted ? DebateStatus.Completed : DebateStatus.InProgress,
       },
     });
 
@@ -525,11 +676,17 @@ Which debater should argue FOR and which AGAINST?`,
   /**
    * Execute the stage generation logic for the current stage of a debate.
    * Extracted from advanceStage to allow reuse in both normal and prefetch paths.
+   * `onNarrative` is forwarded to handlers that emit a narrative field; others
+   * (cross-ex, judge) ignore it.
    */
   private async generateStage(
     debate: Awaited<ReturnType<DebatesService['findOne']>>,
+    onNarrative?: NarrativeStreamHandler,
   ) {
-    const stage = this.stagePlan.getStageByIndex(debate.mode, debate.stageIndex);
+    const stage = this.stagePlan.getStageByIndex(
+      debate.mode,
+      debate.stageIndex,
+    );
     const personaAJson = debate.personaA.personaJson as Record<string, unknown>;
     const personaBJson = debate.personaB.personaJson as Record<string, unknown>;
     const isDiscussion = this.stagePlan.isDiscussion(debate.mode);
@@ -538,22 +695,42 @@ Which debater should argue FOR and which AGAINST?`,
 
     if (isDiscussion) {
       // Discussion mode routing
-      const moderatorPersonaJson = (debate as any).moderatorPersona?.personaJson as Record<string, unknown> | undefined;
-      const confrontationLevel = (debate as any).confrontationLevel ?? 3;
+      const moderatorPersonaJson = debate.moderatorPersona?.personaJson as
+        | Record<string, unknown>
+        | undefined;
+      const confrontationLevel =
+        debate.confrontationLevel ?? DEFAULT_CONFRONTATION_LEVEL;
 
       if (stage.id === 'MOD_WRAP') {
         await this.handleDiscussionWrapStage(
-          debate, stage, personaAJson, personaBJson,
-          moderatorPersonaJson ?? {}, confrontationLevel, existingTurns,
+          debate,
+          stage,
+          personaAJson,
+          personaBJson,
+          moderatorPersonaJson ?? {},
+          confrontationLevel,
+          existingTurns,
+          onNarrative,
         );
       } else if (stage.speaker === 'MOD') {
         await this.handleDiscussionModeratorStage(
-          debate, stage, personaAJson, personaBJson,
-          moderatorPersonaJson ?? {}, confrontationLevel, existingTurns,
+          debate,
+          stage,
+          personaAJson,
+          personaBJson,
+          moderatorPersonaJson ?? {},
+          confrontationLevel,
+          existingTurns,
+          onNarrative,
         );
       } else {
         await this.handleDiscussionParticipantStage(
-          debate, stage, personaAJson, personaBJson, existingTurns,
+          debate,
+          stage,
+          personaAJson,
+          personaBJson,
+          existingTurns,
+          onNarrative,
         );
       }
     } else if (stage.speaker === 'MOD') {
@@ -562,6 +739,7 @@ Which debater should argue FOR and which AGAINST?`,
         stage,
         personaAJson,
         personaBJson,
+        onNarrative,
       );
     } else if (stage.speaker === 'JUDGE') {
       await this.handleJudgeStage(
@@ -586,6 +764,7 @@ Which debater should argue FOR and which AGAINST?`,
         personaAJson,
         personaBJson,
         existingTurns,
+        onNarrative,
       );
     }
   }
@@ -606,7 +785,9 @@ Which debater should argue FOR and which AGAINST?`,
     // Evict stale entries before adding a new one
     this.evictStaleEntries();
 
-    this.logger.log(`[Prefetch] Starting background generation for ${cacheKey}`);
+    this.logger.log(
+      `[Prefetch] Starting background generation for ${cacheKey}`,
+    );
 
     const promise = (async () => {
       // Re-fetch debate with all turns (including the just-saved one)
@@ -620,13 +801,20 @@ Which debater should argue FOR and which AGAINST?`,
         return;
       }
 
-      if (debate.status === 'completed' || debate.status === 'error') {
-        this.logger.warn(`[Prefetch] Debate ${debateId} is ${debate.status}, skipping prefetch.`);
+      if (
+        debate.status === DebateStatus.Completed ||
+        debate.status === DebateStatus.Error
+      ) {
+        this.logger.warn(
+          `[Prefetch] Debate ${debateId} is ${debate.status}, skipping prefetch.`,
+        );
         return;
       }
 
       await this.generateStage(debate);
-      this.logger.log(`[Prefetch] Completed background generation for ${cacheKey}`);
+      this.logger.log(
+        `[Prefetch] Completed background generation for ${cacheKey}`,
+      );
     })().catch((err) => {
       this.logger.warn(
         `[Prefetch] Background generation failed for ${cacheKey}: ${(err as Error).message}`,
@@ -669,9 +857,13 @@ Which debater should argue FOR and which AGAINST?`,
 
     // If still over max, evict oldest entries
     if (this.prefetchCache.size >= PREFETCH_MAX_ENTRIES) {
-      const entries = [...this.prefetchCache.entries()]
-        .sort((a, b) => a[1].createdAt - b[1].createdAt);
-      const toEvict = entries.slice(0, entries.length - PREFETCH_MAX_ENTRIES + 1);
+      const entries = [...this.prefetchCache.entries()].sort(
+        (a, b) => a[1].createdAt - b[1].createdAt,
+      );
+      const toEvict = entries.slice(
+        0,
+        entries.length - PREFETCH_MAX_ENTRIES + 1,
+      );
       for (const [key] of toEvict) {
         this.prefetchCache.delete(key);
         this.logger.debug(`[Prefetch] Evicted entry (max size): ${key}`);
@@ -685,7 +877,7 @@ Which debater should argue FOR and which AGAINST?`,
   async setError(debateId: string, message: string) {
     await this.prisma.debate.update({
       where: { id: debateId },
-      data: { status: 'error' },
+      data: { status: DebateStatus.Error },
     });
     this.logger.error(`Debate ${debateId} set to error: ${message}`);
   }
@@ -695,6 +887,7 @@ Which debater should argue FOR and which AGAINST?`,
     stage: StageConfig,
     personaAJson: Record<string, unknown>,
     personaBJson: Record<string, unknown>,
+    onNarrative?: NarrativeStreamHandler,
   ) {
     const prompt = buildModeratorPrompt({
       motion: debate.motion,
@@ -703,7 +896,10 @@ Which debater should argue FOR and which AGAINST?`,
       personaB: personaBJson,
     });
 
-    const output: ModeratorOutput = await this.llm.generateModeratorTurn(prompt);
+    const output: ModeratorOutput = await this.llm.generateModeratorTurn(
+      prompt,
+      onNarrative,
+    );
 
     const renderedText = this.renderModeratorText(output);
     const wordCount = this.countWords(renderedText);
@@ -733,6 +929,7 @@ Which debater should argue FOR and which AGAINST?`,
       payload: unknown;
       violations: string[];
     }>,
+    onNarrative?: NarrativeStreamHandler,
   ) {
     const speaker = stage.speaker as 'A' | 'B';
     const persona = speaker === 'A' ? personaAJson : personaBJson;
@@ -753,7 +950,11 @@ Which debater should argue FOR and which AGAINST?`,
       transcript,
     });
 
-    const output: DebaterOutput = await this.llm.generateDebaterTurn(prompt, speaker);
+    const output: DebaterOutput = await this.llm.generateDebaterTurn(
+      prompt,
+      speaker,
+      onNarrative,
+    );
 
     const renderedText = this.validator.renderDebaterText(output);
     const wordCount = this.countWords(renderedText);
@@ -763,18 +964,28 @@ Which debater should argue FOR and which AGAINST?`,
       .filter((t) => t.speaker === speaker)
       .map((t) => {
         const payload = t.payload as Record<string, unknown> | null;
-        return (payload?.narrative as string) ?? (payload?.lead as string) ?? '';
+        return (
+          (payload?.narrative as string) ?? (payload?.lead as string) ?? ''
+        );
       })
       .filter((l) => l.length > 0);
 
     // Use async validation for closing stages (LLM classifier), sync for others
     const validation = this.validator.isClosingStage(stage.id)
-      ? await this.validator.validateDebaterTurnAsync(output, stage, priorNarratives)
+      ? await this.validator.validateDebaterTurnAsync(
+          output,
+          stage,
+          priorNarratives,
+        )
       : this.validator.validateDebaterTurn(output, stage, priorNarratives);
 
     // Rebuttal callback validation (requires at least 2 callbacks referencing opponent stage IDs)
     if (stage.id.includes('REBUTTAL')) {
-      const rebuttalValidation = this.validator.validateRebuttalCallbacks(output, stage, 2);
+      const rebuttalValidation = this.validator.validateRebuttalCallbacks(
+        output,
+        stage,
+        2,
+      );
       validation.violations.push(...rebuttalValidation.violations);
       validation.details.push(...rebuttalValidation.details);
     }
@@ -871,7 +1082,10 @@ Which debater should argue FOR and which AGAINST?`,
       transcript,
     });
 
-    if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROMPTS === 'true') {
+    if (
+      process.env.NODE_ENV === 'development' ||
+      process.env.DEBUG_PROMPTS === 'true'
+    ) {
       this.logger.debug(`[JUDGE PROMPT] System:\n${prompt.system}`);
       this.logger.debug(`[JUDGE PROMPT] User:\n${prompt.user}`);
     }
@@ -880,7 +1094,10 @@ Which debater should argue FOR and which AGAINST?`,
     try {
       output = await this.llm.generateJudgeDecision(prompt);
     } catch (err) {
-      await this.setError(debate.id, `Judge generation failed: ${(err as Error).message}`);
+      await this.setError(
+        debate.id,
+        `Judge generation failed: ${(err as Error).message}`,
+      );
       throw err;
     }
 
@@ -908,7 +1125,9 @@ Which debater should argue FOR and which AGAINST?`,
         scores: toJson(output.scores),
         ballot: toJson(output.ballot),
         bestLines: toJson(output.bestLines),
-        detailedScores: output.detailedScores ? toJson(output.detailedScores) : undefined,
+        detailedScores: output.detailedScores
+          ? toJson(output.detailedScores)
+          : undefined,
         verdict: output.verdict ?? undefined,
         analysis: output.analysis ? toJson(output.analysis) : undefined,
         momentum: output.momentum ? toJson(output.momentum) : undefined,
@@ -926,7 +1145,12 @@ Which debater should argue FOR and which AGAINST?`,
     personaBJson: Record<string, unknown>,
     moderatorPersonaJson: Record<string, unknown>,
     confrontationLevel: number,
-    existingTurns: Array<{ stageId: string; speaker: string; renderedText: string }>,
+    existingTurns: Array<{
+      stageId: string;
+      speaker: string;
+      renderedText: string;
+    }>,
+    onNarrative?: NarrativeStreamHandler,
   ) {
     const prompt = buildDiscussionModeratorPrompt({
       topic: debate.motion,
@@ -942,7 +1166,7 @@ Which debater should argue FOR and which AGAINST?`,
       })),
     });
 
-    const output = await this.llm.generateModeratorTurn(prompt);
+    const output = await this.llm.generateModeratorTurn(prompt, onNarrative);
     const renderedText = output.narrative;
     const wordCount = this.countWords(renderedText);
 
@@ -951,7 +1175,10 @@ Which debater should argue FOR and which AGAINST?`,
         debateId: debate.id,
         stageId: stage.id,
         speaker: 'MOD',
-        payload: toJson({ ...output, promptVersion: DISCUSSION_MODERATOR_PROMPT_VERSION }),
+        payload: toJson({
+          ...output,
+          promptVersion: DISCUSSION_MODERATOR_PROMPT_VERSION,
+        }),
         renderedText,
         wordCount,
         violations: [],
@@ -971,6 +1198,7 @@ Which debater should argue FOR and which AGAINST?`,
       payload: unknown;
       violations: string[];
     }>,
+    onNarrative?: NarrativeStreamHandler,
   ) {
     const speaker = stage.speaker as 'A' | 'B';
     const persona = speaker === 'A' ? personaAJson : personaBJson;
@@ -989,7 +1217,11 @@ Which debater should argue FOR and which AGAINST?`,
       })),
     });
 
-    const output = await this.llm.generateDebaterTurn(prompt, speaker);
+    const output = await this.llm.generateDebaterTurn(
+      prompt,
+      speaker,
+      onNarrative,
+    );
     const renderedText = this.validator.renderDebaterText(output);
     const wordCount = this.countWords(renderedText);
 
@@ -998,7 +1230,10 @@ Which debater should argue FOR and which AGAINST?`,
         debateId: debate.id,
         stageId: stage.id,
         speaker,
-        payload: toJson({ ...output, promptVersion: DISCUSSION_PARTICIPANT_PROMPT_VERSION }),
+        payload: toJson({
+          ...output,
+          promptVersion: DISCUSSION_PARTICIPANT_PROMPT_VERSION,
+        }),
         renderedText,
         wordCount,
         violations: [],
@@ -1013,7 +1248,12 @@ Which debater should argue FOR and which AGAINST?`,
     personaBJson: Record<string, unknown>,
     moderatorPersonaJson: Record<string, unknown>,
     confrontationLevel: number,
-    existingTurns: Array<{ stageId: string; speaker: string; renderedText: string }>,
+    existingTurns: Array<{
+      stageId: string;
+      speaker: string;
+      renderedText: string;
+    }>,
+    onNarrative?: NarrativeStreamHandler,
   ) {
     const prompt = buildDiscussionModeratorPrompt({
       topic: debate.motion,
@@ -1029,7 +1269,10 @@ Which debater should argue FOR and which AGAINST?`,
       })),
     });
 
-    const output: DiscussionWrapOutput = await this.llm.generateDiscussionWrap(prompt);
+    const output: DiscussionWrapOutput = await this.llm.generateDiscussionWrap(
+      prompt,
+      onNarrative,
+    );
     const renderedText = output.narrative;
     const wordCount = this.countWords(renderedText);
 
@@ -1038,7 +1281,10 @@ Which debater should argue FOR and which AGAINST?`,
         debateId: debate.id,
         stageId: stage.id,
         speaker: 'MOD',
-        payload: toJson({ ...output, promptVersion: DISCUSSION_MODERATOR_PROMPT_VERSION }),
+        payload: toJson({
+          ...output,
+          promptVersion: DISCUSSION_MODERATOR_PROMPT_VERSION,
+        }),
         renderedText,
         wordCount,
         violations: [],
@@ -1070,7 +1316,9 @@ Which debater should argue FOR and which AGAINST?`,
     }
     if (output.momentum) {
       parts.push('');
-      parts.push(`Momentum: ${output.momentum.trajectory} — ${output.momentum.description}`);
+      parts.push(
+        `Momentum: ${output.momentum.trajectory} — ${output.momentum.description}`,
+      );
     }
     return parts.join('\n');
   }

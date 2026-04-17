@@ -18,6 +18,22 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* "Paper" results-view palette — named so we don't repeat hex literals. */
+  --color-side-a: #3a75d4;
+  --color-side-a-deep: #2a5aa4;
+  --color-side-b: #c4564a;
+  --color-winner-gold: #a8802e;
+  --color-winner-gold-light: #c9a84c;
+  --color-paper-bg: #f7f6f2;
+  --color-paper-bg-warm: #faf6eb;
+  --color-paper-bg-stripe: #f3f2ee;
+  --color-paper-border: #e5e3dc;
+  --color-paper-rule: #eceae4;
+  --color-paper-gold-border: #e6d5a0;
+  --color-paper-ink: #1a1a1a;
+  --color-paper-text: #5c5c5c;
+  --color-paper-muted: #999999;
 }
 
 body {
@@ -53,4 +69,33 @@ html {
 @keyframes crownPulse {
   0%, 100% { filter: drop-shadow(0 0 4px rgba(168,128,46,0.2)); }
   50% { filter: drop-shadow(0 0 10px rgba(168,128,46,0.35)); }
+}
+
+/* Skeleton shimmer for pre-TTFT loading states. */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.04) 0%,
+    rgba(0, 0, 0, 0.10) 50%,
+    rgba(0, 0, 0, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+}
+
+/* Honor system motion preferences. Disables infinite/decorative animations
+   while leaving short transitions intact. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

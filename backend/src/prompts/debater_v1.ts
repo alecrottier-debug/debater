@@ -24,7 +24,8 @@ export interface DebaterPromptContext {
 }
 
 export function buildDebaterPrompt(ctx: DebaterPromptContext): LlmPrompt {
-  const side = ctx.speaker === 'A' ? 'proposition (FOR)' : 'opposition (AGAINST)';
+  const side =
+    ctx.speaker === 'A' ? 'proposition (FOR)' : 'opposition (AGAINST)';
 
   const transcriptText =
     ctx.transcript.length > 0
@@ -41,7 +42,9 @@ export function buildDebaterPrompt(ctx: DebaterPromptContext): LlmPrompt {
     ? '\nIMPORTANT: This is a CLOSING statement. Summarize and reinforce your strongest arguments. Do NOT introduce new arguments or topics.'
     : '';
 
-  const turnCount = ctx.transcript.filter((t) => t.speaker === ctx.speaker).length;
+  const turnCount = ctx.transcript.filter(
+    (t) => t.speaker === ctx.speaker,
+  ).length;
 
   const stagePhase = classifyDebateStage(ctx.stage.id);
 
@@ -79,11 +82,17 @@ Read the ENTIRE transcript before writing. Track every rhetorical device, transi
 - Reusing transition words/phrases across turns (e.g. if you used "fundamentally" last turn, use different language this turn)
 
 TACTICAL ADAPTATION (Turn ${turnCount + 1}):
-You are ${turnCount + 1} turns into this debate. Skilled debaters read the room and shift tactics as a debate unfolds:${turnCount === 0 ? `
-- This is your OPENING. Establish your strongest framing and core thesis. Plant seeds you can develop later.` : turnCount === 1 ? `
-- Your opponent has laid out their framework. Find the WEAKEST link in their argument chain and attack it specifically. Concede a minor point to build credibility, then pivot to your strongest counter.` : `
+You are ${turnCount + 1} turns into this debate. Skilled debaters read the room and shift tactics as a debate unfolds:${
+    turnCount === 0
+      ? `
+- This is your OPENING. Establish your strongest framing and core thesis. Plant seeds you can develop later.`
+      : turnCount === 1
+        ? `
+- Your opponent has laid out their framework. Find the WEAKEST link in their argument chain and attack it specifically. Concede a minor point to build credibility, then pivot to your strongest counter.`
+        : `
 - The debate is well underway. By now you should be ADAPTING: if your logical arguments aren't landing, try emotional appeal or vivid examples. If your opponent keeps deflecting, pin them down with specifics. If they're winning on one front, SHIFT THE BATTLEFIELD to terrain that favors you.
-- Ask yourself: "What is my opponent's strongest point, and how do I neutralize it?" Then DO that.`}
+- Ask yourself: "What is my opponent's strongest point, and how do I neutralize it?" Then DO that.`
+  }
 - If your persona has high rhetorical sophistication, use advanced moves: steel-manning then dismantling, reductio ad absurdum, turning your opponent's evidence against them, or finding the hidden assumption in their argument.
 - If your persona is more direct/populist, use vivid stories, common-sense framing, and moral clarity. Either way — NEVER repeat yourself.
 

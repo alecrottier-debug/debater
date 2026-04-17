@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchPersonas, createDebate, type Persona } from "@/lib/api";
+import { DEFAULT_CONFRONTATION_LEVEL } from "@/lib/debate-constants";
 import PersonaPicker from "@/components/PersonaPicker";
 import PersonaPreview from "@/components/PersonaPreview";
 
@@ -79,7 +80,9 @@ export default function SetupPage() {
   const [personaAId, setPersonaAId] = useState("");
   const [personaBId, setPersonaBId] = useState("");
   const [moderatorPersonaId, setModeratorPersonaId] = useState("");
-  const [confrontationLevel, setConfrontationLevel] = useState(3);
+  const [confrontationLevel, setConfrontationLevel] = useState(
+    DEFAULT_CONFRONTATION_LEVEL,
+  );
   const [mode, setMode] = useState("quick");
 
   useEffect(() => {
@@ -181,7 +184,7 @@ export default function SetupPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-[var(--font-cinzel)] text-5xl font-black tracking-tight text-gray-900 sm:text-6xl"
+            className="font-[var(--font-cinzel)] text-3xl font-black tracking-tight text-gray-900 sm:text-5xl md:text-6xl"
           >
             Set Up Your{" "}
             <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
@@ -192,7 +195,7 @@ export default function SetupPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="mt-3 text-lg text-gray-500"
+            className="mt-3 text-base text-gray-500 sm:text-lg"
           >
             {isDiscussion
               ? "Choose a topic, pick your guests and moderator, and let the conversation unfold."
@@ -203,8 +206,7 @@ export default function SetupPage() {
             initial={{ opacity: 0, scaleX: 0 }}
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="mx-auto mt-4 flex items-center gap-3"
-            style={{ maxWidth: "16rem" }}
+            className="mx-auto mt-4 flex max-w-xs items-center gap-3"
           >
             <div className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-300" />
             <svg className="h-3 w-3 text-gray-300" viewBox="0 0 12 12" fill="currentColor">
@@ -217,14 +219,8 @@ export default function SetupPage() {
         {/* Form Card */}
         <motion.form
           initial={{ opacity: 0, y: 20 }}
-          animate={{
-            opacity: 1,
-            y: [0, -6, 0],
-          }}
-          transition={{
-            opacity: { duration: 0.5, delay: 0.3 },
-            y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.8 },
-          }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
           onSubmit={handleSubmit}
           className="relative overflow-hidden rounded-2xl border-2 border-gray-900/10 bg-white/90 p-6 shadow-2xl shadow-gray-900/10 backdrop-blur-xl sm:p-8 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-blue-500 before:via-purple-500 before:to-blue-500"
         >

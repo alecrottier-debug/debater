@@ -80,13 +80,14 @@ describe('PerplexityService', () => {
       json: async () => mockResponse,
     } as Response);
 
-    await service.research('labor union organizer', 'Focus on healthcare debates');
+    await service.research(
+      'labor union organizer',
+      'Focus on healthcare debates',
+    );
 
     const body = JSON.parse(fetchSpy.mock.calls[0][1]?.body as string);
     expect(body.messages[1].content).toContain('labor union organizer');
-    expect(body.messages[1].content).toContain(
-      'Focus on healthcare debates',
-    );
+    expect(body.messages[1].content).toContain('Focus on healthcare debates');
   });
 
   it('throws on API error', async () => {

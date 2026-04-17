@@ -1,5 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { LlmAdapter, LlmPrompt } from './llm-adapter.interface.js';
+import {
+  LlmAdapter,
+  LlmPrompt,
+  NarrativeStreamHandler,
+} from './llm-adapter.interface.js';
 import {
   DebaterOutput,
   ModeratorOutput,
@@ -12,21 +16,29 @@ import {
 export class MockLlmAdapter implements LlmAdapter {
   private readonly logger = new Logger(MockLlmAdapter.name);
 
-  async generateModeratorTurn(_prompt: LlmPrompt): Promise<ModeratorOutput> {
+  async generateModeratorTurn(
+    _prompt: LlmPrompt,
+    onNarrative?: NarrativeStreamHandler,
+  ): Promise<ModeratorOutput> {
     this.logger.debug('[MOCK] generateModeratorTurn called');
-    return {
-      narrative:
-        'Welcome to today\'s debate. The motion refers to the proposition as stated, and success is measured by overall impact. Side A must prove the motion is beneficial, while Side B must demonstrate the motion causes harm. We will judge on clarity of argumentation, strength of evidence, and responsiveness to your opponent. Please refrain from ad hominem attacks and stay within word limits.',
-    };
+    const narrative =
+      "Welcome to today's debate. The motion refers to the proposition as stated, and success is measured by overall impact. Side A must prove the motion is beneficial, while Side B must demonstrate the motion causes harm. We will judge on clarity of argumentation, strength of evidence, and responsiveness to your opponent. Please refrain from ad hominem attacks and stay within word limits.";
+    onNarrative?.(narrative);
+    return { narrative };
   }
 
   async generateDebaterTurn(
     _prompt: LlmPrompt,
     speaker: 'A' | 'B',
+    onNarrative?: NarrativeStreamHandler,
   ): Promise<DebaterOutput> {
-    this.logger.debug(`[MOCK] generateDebaterTurn called for speaker ${speaker}`);
+    this.logger.debug(
+      `[MOCK] generateDebaterTurn called for speaker ${speaker}`,
+    );
+    const narrative = `This is the main argument for Side ${speaker}. The evidence clearly supports our position, and when we examine the facts carefully, we find that the first supporting point strengthens our case considerably. Furthermore, the second supporting point demonstrates the broader implications of our stance.`;
+    onNarrative?.(narrative);
     return {
-      narrative: `This is the main argument for Side ${speaker}. The evidence clearly supports our position, and when we examine the facts carefully, we find that the first supporting point strengthens our case considerably. Furthermore, the second supporting point demonstrates the broader implications of our stance.`,
+      narrative,
       question: `What does the opponent say about this key issue?`,
       callbacks: [],
       tags: ['economy', 'policy'],
@@ -43,19 +55,32 @@ export class MockLlmAdapter implements LlmAdapter {
       },
       detailedScores: {
         A: {
-          logicalRigor: 8, evidenceQuality: 7, rebuttalEffectiveness: 8,
-          argumentNovelty: 7, persuasiveness: 8, voiceAuthenticity: 7,
-          rhetoricalSkill: 7, emotionalResonance: 6, framingControl: 8,
+          logicalRigor: 8,
+          evidenceQuality: 7,
+          rebuttalEffectiveness: 8,
+          argumentNovelty: 7,
+          persuasiveness: 8,
+          voiceAuthenticity: 7,
+          rhetoricalSkill: 7,
+          emotionalResonance: 6,
+          framingControl: 8,
           adaptability: 7,
         },
         B: {
-          logicalRigor: 7, evidenceQuality: 6, rebuttalEffectiveness: 6,
-          argumentNovelty: 6, persuasiveness: 7, voiceAuthenticity: 7,
-          rhetoricalSkill: 6, emotionalResonance: 7, framingControl: 6,
+          logicalRigor: 7,
+          evidenceQuality: 6,
+          rebuttalEffectiveness: 6,
+          argumentNovelty: 6,
+          persuasiveness: 7,
+          voiceAuthenticity: 7,
+          rhetoricalSkill: 6,
+          emotionalResonance: 7,
+          framingControl: 6,
           adaptability: 6,
         },
       },
-      verdict: 'Side A wins this debate through superior argumentation and more effective engagement with the opponent\'s points. While Side B showed moments of strong rhetorical flair, particularly in their opening, they failed to sustain that energy through the middle rounds. The decisive moment came during A\'s challenge stage, where they systematically dismantled B\'s core framework.',
+      verdict:
+        "Side A wins this debate through superior argumentation and more effective engagement with the opponent's points. While Side B showed moments of strong rhetorical flair, particularly in their opening, they failed to sustain that energy through the middle rounds. The decisive moment came during A's challenge stage, where they systematically dismantled B's core framework.",
       ballot: [
         {
           reason: 'Side A presented stronger evidence with clearer logic.',
@@ -74,9 +99,10 @@ export class MockLlmAdapter implements LlmAdapter {
           ],
           weaknesses: [
             'Closing argument could have been more impactful',
-            'Missed an opportunity to address B\'s emotional appeal',
+            "Missed an opportunity to address B's emotional appeal",
           ],
-          keyMoment: 'The systematic dismantling of Side B\'s economic argument using their own cited statistics.',
+          keyMoment:
+            "The systematic dismantling of Side B's economic argument using their own cited statistics.",
           keyMomentRef: 'A_CHALLENGE',
         },
         B: {
@@ -88,13 +114,15 @@ export class MockLlmAdapter implements LlmAdapter {
             'Failed to provide concrete examples when challenged',
             'Lost control of the framing in the middle rounds',
           ],
-          keyMoment: 'The passionate opening argument that framed the human cost of the motion.',
+          keyMoment:
+            'The passionate opening argument that framed the human cost of the motion.',
           keyMomentRef: 'B_OPEN',
         },
       },
       momentum: {
         trajectory: 'A_BUILDING',
-        description: 'Side A started solid and built momentum through the challenge and counter stages, while Side B peaked early and faded.',
+        description:
+          'Side A started solid and built momentum through the challenge and counter stages, while Side B peaked early and faded.',
       },
       closeness: 'clear',
       improvements: {
@@ -112,7 +140,9 @@ export class MockLlmAdapter implements LlmAdapter {
     _prompt: LlmPrompt,
     speaker: 'A' | 'B',
   ): Promise<CrossExOutput> {
-    this.logger.debug(`[MOCK] generateCrossExTurn called for speaker ${speaker}`);
+    this.logger.debug(
+      `[MOCK] generateCrossExTurn called for speaker ${speaker}`,
+    );
     return {
       questions: [
         {
@@ -128,11 +158,21 @@ export class MockLlmAdapter implements LlmAdapter {
     };
   }
 
-  async generateDiscussionWrap(_prompt: LlmPrompt): Promise<DiscussionWrapOutput> {
+  async generateDiscussionWrap(
+    _prompt: LlmPrompt,
+    onNarrative?: NarrativeStreamHandler,
+  ): Promise<DiscussionWrapOutput> {
     this.logger.debug('[MOCK] generateDiscussionWrap called');
+    const narrative =
+      'What a fascinating discussion. Both guests brought unique perspectives to this important topic.';
+    onNarrative?.(narrative);
     return {
-      narrative: 'What a fascinating discussion. Both guests brought unique perspectives to this important topic.',
-      keyTakeaways: ['First key takeaway', 'Second key takeaway', 'Third key takeaway'],
+      narrative,
+      keyTakeaways: [
+        'First key takeaway',
+        'Second key takeaway',
+        'Third key takeaway',
+      ],
       areasOfAgreement: ['Both agree on the importance of the topic'],
       areasOfDisagreement: ['They differ on the best approach'],
       openQuestions: ['What will the future hold?'],

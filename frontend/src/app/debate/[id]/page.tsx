@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo, useRef, use } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   fetchDebate,
-  advanceDebate,
+  streamAdvanceDebate,
   getStagesForMode,
   type Debate,
   type Turn,
@@ -13,7 +13,9 @@ import {
   type TurnPayload,
   type Persona,
 } from "@/lib/api";
+import { formatStageLabel } from "@/lib/format-stage-label";
 import { ModJudgeCard } from "@/components/FighterCard";
+import Spinner from "@/components/Spinner";
 import SpeechCard from "@/components/SpeechCard";
 import TranscriptDrawer from "@/components/TranscriptDrawer";
 import ResultsView from "@/components/ResultsView";
@@ -43,19 +45,15 @@ function getAvatarUrl(persona: Persona): string | undefined {
   return (identity?.avatarUrl ?? raw.avatarUrl) as string | undefined;
 }
 
-/* Continuous talking sway animation for avatars */
+/* Subtle "breathing" idle animation for avatars. Reduced from a full talking
+   sway because the always-on motion was competing with the live streaming
+   card for the user's attention. */
 const avatarTalkingSway = {
   opacity: 1,
-  scale: 1,
-  x: [0, -3, 3, -2, 2, 0],
-  rotate: [0, -1.5, 1.5, -1, 1, 0],
-  y: [0, -2, 0],
+  scale: [1, 1.012, 1],
   transition: {
     opacity: { duration: 0.4 },
-    scale: { type: "spring" as const, stiffness: 260, damping: 20 },
-    x: { duration: 3, repeat: Infinity, ease: "easeInOut" as const },
-    rotate: { duration: 3, repeat: Infinity, ease: "easeInOut" as const },
-    y: { duration: 3, repeat: Infinity, ease: "easeInOut" as const },
+    scale: { duration: 4.5, repeat: Infinity, ease: "easeInOut" as const },
   },
 };
 
@@ -163,8 +161,17 @@ function DebateSubheader({
             </div>
           )}
 
-          <div className="max-w-[500px] text-center font-[var(--font-playfair)] text-[17px] font-extrabold leading-snug tracking-tight text-gray-900 line-clamp-2">
-            &ldquo;{debate.motion}&rdquo;
+          <div className="flex max-w-[500px] items-baseline justify-center gap-2">
+            <span
+              aria-label="AI simulated content"
+              title="AI-generated. Not real statements by any person depicted."
+              className="shrink-0 rounded-sm bg-amber-100 px-1.5 py-0.5 font-[var(--font-cinzel)] text-[9px] font-bold uppercase tracking-[0.15em] text-amber-700"
+            >
+              Sim
+            </span>
+            <div className="text-center font-[var(--font-playfair)] text-[17px] font-extrabold leading-snug tracking-tight text-gray-900 line-clamp-2">
+              &ldquo;{debate.motion}&rdquo;
+            </div>
           </div>
 
           <div className="flex w-full max-w-[500px] items-center gap-3">
@@ -178,7 +185,7 @@ function DebateSubheader({
                       ? "bg-gradient-to-br from-blue-500 to-purple-500"
                       : "bg-gray-200"
                   }`}
-                  title={stage.label.replace(/\bSide A\b/g, debate.personaA.name).replace(/\bSide B\b/g, debate.personaB.name).replace(/\bGuest A\b/g, debate.personaA.name).replace(/\bGuest B\b/g, debate.personaB.name)}
+                  title={formatStageLabel(stage.label, debate.personaA.name, debate.personaB.name)}
                 />
               ))}
             </div>
@@ -248,7 +255,7 @@ function DebateSubheader({
       <div className="flex flex-col gap-2 px-4 py-2.5 sm:hidden">
         {/* Debaters row */}
         <div className="flex w-full items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
             {avatarA ? (
               <motion.img
                 src={avatarA}
@@ -258,15 +265,15 @@ function DebateSubheader({
                 animate={avatarTalkingSway}
               />
             ) : (
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
                 A
               </div>
             )}
-            <div>
-              <span className="text-sm font-bold text-gray-900">
+            <div className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-bold text-gray-900">
                 {debate.personaA.name}
               </span>
-              <div className="text-[10px] italic text-gray-400 line-clamp-1">
+              <div className="truncate text-[10px] italic text-gray-400">
                 {debate.personaA.tagline}
               </div>
             </div>
@@ -274,7 +281,7 @@ function DebateSubheader({
           <span className="mt-3 shrink-0 text-xs font-extrabold text-gray-300">
             {isDiscussion ? "&" : "VS"}
           </span>
-          <div className="flex flex-row-reverse items-center gap-2 text-right">
+          <div className="flex min-w-0 flex-1 flex-row-reverse items-center gap-2 text-right">
             {avatarB ? (
               <motion.img
                 src={avatarB}
@@ -284,15 +291,15 @@ function DebateSubheader({
                 animate={avatarTalkingSway}
               />
             ) : (
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-purple-500 text-xs font-bold text-white">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-purple-500 text-xs font-bold text-white">
                 B
               </div>
             )}
-            <div>
-              <span className="text-sm font-bold text-gray-900">
+            <div className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-bold text-gray-900">
                 {debate.personaB.name}
               </span>
-              <div className="text-[10px] italic text-gray-400 line-clamp-1">
+              <div className="truncate text-[10px] italic text-gray-400">
                 {debate.personaB.tagline}
               </div>
             </div>
@@ -337,6 +344,71 @@ function DebateSubheader({
   );
 }
 
+/* ─── Streaming "ghost" turn card ───
+   Renders the in-flight narrative text while SSE deltas arrive. Visual
+   language mirrors SpeechCard so the swap-in on completion feels seamless. */
+
+interface StreamingTurnCardProps {
+  speaker: Speaker | null;
+  speakerName: string;
+  stageLabel: string;
+  text: string;
+  avatarUrl?: string;
+}
+
+const ghostTones: Record<Speaker, { bg: string; border: string; ring: string; text: string }> = {
+  A: { bg: "bg-blue-50/80", border: "border-blue-200", ring: "ring-blue-300", text: "text-blue-900" },
+  B: { bg: "bg-purple-50/80", border: "border-purple-200", ring: "ring-purple-300", text: "text-purple-900" },
+  MOD: { bg: "bg-amber-50/80", border: "border-amber-200", ring: "ring-amber-300", text: "text-amber-900" },
+  JUDGE: { bg: "bg-emerald-50/80", border: "border-emerald-200", ring: "ring-emerald-300", text: "text-emerald-900" },
+};
+
+function StreamingTurnCard({
+  speaker,
+  speakerName,
+  stageLabel,
+  text,
+  avatarUrl,
+}: StreamingTurnCardProps) {
+  const tone = (speaker && ghostTones[speaker]) || ghostTones.MOD;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className={`relative rounded-2xl border ${tone.border} ${tone.bg} p-4 shadow-sm sm:p-5`}
+    >
+      <div className="mb-3 flex items-center gap-3">
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt={speakerName}
+            className={`h-10 w-10 shrink-0 rounded-full object-cover ring-2 ${tone.ring}`}
+          />
+        ) : (
+          <div
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold ring-2 ${tone.ring} ${tone.text}`}
+          >
+            {speakerName ? speakerName.charAt(0) : "?"}
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <div className={`truncate text-sm font-bold ${tone.text}`}>{speakerName || "Generating…"}</div>
+          <div className="truncate text-[11px] uppercase tracking-wider text-gray-500">{stageLabel}</div>
+        </div>
+        <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+          live
+        </span>
+      </div>
+      <p className={`whitespace-pre-wrap text-[15px] leading-relaxed ${tone.text}`}>
+        {text}
+        <span className="ml-0.5 inline-block h-4 w-[2px] -translate-y-[1px] animate-pulse bg-current align-middle" />
+      </p>
+    </motion.div>
+  );
+}
+
 /* ─── Main Page ─── */
 
 interface DebatePageProps {
@@ -349,9 +421,12 @@ export default function DebatePage({ params }: DebatePageProps) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [loading, setLoading] = useState(true);
   const [advancing, setAdvancing] = useState(false);
+  const [streamingNarrative, setStreamingNarrative] = useState<string>("");
+  const [streamingSpeaker, setStreamingSpeaker] = useState<Speaker | null>(null);
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const autoStarted = useRef(false);
+  const closeStreamRef = useRef<(() => void) | null>(null);
 
   const stages = useMemo(
     () => (debate ? getStagesForMode(debate.mode) : []),
@@ -393,22 +468,61 @@ export default function DebatePage({ params }: DebatePageProps) {
     }
   }, [debate, loading, turns.length]);
 
-  async function handleNextStage() {
+  function handleNextStage() {
     if (advancing || !debate) return;
     setAdvancing(true);
     setError(null);
+    setStreamingNarrative("");
+    setStreamingSpeaker(null);
 
-    try {
-      await advanceDebate(id);
-      const updated = await fetchDebate(id);
-      setDebate(updated);
-      setTurns(updated.turns || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to advance stage");
-    } finally {
-      setAdvancing(false);
-    }
+    // Coalesce narrative deltas through requestAnimationFrame so we never
+    // run more than one React render per frame even if the model fires
+    // 30+ tokens in 16ms. Reduces layout thrash and saves battery on mobile.
+    let pendingText: string | null = null;
+    let rafId: number | null = null;
+    const flush = () => {
+      if (pendingText !== null) {
+        setStreamingNarrative(pendingText);
+        pendingText = null;
+      }
+      rafId = null;
+    };
+
+    closeStreamRef.current?.();
+    closeStreamRef.current = streamAdvanceDebate(id, {
+      onStage: ({ speaker }) => {
+        setStreamingSpeaker(speaker as Speaker);
+      },
+      onNarrative: (text) => {
+        pendingText = text;
+        if (rafId === null) rafId = requestAnimationFrame(flush);
+      },
+      onDone: (updated) => {
+        if (rafId !== null) cancelAnimationFrame(rafId);
+        setDebate(updated);
+        setTurns(updated.turns || []);
+        setStreamingNarrative("");
+        setStreamingSpeaker(null);
+        setAdvancing(false);
+        closeStreamRef.current = null;
+      },
+      onError: (message) => {
+        if (rafId !== null) cancelAnimationFrame(rafId);
+        setError(message || "Failed to advance stage");
+        setStreamingNarrative("");
+        setStreamingSpeaker(null);
+        setAdvancing(false);
+        closeStreamRef.current = null;
+      },
+    });
   }
+
+  // Cancel any in-flight stream when leaving the page
+  useEffect(() => {
+    return () => {
+      closeStreamRef.current?.();
+    };
+  }, []);
 
   const isCompleted = debate?.status === "completed";
   const currentStageIndex = debate?.stageIndex ?? 0;
@@ -436,7 +550,7 @@ export default function DebatePage({ params }: DebatePageProps) {
           animate={{ opacity: 1 }}
           className="flex flex-col items-center gap-4"
         >
-          <div className="h-10 w-10 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+          <Spinner size="lg" />
           <p className="text-gray-500">Loading {isDiscussion ? "discussion" : "debate"}...</p>
         </motion.div>
       </div>
@@ -504,7 +618,7 @@ export default function DebatePage({ params }: DebatePageProps) {
                 <SpeechCard
                   key={turn.id}
                   turn={turn}
-                  stageLabel={(stages[idx]?.label || turn.stageId).replace(/\bSide A\b/g, debate.personaA.name).replace(/\bSide B\b/g, debate.personaB.name).replace(/\bGuest A\b/g, debate.personaA.name).replace(/\bGuest B\b/g, debate.personaB.name)}
+                  stageLabel={formatStageLabel(stages[idx]?.label || turn.stageId, debate.personaA.name, debate.personaB.name)}
                   speakerName={
                     turn.speaker === "A"
                       ? debate.personaA.name
@@ -526,20 +640,63 @@ export default function DebatePage({ params }: DebatePageProps) {
               ))}
             </AnimatePresence>
 
-            {/* Loading indicator */}
+            {/* Live streaming card: shows the narrative as it arrives. While the
+                stream is open but no text has landed yet, a spinner stands in. */}
             <AnimatePresence>
-              {advancing && (
+              {advancing && streamingNarrative && (
+                <StreamingTurnCard
+                  key="streaming-card"
+                  speaker={streamingSpeaker}
+                  speakerName={
+                    streamingSpeaker === "A"
+                      ? debate.personaA.name
+                      : streamingSpeaker === "B"
+                      ? debate.personaB.name
+                      : streamingSpeaker === "MOD" && debate.moderatorPersona
+                      ? debate.moderatorPersona.name
+                      : streamingSpeaker ?? ""
+                  }
+                  stageLabel={formatStageLabel(
+                    stages[currentStageIndex]?.label || "",
+                    debate.personaA.name,
+                    debate.personaB.name,
+                  )}
+                  text={streamingNarrative}
+                  avatarUrl={
+                    streamingSpeaker === "A"
+                      ? pageAvatarA
+                      : streamingSpeaker === "B"
+                      ? pageAvatarB
+                      : undefined
+                  }
+                />
+              )}
+              {advancing && !streamingNarrative && (
                 <motion.div
+                  key="generating-indicator"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
+                  className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5"
+                  aria-busy="true"
+                  aria-live="polite"
                 >
-                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-                  <span className="text-sm text-gray-500">
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="h-10 w-10 shrink-0 rounded-full shimmer" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-3 w-32 rounded shimmer" />
+                      <div className="h-2 w-20 rounded shimmer" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-3 w-full rounded shimmer" />
+                    <div className="h-3 w-[92%] rounded shimmer" />
+                    <div className="h-3 w-[78%] rounded shimmer" />
+                  </div>
+                  <span className="sr-only">
                     {currentStageIndex < stages.length
-                      ? `Generating ${(stages[currentStageIndex]?.label || "").replace(/\bSide A\b/g, debate.personaA.name).replace(/\bSide B\b/g, debate.personaB.name).replace(/\bGuest A\b/g, debate.personaA.name).replace(/\bGuest B\b/g, debate.personaB.name)}...`
-                      : "Generating..."}
+                      ? `Generating ${formatStageLabel(stages[currentStageIndex]?.label || "", debate.personaA.name, debate.personaB.name)}`
+                      : "Generating"}
                   </span>
                 </motion.div>
               )}
@@ -550,10 +707,13 @@ export default function DebatePage({ params }: DebatePageProps) {
           <div ref={bottomRef} />
 
           {/* Spacer so content doesn't hide behind sticky button */}
-          <div className="h-24" />
+          <div className="h-20 sm:h-24" />
 
           {/* Sticky Next Stage Button */}
-          <div className="sticky bottom-0 z-20 bg-gradient-to-t from-[#f8f9fb] via-[#f8f9fb] to-[#f8f9fb]/80 pb-4 pt-8">
+          <div
+            style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
+            className="sticky bottom-0 z-20 bg-gradient-to-t from-[#f8f9fb] via-[#f8f9fb] to-[#f8f9fb]/80 pt-8"
+          >
             <div className="flex flex-col items-center gap-2">
               <AnimatePresence>
                 {error && (
@@ -572,7 +732,7 @@ export default function DebatePage({ params }: DebatePageProps) {
                 disabled={advancing}
                 whileHover={!advancing ? { scale: 1.02 } : {}}
                 whileTap={!advancing ? { scale: 0.98 } : {}}
-                className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-3 font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+                className="min-h-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-3 text-base font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none sm:px-8"
               >
                 {advancing
                   ? "Generating..."

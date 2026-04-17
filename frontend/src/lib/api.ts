@@ -1,3 +1,5 @@
+import type { DebateStatus } from "./debate-constants";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 // personaJson may be v1 (flat: name, tagline, style, etc.) or v2 (nested: identity, positions, rhetoric, etc.)
@@ -106,7 +108,7 @@ export interface Debate {
   moderatorPersonaId: string | null;
   confrontationLevel: number;
   stageIndex: number;
-  status: string;
+  status: DebateStatus;
   createdAt: string;
   updatedAt: string;
   personaA: Persona;
@@ -171,6 +173,85 @@ export async function advanceDebate(id: string): Promise<Debate> {
   });
 }
 
+/* ========================== Streaming advance ========================== */
+
+export type StreamEvent =
+  | { type: "stage"; stageId: string; speaker: string; label: string }
+  | { type: "narrative"; text: string }
+  | { type: "done"; debate: Debate }
+  | { type: "error"; message: string };
+
+export interface StreamHandlers {
+  onStage?: (event: { stageId: string; speaker: string; label: string }) => void;
+  onNarrative?: (text: string) => void;
+  onDone?: (debate: Debate) => void;
+  onError?: (message: string) => void;
+}
+
+/**
+ * Open an SSE connection to the streaming-advance endpoint. The LLM's narrative
+ * text is delivered in cumulative deltas via `onNarrative`; once the turn is
+ * persisted server-side, `onDone` fires with the refreshed debate.
+ *
+ * Returns an `unsubscribe` function — call it to abort the stream early
+ * (e.g. on component unmount).
+ */
+export function streamAdvanceDebate(
+  id: string,
+  handlers: StreamHandlers,
+): () => void {
+  const url = `${API_BASE}/debates/${id}/next/stream`;
+  const source = new EventSource(url);
+
+  const close = () => source.close();
+
+  const handle = (raw: MessageEvent) => {
+    let event: StreamEvent;
+    try {
+      event = JSON.parse(raw.data) as StreamEvent;
+    } catch {
+      return;
+    }
+    switch (event.type) {
+      case "stage":
+        handlers.onStage?.({
+          stageId: event.stageId,
+          speaker: event.speaker,
+          label: event.label,
+        });
+        break;
+      case "narrative":
+        handlers.onNarrative?.(event.text);
+        break;
+      case "done":
+        handlers.onDone?.(event.debate);
+        close();
+        break;
+      case "error":
+        handlers.onError?.(event.message);
+        close();
+        break;
+    }
+  };
+
+  // NestJS @Sse() emits each event with its `type` field as the SSE event name,
+  // so a generic "message" listener won't pick them up. Subscribe to all four.
+  for (const name of ["stage", "narrative", "done", "error"] as const) {
+    source.addEventListener(name, handle as EventListener);
+  }
+
+  source.onerror = () => {
+    // EventSource auto-reconnects on transient errors; once we've called
+    // close() in the done/error branches, this handler is moot. Surface true
+    // failures only when the connection couldn't be established at all.
+    if (source.readyState === EventSource.CLOSED) {
+      handlers.onError?.("Stream connection lost");
+    }
+  };
+
+  return close;
+}
+
 export async function rematchDebate(id: string): Promise<Debate> {
   return apiFetch<Debate>(`/debates/${id}/rematch`, {
     method: "POST",
@@ -212,6 +293,21 @@ export async function synthesizePersona(data: {
     method: "POST",
     body: JSON.stringify(data),
   });
+}
+
+/** One-shot: research the subject and synthesize the persona in a single call. */
+export async function researchAndSynthesizePersona(data: {
+  subject: string;
+  context?: string;
+  name?: string;
+}): Promise<{ persona: Persona; dossierId: string; summary: string }> {
+  return apiFetch<{ persona: Persona; dossierId: string; summary: string }>(
+    "/personas/research-and-synthesize",
+    {
+      method: "POST",
+      body: JSON.stringify(data),
+    },
+  );
 }
 
 export async function createPersona(data: {

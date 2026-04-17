@@ -46,7 +46,11 @@ describe('PersonaSynthesisService', () => {
             finish_reason: 'stop',
           },
         ],
-        usage: { prompt_tokens: 100, completion_tokens: 200, total_tokens: 300 },
+        usage: {
+          prompt_tokens: 100,
+          completion_tokens: 200,
+          total_tokens: 300,
+        },
       }),
     } as Response);
 
@@ -66,11 +70,18 @@ describe('PersonaSynthesisService', () => {
         choices: [
           {
             index: 0,
-            message: { role: 'assistant', content: JSON.stringify(validPersona) },
+            message: {
+              role: 'assistant',
+              content: JSON.stringify(validPersona),
+            },
             finish_reason: 'stop',
           },
         ],
-        usage: { prompt_tokens: 100, completion_tokens: 200, total_tokens: 300 },
+        usage: {
+          prompt_tokens: 100,
+          completion_tokens: 200,
+          total_tokens: 300,
+        },
       }),
     } as Response);
 
@@ -95,11 +106,18 @@ describe('PersonaSynthesisService', () => {
         choices: [
           {
             index: 0,
-            message: { role: 'assistant', content: JSON.stringify(validPersona) },
+            message: {
+              role: 'assistant',
+              content: JSON.stringify(validPersona),
+            },
             finish_reason: 'stop',
           },
         ],
-        usage: { prompt_tokens: 100, completion_tokens: 200, total_tokens: 300 },
+        usage: {
+          prompt_tokens: 100,
+          completion_tokens: 200,
+          total_tokens: 300,
+        },
       }),
     } as Response);
 
@@ -110,7 +128,8 @@ describe('PersonaSynthesisService', () => {
   });
 
   it('retries on invalid JSON and succeeds on second attempt', async () => {
-    const fetchSpy = jest.spyOn(globalThis, 'fetch')
+    const fetchSpy = jest
+      .spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
@@ -122,7 +141,11 @@ describe('PersonaSynthesisService', () => {
               finish_reason: 'stop',
             },
           ],
-          usage: { prompt_tokens: 50, completion_tokens: 50, total_tokens: 100 },
+          usage: {
+            prompt_tokens: 50,
+            completion_tokens: 50,
+            total_tokens: 100,
+          },
         }),
       } as Response)
       .mockResolvedValueOnce({
@@ -132,11 +155,18 @@ describe('PersonaSynthesisService', () => {
           choices: [
             {
               index: 0,
-              message: { role: 'assistant', content: JSON.stringify(validPersona) },
+              message: {
+                role: 'assistant',
+                content: JSON.stringify(validPersona),
+              },
               finish_reason: 'stop',
             },
           ],
-          usage: { prompt_tokens: 50, completion_tokens: 50, total_tokens: 100 },
+          usage: {
+            prompt_tokens: 50,
+            completion_tokens: 50,
+            total_tokens: 100,
+          },
         }),
       } as Response);
 
@@ -149,7 +179,8 @@ describe('PersonaSynthesisService', () => {
   it('retries on schema validation failure', async () => {
     const invalidPersona = { name: 'Test' }; // missing required fields
 
-    jest.spyOn(globalThis, 'fetch')
+    jest
+      .spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
@@ -157,11 +188,18 @@ describe('PersonaSynthesisService', () => {
           choices: [
             {
               index: 0,
-              message: { role: 'assistant', content: JSON.stringify(invalidPersona) },
+              message: {
+                role: 'assistant',
+                content: JSON.stringify(invalidPersona),
+              },
               finish_reason: 'stop',
             },
           ],
-          usage: { prompt_tokens: 50, completion_tokens: 50, total_tokens: 100 },
+          usage: {
+            prompt_tokens: 50,
+            completion_tokens: 50,
+            total_tokens: 100,
+          },
         }),
       } as Response)
       .mockResolvedValueOnce({
@@ -171,11 +209,18 @@ describe('PersonaSynthesisService', () => {
           choices: [
             {
               index: 0,
-              message: { role: 'assistant', content: JSON.stringify(validPersona) },
+              message: {
+                role: 'assistant',
+                content: JSON.stringify(validPersona),
+              },
               finish_reason: 'stop',
             },
           ],
-          usage: { prompt_tokens: 50, completion_tokens: 50, total_tokens: 100 },
+          usage: {
+            prompt_tokens: 50,
+            completion_tokens: 50,
+            total_tokens: 100,
+          },
         }),
       } as Response);
 
@@ -199,9 +244,9 @@ describe('PersonaSynthesisService', () => {
       }),
     } as Response);
 
-    await expect(
-      service.synthesize('summary', 'Subject'),
-    ).rejects.toThrow('Failed to synthesize persona after 3 attempts');
+    await expect(service.synthesize('summary', 'Subject')).rejects.toThrow(
+      'Failed to synthesize persona after 3 attempts',
+    );
   });
 
   it('throws on OpenAI API error', async () => {
@@ -212,8 +257,8 @@ describe('PersonaSynthesisService', () => {
       text: async () => 'Rate limited',
     } as Response);
 
-    await expect(
-      service.synthesize('summary', 'Subject'),
-    ).rejects.toThrow('Failed to synthesize persona after 3 attempts');
+    await expect(service.synthesize('summary', 'Subject')).rejects.toThrow(
+      'Failed to synthesize persona after 3 attempts',
+    );
   });
 });

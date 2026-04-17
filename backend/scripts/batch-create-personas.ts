@@ -8,13 +8,12 @@
 import 'dotenv/config';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { researchSubject } from '../src/personas/lib/perplexity-client.js';
 import { synthesizePersona } from '../src/personas/lib/synthesis-client.js';
 import type { PersonaV2, SynthesizedPersona } from '../src/personas/lib/synthesis-client.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PERSONAS_DIR = path.join(__dirname, '..', 'prisma', 'personas');
+// Script is run from the backend/ directory: `cd backend && npx tsx scripts/batch-create-personas.ts`
+const PERSONAS_DIR = path.resolve(process.cwd(), 'prisma', 'personas');
 
 function toKebab(str: string): string {
   return str

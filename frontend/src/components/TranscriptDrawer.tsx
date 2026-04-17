@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Turn, Speaker, StageConfig } from "@/lib/api";
+import { formatStageLabel } from "@/lib/format-stage-label";
 
 interface TranscriptDrawerProps {
   turns: Turn[];
@@ -58,13 +59,8 @@ export default function TranscriptDrawer({
     }
   }
 
-  function humanizeStageLabel(label: string): string {
-    return label
-      .replace(/\bSide A\b/g, personaAName)
-      .replace(/\bSide B\b/g, personaBName)
-      .replace(/\bGuest A\b/g, personaAName)
-      .replace(/\bGuest B\b/g, personaBName);
-  }
+  const humanizeStageLabel = (label: string) =>
+    formatStageLabel(label, personaAName, personaBName);
 
   if (turns.length === 0) return null;
 
@@ -73,7 +69,12 @@ export default function TranscriptDrawer({
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25 transition-transform hover:scale-105 lg:bottom-auto lg:right-auto lg:left-4 lg:top-24 lg:h-10 lg:w-10"
+        aria-label={isOpen ? "Close transcript" : "Open transcript"}
+        style={{
+          bottom: "calc(env(safe-area-inset-bottom, 0px) + 5.25rem)",
+          right: "calc(env(safe-area-inset-right, 0px) + 1rem)",
+        }}
+        className="fixed z-40 flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white/95 text-gray-600 shadow-md backdrop-blur transition-all hover:border-blue-300 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 lg:bottom-auto lg:right-auto lg:left-4 lg:top-24 lg:h-10 lg:w-10 lg:border-0 lg:bg-gradient-to-r lg:from-blue-500 lg:to-purple-600 lg:text-white lg:shadow-lg lg:shadow-blue-500/25"
       >
         <svg
           className={`h-5 w-5 transition-transform ${isOpen ? "rotate-180" : ""}`}

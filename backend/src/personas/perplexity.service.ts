@@ -17,10 +17,7 @@ export class PerplexityService {
     this.apiKey = this.config.get<string>('PERPLEXITY_API_KEY', '');
   }
 
-  async research(
-    subject: string,
-    context?: string,
-  ): Promise<ResearchResult> {
+  async research(subject: string, context?: string): Promise<ResearchResult> {
     this.logger.log(`Researching subject: "${subject}"`);
 
     const result = await researchSubject(subject, context, {

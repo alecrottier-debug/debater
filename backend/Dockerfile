@@ -25,4 +25,6 @@ COPY package.json ./
 
 EXPOSE 3001
 ENV PORT=3001
-CMD ["sh", "-c", "npx prisma migrate deploy --config prisma/prisma.config.ts && node dist/src/main"]
+# Migrations are run by CI before container update (see .github/workflows/deploy-backend.yml).
+# This avoids races on multi-replica deploys and keeps cold-start fast.
+CMD ["node", "dist/src/main"]

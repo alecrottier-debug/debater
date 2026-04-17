@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { synthesizePersona, type SynthesizedPersona, type PersonaV2 } from './lib/synthesis-client.js';
+import {
+  synthesizePersona,
+  type SynthesizedPersona,
+  type PersonaV2,
+} from './lib/synthesis-client.js';
 
 export type { SynthesizedPersona, PersonaV2 };
 
@@ -21,10 +25,15 @@ export class PersonaSynthesisService {
   ): Promise<PersonaV2 | SynthesizedPersona> {
     this.logger.log(`Synthesizing persona for "${subject}"`);
 
-    const result = await synthesizePersona(dossierSummary, subject, nameOverride, {
-      apiKey: this.apiKey,
-      maxRetries: this.maxRetries,
-    });
+    const result = await synthesizePersona(
+      dossierSummary,
+      subject,
+      nameOverride,
+      {
+        apiKey: this.apiKey,
+        maxRetries: this.maxRetries,
+      },
+    );
 
     this.logger.log(`Successfully synthesized persona for "${subject}"`);
 

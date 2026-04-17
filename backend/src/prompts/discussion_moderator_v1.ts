@@ -46,7 +46,8 @@ function buildModeratorIdentity(persona: Record<string, unknown>): string {
     if (phrases?.length) {
       parts.push(`\nSignature phrases you may use: ${phrases.join('; ')}`);
     }
-    if (rhetoric.sentenceRhythm) parts.push(`Sentence rhythm: ${rhetoric.sentenceRhythm}`);
+    if (rhetoric.sentenceRhythm)
+      parts.push(`Sentence rhythm: ${rhetoric.sentenceRhythm}`);
     if (rhetoric.humorUsage) parts.push(`Humor: ${rhetoric.humorUsage}`);
   }
 
@@ -57,10 +58,12 @@ function buildConfrontationGuidance(
   persona: Record<string, unknown>,
   level: number,
 ): string {
-  const profile = persona.confrontationProfile as Record<string, unknown> | undefined;
+  const profile = persona.confrontationProfile as
+    | Record<string, unknown>
+    | undefined;
   if (!profile) return `Confrontation level: ${level}/5.`;
 
-  const levelKey = `level${level}` as string;
+  const levelKey = `level${level}`;
   const levelProfile = profile[levelKey] as Record<string, unknown> | undefined;
 
   if (!levelProfile) return `Confrontation level: ${level}/5.`;
@@ -77,12 +80,17 @@ function buildConfrontationGuidance(
   return parts.join('\n');
 }
 
-function buildSignatureMoves(persona: Record<string, unknown>, level: number): string {
-  const moves = persona.signatureMoves as Array<{
-    name: string;
-    description: string;
-    confrontationThreshold: number;
-  }> | undefined;
+function buildSignatureMoves(
+  persona: Record<string, unknown>,
+  level: number,
+): string {
+  const moves = persona.signatureMoves as
+    | Array<{
+        name: string;
+        description: string;
+        confrontationThreshold: number;
+      }>
+    | undefined;
 
   if (!moves?.length) return '';
 
@@ -95,7 +103,10 @@ function buildSignatureMoves(persona: Record<string, unknown>, level: number): s
   );
 }
 
-function buildStageInstructions(stageType: StageType, stage: StageConfig): string {
+function buildStageInstructions(
+  stageType: StageType,
+  stage: StageConfig,
+): string {
   switch (stageType) {
     case 'intro':
       return `This is the INTRODUCTION. Introduce the topic and both guests. Explain why this topic matters right now. Set the tone for the discussion. End by transitioning naturally into the first question.
@@ -133,8 +144,12 @@ export function buildDiscussionModeratorPrompt(
   ctx: DiscussionModeratorPromptContext,
 ): LlmPrompt {
   const stageType = getStageType(ctx.stage.id);
-  const guestAName = (ctx.personaA.identity as Record<string, unknown> | undefined)?.name ?? 'Guest A';
-  const guestBName = (ctx.personaB.identity as Record<string, unknown> | undefined)?.name ?? 'Guest B';
+  const guestAName =
+    (ctx.personaA.identity as Record<string, unknown> | undefined)?.name ??
+    'Guest A';
+  const guestBName =
+    (ctx.personaB.identity as Record<string, unknown> | undefined)?.name ??
+    'Guest B';
 
   const transcriptText =
     ctx.transcript.length > 0

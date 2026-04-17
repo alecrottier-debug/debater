@@ -53,7 +53,8 @@ describe('LLM Output Schemas', () => {
 
   describe('ModeratorOutputSchema', () => {
     const validModerator = {
-      narrative: 'Welcome to the debate. Here are the definitions, burdens, criteria, and rules.',
+      narrative:
+        'Welcome to the debate. Here are the definitions, burdens, criteria, and rules.',
     };
 
     it('accepts valid moderator output', () => {
@@ -75,15 +76,39 @@ describe('LLM Output Schemas', () => {
   });
 
   describe('JudgeOutputSchema', () => {
+    const detailedFixture = {
+      logicalRigor: 8,
+      evidenceQuality: 7,
+      rebuttalEffectiveness: 8,
+      argumentNovelty: 7,
+      persuasiveness: 8,
+      voiceAuthenticity: 8,
+      rhetoricalSkill: 7,
+      emotionalResonance: 7,
+      framingControl: 8,
+      adaptability: 7,
+    };
+    const sideAnalysisFixture = {
+      strengths: ['Clear framing'],
+      weaknesses: ['Light on evidence'],
+      keyMoment: 'Pivot in rebuttal',
+      keyMomentRef: 'A_REBUTTAL',
+    };
     const validJudge = {
       winner: 'A' as const,
       scores: {
         A: { clarity: 8, strength: 7, responsiveness: 8, weighing: 7 },
         B: { clarity: 7, strength: 6, responsiveness: 7, weighing: 6 },
       },
-      ballot: [
-        { reason: 'Strong argument', refs: ['A_OPEN'] },
-      ],
+      detailedScores: { A: detailedFixture, B: detailedFixture },
+      verdict: 'Side A made the stronger case overall.',
+      ballot: [{ reason: 'Strong argument', refs: ['A_OPEN'] }],
+      analysis: { A: sideAnalysisFixture, B: sideAnalysisFixture },
+      momentum: {
+        trajectory: 'A_BUILDING' as const,
+        description: 'Side A built momentum through rebuttal.',
+      },
+      closeness: 'clear' as const,
       improvements: {
         A: ['Improve closing'],
         B: ['More evidence'],

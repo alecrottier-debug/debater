@@ -10,6 +10,7 @@ import {
   type Persona,
   type DetailedSubScores,
 } from "@/lib/api";
+import { humanizeNarrativeText } from "@/lib/format-stage-label";
 
 interface ResultsViewProps {
   debate: Debate;
@@ -21,7 +22,7 @@ function ConfettiParticle({ delay }: { delay: number }) {
   const randomX = useMemo(() => Math.random() * 100, []);
   const randomDuration = useMemo(() => 2 + Math.random() * 3, []);
   const randomRotation = useMemo(() => Math.random() * 720 - 360, []);
-  const colors = ["#a8802e", "#c9a84c", "#3a75d4", "#c4564a", "#3a8a5c"];
+  const colors = ["var(--color-winner-gold)", "var(--color-winner-gold-light)", "var(--color-side-a)", "var(--color-side-b)", "#3a8a5c"];
   const color = useMemo(
     () => colors[Math.floor(Math.random() * colors.length)],
     [],
@@ -233,43 +234,26 @@ export default function ResultsView({ debate }: ResultsViewProps) {
   }
 
   function humanizeReason(text: string): string {
-    return (
-      text
-        .replace(/\s*References?:\s*[A-Z_,;\s]+\.?\s*$/g, "")
-        .replace(/\s*\([A-Z_]+(?:,\s*[A-Z_]+)*\)/g, "")
-        .replace(/\[([A-Z][A-Z0-9_]+)\]/g, (_match, id) =>
-          humanizeStageId(id),
-        )
-        .replace(
-          /\b([AB]_(?:OPEN|CHALLENGE|REBUTTAL|COUNTER|CLOSE|RESPOND_[12]|FINAL))\b/g,
-          (_match, id) => humanizeStageId(id),
-        )
-        .replace(
-          /\b(MOD_(?:SETUP|INTRO|Q[12]|SYNTHESIS|WRAP))\b/g,
-          (_match, id) => humanizeStageId(id),
-        )
-        .replace(/\bSide A\b/g, nameA)
-        .replace(/\bSide B\b/g, nameB)
-        .replace(/\bside A\b/g, nameA)
-        .replace(/\bside B\b/g, nameB)
-        .replace(/\bDebater A\b/g, nameA)
-        .replace(/\bDebater B\b/g, nameB)
-        .replace(/\bdebater A\b/g, nameA)
-        .replace(/\bdebater B\b/g, nameB)
-        .replace(/\bSpeaker A\b/g, nameA)
-        .replace(/\bSpeaker B\b/g, nameB)
-        .replace(/\bspeaker A\b/g, nameA)
-        .replace(/\bspeaker B\b/g, nameB)
-        .replace(/\bParticipant A\b/g, nameA)
-        .replace(/\bParticipant B\b/g, nameB)
-        .replace(/\bparticipant A\b/g, nameA)
-        .replace(/\bparticipant B\b/g, nameB)
-        .replace(/\bB\b/g, nameB)
-        // Standalone "A" after punctuation = debater ref
-        .replace(/(?<=[:;,]\s*)A\b/g, nameA)
-        .replace(/(?<=\.\s+)A\b/g, nameA)
-        .replace(/(?<![A-Za-z])\bA\b(?='s\b)/g, nameA)
-    );
+    const stripped = text
+      .replace(/\s*References?:\s*[A-Z_,;\s]+\.?\s*$/g, "")
+      .replace(/\s*\([A-Z_]+(?:,\s*[A-Z_]+)*\)/g, "")
+      .replace(/\[([A-Z][A-Z0-9_]+)\]/g, (_match, id) => humanizeStageId(id))
+      .replace(
+        /\b([AB]_(?:OPEN|CHALLENGE|REBUTTAL|COUNTER|CLOSE|RESPOND_[12]|FINAL))\b/g,
+        (_match, id) => humanizeStageId(id),
+      )
+      .replace(
+        /\b(MOD_(?:SETUP|INTRO|Q[12]|SYNTHESIS|WRAP))\b/g,
+        (_match, id) => humanizeStageId(id),
+      );
+    return humanizeNarrativeText(stripped, nameA, nameB)
+      .replace(/\bparticipant A\b/g, nameA)
+      .replace(/\bparticipant B\b/g, nameB)
+      .replace(/\bB\b/g, nameB)
+      // Standalone "A" after punctuation = debater ref
+      .replace(/(?<=[:;,]\s*)A\b/g, nameA)
+      .replace(/(?<=\.\s+)A\b/g, nameA)
+      .replace(/(?<![A-Za-z])\bA\b(?='s\b)/g, nameA);
   }
 
   const rawBallot = decision.ballot as { refs: string[]; reason: string }[];
@@ -302,15 +286,15 @@ export default function ResultsView({ debate }: ResultsViewProps) {
         }`}
       >
         {/* ── Scorecard (left) ── */}
-        <div className="flex flex-col rounded-[10px] border border-[#e5e3dc] bg-white px-[18px] py-4">
+        <div className="flex flex-col rounded-[10px] border border-[var(--color-paper-border)] bg-white px-3 py-3 sm:px-[18px] sm:py-4">
           <div className="mb-2.5 flex items-center justify-between">
-            <span className="font-[var(--font-geist-mono)] text-[13px] font-medium uppercase tracking-[2.5px] text-[#999]">
+            <span className="font-[var(--font-geist-mono)] text-[13px] font-medium uppercase tracking-[2.5px] text-[var(--color-paper-muted)]">
               Scorecard
             </span>
             {detailedScores && (
               <button
                 onClick={() => setShowDetailedScores(!showDetailedScores)}
-                className="font-[var(--font-geist-mono)] text-[9px] uppercase tracking-[1.5px] text-[#3a75d4] transition-colors hover:text-[#2a5aa4]"
+                className="font-[var(--font-geist-mono)] text-[9px] uppercase tracking-[1.5px] text-[var(--color-side-a)] transition-colors hover:text-[var(--color-side-a-deep)]"
               >
                 {showDetailedScores ? "Summary" : "Detailed"}
               </button>
@@ -321,11 +305,11 @@ export default function ResultsView({ debate }: ResultsViewProps) {
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th className="border-b border-[#eceae4] pb-2 text-left" />
-                  <th className="w-[42px] border-b border-[#eceae4] pb-2 text-center font-[var(--font-geist-mono)] text-[9px] font-medium uppercase tracking-[1.5px] text-[#3a75d4]">
+                  <th className="border-b border-[var(--color-paper-rule)] pb-2 text-left" />
+                  <th className="w-[42px] border-b border-[var(--color-paper-rule)] pb-2 text-center font-[var(--font-geist-mono)] text-[9px] font-medium uppercase tracking-[1.5px] text-[var(--color-side-a)]">
                     {nameA.split(" ")[0].charAt(0)}
                   </th>
-                  <th className="w-[42px] border-b border-[#eceae4] pb-2 text-center font-[var(--font-geist-mono)] text-[9px] font-medium uppercase tracking-[1.5px] text-[#c4564a]">
+                  <th className="w-[42px] border-b border-[var(--color-paper-rule)] pb-2 text-center font-[var(--font-geist-mono)] text-[9px] font-medium uppercase tracking-[1.5px] text-[var(--color-side-b)]">
                     {nameB.split(" ")[0].charAt(0)}
                   </th>
                 </tr>
@@ -342,17 +326,17 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.4 + idx * 0.06 }}
                         >
-                          <td className="border-t border-[#eceae4] py-[7px] pr-2.5 text-[14px] text-[#5c5c5c] first:border-t-0">
+                          <td className="border-t border-[var(--color-paper-rule)] py-[7px] pr-2.5 text-[14px] text-[var(--color-paper-text)] first:border-t-0">
                             {scoreLabels[category] || category}
                           </td>
-                          <td className="border-t border-[#eceae4] py-[7px] text-center font-[var(--font-geist-mono)] text-[15px] font-medium text-[#3a75d4] first:border-t-0">
+                          <td className="border-t border-[var(--color-paper-rule)] py-[7px] text-center font-[var(--font-geist-mono)] text-[15px] font-medium text-[var(--color-side-a)] first:border-t-0">
                             <span
                               className={`inline-block min-w-[28px] rounded px-1 py-px ${isAHigher ? "bg-[rgba(58,117,212,0.07)]" : ""}`}
                             >
                               {values.A}
                             </span>
                           </td>
-                          <td className="border-t border-[#eceae4] py-[7px] text-center font-[var(--font-geist-mono)] text-[15px] font-medium text-[#c4564a] first:border-t-0">
+                          <td className="border-t border-[var(--color-paper-rule)] py-[7px] text-center font-[var(--font-geist-mono)] text-[15px] font-medium text-[var(--color-side-b)] first:border-t-0">
                             <span
                               className={`inline-block min-w-[28px] rounded px-1 py-px ${isBHigher ? "bg-[rgba(196,86,74,0.07)]" : ""}`}
                             >
@@ -367,7 +351,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                         <tr key={`h-${group.label}`}>
                           <td
                             colSpan={3}
-                            className="bg-[#f3f2ee] py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#999]"
+                            className="bg-[var(--color-paper-bg-stripe)] py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--color-paper-muted)]"
                           >
                             {group.label}
                           </td>
@@ -379,17 +363,17 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                           const isBHigher = bVal > aVal;
                           return (
                             <tr key={key}>
-                              <td className="border-t border-[#eceae4] py-[5px] pr-2 text-[12px] text-[#5c5c5c]">
+                              <td className="border-t border-[var(--color-paper-rule)] py-[5px] pr-2 text-[12px] text-[var(--color-paper-text)]">
                                 {detailedScoreLabels[key]}
                               </td>
-                              <td className="border-t border-[#eceae4] py-[5px] text-center font-[var(--font-geist-mono)] text-[12px] font-medium text-[#3a75d4]">
+                              <td className="border-t border-[var(--color-paper-rule)] py-[5px] text-center font-[var(--font-geist-mono)] text-[12px] font-medium text-[var(--color-side-a)]">
                                 <span
                                   className={`inline-block min-w-[24px] rounded px-1 py-px ${isAHigher ? "bg-[rgba(58,117,212,0.07)]" : ""}`}
                                 >
                                   {aVal}
                                 </span>
                               </td>
-                              <td className="border-t border-[#eceae4] py-[5px] text-center font-[var(--font-geist-mono)] text-[12px] font-medium text-[#c4564a]">
+                              <td className="border-t border-[var(--color-paper-rule)] py-[5px] text-center font-[var(--font-geist-mono)] text-[12px] font-medium text-[var(--color-side-b)]">
                                 <span
                                   className={`inline-block min-w-[24px] rounded px-1 py-px ${isBHigher ? "bg-[rgba(196,86,74,0.07)]" : ""}`}
                                 >
@@ -404,17 +388,17 @@ export default function ResultsView({ debate }: ResultsViewProps) {
 
                 {/* Total row */}
                 <tr>
-                  <td className="border-t-[1.5px] border-[#e5e3dc] pt-2.5 text-[15px] font-semibold text-[#1a1a1a]">
+                  <td className="border-t-[1.5px] border-[var(--color-paper-border)] pt-2.5 text-[15px] font-semibold text-[var(--color-paper-ink)]">
                     Total
                   </td>
-                  <td className="border-t-[1.5px] border-[#e5e3dc] pt-2.5 text-center font-[var(--font-geist-mono)] text-[20px] font-bold text-[#3a75d4]">
+                  <td className="border-t-[1.5px] border-[var(--color-paper-border)] pt-2.5 text-center font-[var(--font-geist-mono)] text-[20px] font-bold text-[var(--color-side-a)]">
                     <span
                       className={`inline-block rounded px-1.5 py-px ${totalA > totalB ? "bg-[rgba(58,117,212,0.07)]" : ""}`}
                     >
                       {totalA}
                     </span>
                   </td>
-                  <td className="border-t-[1.5px] border-[#e5e3dc] pt-2.5 text-center font-[var(--font-geist-mono)] text-[20px] font-bold text-[#c4564a]">
+                  <td className="border-t-[1.5px] border-[var(--color-paper-border)] pt-2.5 text-center font-[var(--font-geist-mono)] text-[20px] font-bold text-[var(--color-side-b)]">
                     <span
                       className={`inline-block rounded px-1.5 py-px ${totalB > totalA ? "bg-[rgba(196,86,74,0.07)]" : ""}`}
                     >
@@ -437,15 +421,15 @@ export default function ResultsView({ debate }: ResultsViewProps) {
             stiffness: 200,
             damping: 22,
           }}
-          className="relative flex flex-col items-center justify-center overflow-hidden rounded-[10px] border border-[#e6d5a0] bg-[#faf6eb] p-5 text-center"
+          className="relative flex flex-col items-center justify-center overflow-hidden rounded-[10px] border border-[var(--color-paper-gold-border)] bg-[var(--color-paper-bg-warm)] p-5 text-center"
         >
           {/* Gold accent line at top */}
-          <div className="pointer-events-none absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent opacity-60" />
+          <div className="pointer-events-none absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-[var(--color-winner-gold-light)] to-transparent opacity-60" />
 
           {/* Crown + label */}
-          <div className="mb-2.5 flex items-center justify-center gap-[5px] font-[var(--font-geist-mono)] text-[12px] font-medium uppercase tracking-[2.5px] text-[#a8802e]">
+          <div className="mb-2.5 flex items-center justify-center gap-[5px] font-[var(--font-geist-mono)] text-[12px] font-medium uppercase tracking-[2.5px] text-[var(--color-winner-gold)]">
             <svg
-              className="h-[13px] w-[13px] fill-[#a8802e]"
+              className="h-[13px] w-[13px] fill-[var(--color-winner-gold)]"
               viewBox="0 0 24 24"
               style={{ animation: "crownPulse 3s ease-in-out infinite" }}
             >
@@ -464,18 +448,18 @@ export default function ResultsView({ debate }: ResultsViewProps) {
               <img
                 src={winnerAvatar}
                 alt={winnerPersona.name}
-                className="mb-3 h-[150px] w-[150px] shrink-0 rounded-full border-[3px] border-[#e6d5a0] bg-[#f3f2ee] object-cover"
+                className="mb-3 h-[150px] w-[150px] shrink-0 rounded-full border-[3px] border-[var(--color-paper-gold-border)] bg-[var(--color-paper-bg-stripe)] object-cover"
                 style={{
                   boxShadow:
-                    "0 0 0 5px #faf6eb, 0 4px 24px rgba(168,128,46,0.15)",
+                    "0 0 0 5px var(--color-paper-bg-warm), 0 4px 24px rgba(168,128,46,0.15)",
                 }}
               />
             ) : (
               <div
-                className="mb-3 flex h-[150px] w-[150px] shrink-0 items-center justify-center rounded-full border-[3px] border-[#e6d5a0] bg-gradient-to-br from-[#c9a84c] to-[#a8802e]"
+                className="mb-3 flex h-[150px] w-[150px] shrink-0 items-center justify-center rounded-full border-[3px] border-[var(--color-paper-gold-border)] bg-gradient-to-br from-[var(--color-winner-gold-light)] to-[var(--color-winner-gold)]"
                 style={{
                   boxShadow:
-                    "0 0 0 5px #faf6eb, 0 4px 24px rgba(168,128,46,0.15)",
+                    "0 0 0 5px var(--color-paper-bg-warm), 0 4px 24px rgba(168,128,46,0.15)",
                 }}
               >
                 <svg
@@ -494,7 +478,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
-            className="font-[var(--font-playfair)] text-2xl font-semibold leading-tight text-[#a8802e]"
+            className="font-[var(--font-playfair)] text-2xl font-semibold leading-tight text-[var(--color-winner-gold)]"
           >
             {isTie ? "TIE" : winnerPersona.name}
           </motion.div>
@@ -505,10 +489,10 @@ export default function ResultsView({ debate }: ResultsViewProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.0 }}
-              className="mt-0.5 mb-2.5 text-[12px] text-[#5c5c5c]"
+              className="mt-0.5 mb-2.5 text-[12px] text-[var(--color-paper-text)]"
             >
               defeats{" "}
-              <strong className="font-medium text-[#1a1a1a]">
+              <strong className="font-medium text-[var(--color-paper-ink)]">
                 {loserPersona.name}
               </strong>
             </motion.div>
@@ -519,18 +503,18 @@ export default function ResultsView({ debate }: ResultsViewProps) {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.1 }}
-            className="rounded-lg border border-[#e6d5a0] bg-white/60 px-4 py-2.5"
+            className="rounded-lg border border-[var(--color-paper-gold-border)] bg-white/60 px-4 py-2.5"
           >
             <div className="flex items-baseline justify-center gap-2 font-[var(--font-playfair)]">
-              <span className="text-[22px] font-light text-[#999]">
+              <span className="text-[22px] font-light text-[var(--color-paper-muted)]">
                 {loserTotal}
               </span>
-              <span className="text-[13px] text-[#999]">&mdash;</span>
-              <span className="text-[28px] font-bold text-[#a8802e]">
+              <span className="text-[13px] text-[var(--color-paper-muted)]">&mdash;</span>
+              <span className="text-[28px] font-bold text-[var(--color-winner-gold)]">
                 {winnerTotal}
               </span>
             </div>
-            <div className="mt-0.5 font-[var(--font-geist-mono)] text-[9px] uppercase tracking-[1.5px] text-[#a8802e]">
+            <div className="mt-0.5 font-[var(--font-geist-mono)] text-[9px] uppercase tracking-[1.5px] text-[var(--color-winner-gold)]">
               {closeness && closenessText[closeness]
                 ? closenessText[closeness]
                 : "Victory"}{" "}
@@ -545,29 +529,29 @@ export default function ResultsView({ debate }: ResultsViewProps) {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="flex flex-col rounded-[10px] border border-[#e5e3dc] bg-white px-[18px] py-4"
+            className="flex flex-col rounded-[10px] border border-[var(--color-paper-border)] bg-white px-[18px] py-4"
           >
-            <div className="mb-2.5 font-[var(--font-geist-mono)] text-[13px] font-medium uppercase tracking-[2.5px] text-[#999]">
+            <div className="mb-2.5 font-[var(--font-geist-mono)] text-[13px] font-medium uppercase tracking-[2.5px] text-[var(--color-paper-muted)]">
               Best Moments
             </div>
             <div className="flex flex-1 flex-col justify-center gap-2.5">
               {/* Side A quote */}
-              <div className="rounded-[6px] border-l-[3px] border-l-[#3a75d4] bg-[#f7f6f2] px-3.5 py-3">
-                <p className="mb-1.5 font-[var(--font-cormorant)] text-[21px] italic leading-[1.4] text-[#1a1a1a]">
+              <div className="rounded-[6px] border-l-[3px] border-l-[var(--color-side-a)] bg-[var(--color-paper-bg)] px-3.5 py-3">
+                <p className="mb-1.5 font-[var(--font-cormorant)] text-[21px] italic leading-[1.4] text-[var(--color-paper-ink)]">
                   &ldquo;{bestLines.A}&rdquo;
                 </p>
-                <div className="flex items-center gap-[5px] font-[var(--font-geist-mono)] text-[10px] tracking-[1px] text-[#999]">
-                  <span className="inline-block h-[5px] w-[5px] rounded-full bg-[#3a75d4]" />
+                <div className="flex items-center gap-[5px] font-[var(--font-geist-mono)] text-[10px] tracking-[1px] text-[var(--color-paper-muted)]">
+                  <span className="inline-block h-[5px] w-[5px] rounded-full bg-[var(--color-side-a)]" />
                   {nameA}
                 </div>
               </div>
               {/* Side B quote */}
-              <div className="rounded-[6px] border-l-[3px] border-l-[#c4564a] bg-[#f7f6f2] px-3.5 py-3">
-                <p className="mb-1.5 font-[var(--font-cormorant)] text-[21px] italic leading-[1.4] text-[#1a1a1a]">
+              <div className="rounded-[6px] border-l-[3px] border-l-[var(--color-side-b)] bg-[var(--color-paper-bg)] px-3.5 py-3">
+                <p className="mb-1.5 font-[var(--font-cormorant)] text-[21px] italic leading-[1.4] text-[var(--color-paper-ink)]">
                   &ldquo;{bestLines.B}&rdquo;
                 </p>
-                <div className="flex items-center gap-[5px] font-[var(--font-geist-mono)] text-[10px] tracking-[1px] text-[#999]">
-                  <span className="inline-block h-[5px] w-[5px] rounded-full bg-[#c4564a]" />
+                <div className="flex items-center gap-[5px] font-[var(--font-geist-mono)] text-[10px] tracking-[1px] text-[var(--color-paper-muted)]">
+                  <span className="inline-block h-[5px] w-[5px] rounded-full bg-[var(--color-side-b)]" />
                   {nameB}
                 </div>
               </div>
@@ -583,16 +567,16 @@ export default function ResultsView({ debate }: ResultsViewProps) {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
-        className="overflow-hidden rounded-[10px] border border-[#e5e3dc] bg-white"
+        className="overflow-hidden rounded-[10px] border border-[var(--color-paper-border)] bg-white"
       >
         {/* Tab bar */}
-        <div className="flex border-b border-[#e5e3dc]">
+        <div className="flex border-b border-[var(--color-paper-border)]">
           <button
             onClick={() => setActiveTab("ballot")}
             className={`flex-1 border-b-2 px-3.5 py-2.5 text-center font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] transition-all ${
               activeTab === "ballot"
-                ? "border-[#a8802e] bg-[#faf6eb] text-[#a8802e]"
-                : "border-transparent text-[#999] hover:bg-[#f3f2ee] hover:text-[#5c5c5c]"
+                ? "border-[var(--color-winner-gold)] bg-[var(--color-paper-bg-warm)] text-[var(--color-winner-gold)]"
+                : "border-transparent text-[var(--color-paper-muted)] hover:bg-[var(--color-paper-bg-stripe)] hover:text-[var(--color-paper-text)]"
             }`}
           >
             Ballot Reasons
@@ -603,8 +587,8 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                 onClick={() => setActiveTab("A")}
                 className={`flex-1 border-b-2 px-3.5 py-2.5 text-center font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] transition-all ${
                   activeTab === "A"
-                    ? "border-[#a8802e] bg-[#faf6eb] text-[#a8802e]"
-                    : "border-transparent text-[#999] hover:bg-[#f3f2ee] hover:text-[#5c5c5c]"
+                    ? "border-[var(--color-winner-gold)] bg-[var(--color-paper-bg-warm)] text-[var(--color-winner-gold)]"
+                    : "border-transparent text-[var(--color-paper-muted)] hover:bg-[var(--color-paper-bg-stripe)] hover:text-[var(--color-paper-text)]"
                 }`}
               >
                 {nameA.split(" ")[0]} Analysis
@@ -613,8 +597,8 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                 onClick={() => setActiveTab("B")}
                 className={`flex-1 border-b-2 px-3.5 py-2.5 text-center font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] transition-all ${
                   activeTab === "B"
-                    ? "border-[#a8802e] bg-[#faf6eb] text-[#a8802e]"
-                    : "border-transparent text-[#999] hover:bg-[#f3f2ee] hover:text-[#5c5c5c]"
+                    ? "border-[var(--color-winner-gold)] bg-[var(--color-paper-bg-warm)] text-[var(--color-winner-gold)]"
+                    : "border-transparent text-[var(--color-paper-muted)] hover:bg-[var(--color-paper-bg-stripe)] hover:text-[var(--color-paper-text)]"
                 }`}
               >
                 {nameB.split(" ")[0]} Analysis
@@ -636,7 +620,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
               >
                 {/* Verdict */}
                 {verdict && (
-                  <div className="mb-3.5 border-b border-[#eceae4] pb-3 text-[15px] leading-[1.7] text-[#5c5c5c]">
+                  <div className="mb-3.5 border-b border-[var(--color-paper-rule)] pb-3 text-[15px] leading-[1.7] text-[var(--color-paper-text)]">
                     {humanizeReason(verdict)}
                   </div>
                 )}
@@ -649,10 +633,10 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.1 + idx * 0.06 }}
-                      className="relative border-b border-[#eceae4] py-[7px] pl-3.5 last:border-b-0"
+                      className="relative border-b border-[var(--color-paper-rule)] py-[7px] pl-3.5 last:border-b-0"
                     >
-                      <span className="absolute left-0 top-[13px] h-[5px] w-[5px] rounded-full bg-[#a8802e]" />
-                      <p className="text-[14px] leading-[1.6] text-[#5c5c5c]">
+                      <span className="absolute left-0 top-[13px] h-[5px] w-[5px] rounded-full bg-[var(--color-winner-gold)]" />
+                      <p className="text-[14px] leading-[1.6] text-[var(--color-paper-text)]">
                         {item.reason}
                       </p>
                     </motion.div>
@@ -686,7 +670,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                     {analysis.A.strengths?.map((s, i) => (
                       <div
                         key={i}
-                        className="mb-[5px] flex items-start gap-[7px] rounded-[6px] bg-[#f3f2ee] px-2.5 py-[7px] text-[13px] leading-[1.5] text-[#5c5c5c]"
+                        className="mb-[5px] flex items-start gap-[7px] rounded-[6px] bg-[var(--color-paper-bg-stripe)] px-2.5 py-[7px] text-[13px] leading-[1.5] text-[var(--color-paper-text)]"
                       >
                         <div className="mt-0.5 flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-full bg-[rgba(58,138,92,0.08)] text-[8px] font-bold text-[#3a8a5c]">
                           ✓
@@ -713,7 +697,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                     {analysis.A.weaknesses?.map((w, i) => (
                       <div
                         key={i}
-                        className="mb-[5px] flex items-start gap-[7px] rounded-[6px] bg-[#f3f2ee] px-2.5 py-[7px] text-[13px] leading-[1.5] text-[#5c5c5c]"
+                        className="mb-[5px] flex items-start gap-[7px] rounded-[6px] bg-[var(--color-paper-bg-stripe)] px-2.5 py-[7px] text-[13px] leading-[1.5] text-[var(--color-paper-text)]"
                       >
                         <div className="mt-0.5 flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-full bg-[rgba(181,86,74,0.06)] text-[8px] font-bold text-[#b5564a]">
                           ✗
@@ -725,16 +709,16 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                 </div>
                 {/* Key moment */}
                 {analysis.A.keyMoment && (
-                  <div className="mt-4 rounded-[6px] border border-[#e5e3dc] bg-[#f7f6f2] px-4 py-3">
-                    <div className="mb-1 font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] text-[#a8802e]">
+                  <div className="mt-4 rounded-[6px] border border-[var(--color-paper-border)] bg-[var(--color-paper-bg)] px-4 py-3">
+                    <div className="mb-1 font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] text-[var(--color-winner-gold)]">
                       Key Moment
                       {analysis.A.keyMomentRef && (
-                        <span className="ml-2 normal-case tracking-normal text-[#999]">
+                        <span className="ml-2 normal-case tracking-normal text-[var(--color-paper-muted)]">
                           ({humanizeStageId(analysis.A.keyMomentRef)})
                         </span>
                       )}
                     </div>
-                    <p className="text-[14px] italic leading-[1.6] text-[#5c5c5c]">
+                    <p className="text-[14px] italic leading-[1.6] text-[var(--color-paper-text)]">
                       {humanizeReason(analysis.A.keyMoment)}
                     </p>
                   </div>
@@ -768,7 +752,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                     {analysis.B.strengths?.map((s, i) => (
                       <div
                         key={i}
-                        className="mb-[5px] flex items-start gap-[7px] rounded-[6px] bg-[#f3f2ee] px-2.5 py-[7px] text-[13px] leading-[1.5] text-[#5c5c5c]"
+                        className="mb-[5px] flex items-start gap-[7px] rounded-[6px] bg-[var(--color-paper-bg-stripe)] px-2.5 py-[7px] text-[13px] leading-[1.5] text-[var(--color-paper-text)]"
                       >
                         <div className="mt-0.5 flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-full bg-[rgba(58,138,92,0.08)] text-[8px] font-bold text-[#3a8a5c]">
                           ✓
@@ -795,7 +779,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                     {analysis.B.weaknesses?.map((w, i) => (
                       <div
                         key={i}
-                        className="mb-[5px] flex items-start gap-[7px] rounded-[6px] bg-[#f3f2ee] px-2.5 py-[7px] text-[13px] leading-[1.5] text-[#5c5c5c]"
+                        className="mb-[5px] flex items-start gap-[7px] rounded-[6px] bg-[var(--color-paper-bg-stripe)] px-2.5 py-[7px] text-[13px] leading-[1.5] text-[var(--color-paper-text)]"
                       >
                         <div className="mt-0.5 flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-full bg-[rgba(181,86,74,0.06)] text-[8px] font-bold text-[#b5564a]">
                           ✗
@@ -807,16 +791,16 @@ export default function ResultsView({ debate }: ResultsViewProps) {
                 </div>
                 {/* Key moment */}
                 {analysis.B.keyMoment && (
-                  <div className="mt-4 rounded-[6px] border border-[#e5e3dc] bg-[#f7f6f2] px-4 py-3">
-                    <div className="mb-1 font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] text-[#a8802e]">
+                  <div className="mt-4 rounded-[6px] border border-[var(--color-paper-border)] bg-[var(--color-paper-bg)] px-4 py-3">
+                    <div className="mb-1 font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[2px] text-[var(--color-winner-gold)]">
                       Key Moment
                       {analysis.B.keyMomentRef && (
-                        <span className="ml-2 normal-case tracking-normal text-[#999]">
+                        <span className="ml-2 normal-case tracking-normal text-[var(--color-paper-muted)]">
                           ({humanizeStageId(analysis.B.keyMomentRef)})
                         </span>
                       )}
                     </div>
-                    <p className="text-[14px] italic leading-[1.6] text-[#5c5c5c]">
+                    <p className="text-[14px] italic leading-[1.6] text-[var(--color-paper-text)]">
                       {humanizeReason(analysis.B.keyMoment)}
                     </p>
                   </div>
@@ -842,7 +826,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
           disabled={rematchLoading}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 rounded-[10px] bg-[#a8802e] px-6 py-2.5 font-[var(--font-geist-mono)] text-[11px] font-medium uppercase tracking-[1.5px] text-white shadow-md transition-all hover:bg-[#8f6c26] disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-2 rounded-[10px] bg-[var(--color-winner-gold)] px-6 py-2.5 font-[var(--font-geist-mono)] text-[11px] font-medium uppercase tracking-[1.5px] text-white shadow-md transition-all hover:bg-[#8f6c26] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {rematchLoading ? (
             <>
@@ -875,11 +859,11 @@ export default function ResultsView({ debate }: ResultsViewProps) {
           disabled={exportLoading}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 rounded-[10px] border border-[#e5e3dc] bg-white px-6 py-2.5 font-[var(--font-geist-mono)] text-[11px] font-medium uppercase tracking-[1.5px] text-[#5c5c5c] transition-all hover:border-[#d5d3cc] hover:bg-[#f7f6f2] disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-2 rounded-[10px] border border-[var(--color-paper-border)] bg-white px-6 py-2.5 font-[var(--font-geist-mono)] text-[11px] font-medium uppercase tracking-[1.5px] text-[var(--color-paper-text)] transition-all hover:border-[#d5d3cc] hover:bg-[var(--color-paper-bg)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {exportLoading ? (
             <>
-              <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#999] border-t-transparent" />
+              <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[var(--color-paper-muted)] border-t-transparent" />
               Exporting...
             </>
           ) : (
@@ -907,7 +891,7 @@ export default function ResultsView({ debate }: ResultsViewProps) {
           onClick={handleCopyExport}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 rounded-[10px] border border-[#e5e3dc] bg-white px-6 py-2.5 font-[var(--font-geist-mono)] text-[11px] font-medium uppercase tracking-[1.5px] text-[#5c5c5c] transition-all hover:border-[#d5d3cc] hover:bg-[#f7f6f2]"
+          className="flex items-center gap-2 rounded-[10px] border border-[var(--color-paper-border)] bg-white px-6 py-2.5 font-[var(--font-geist-mono)] text-[11px] font-medium uppercase tracking-[1.5px] text-[var(--color-paper-text)] transition-all hover:border-[#d5d3cc] hover:bg-[var(--color-paper-bg)]"
         >
           {copied ? (
             <>

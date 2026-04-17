@@ -46,9 +46,14 @@ export class ValidatorService {
     }
 
     // Question required check
-    if (stage.questionRequired && (!payload.question || payload.question.trim() === '')) {
+    if (
+      stage.questionRequired &&
+      (!payload.question || payload.question.trim() === '')
+    ) {
       violations.push('MISSING_FIELD');
-      details.push('Question is required for this stage but was empty or missing');
+      details.push(
+        'Question is required for this stage but was empty or missing',
+      );
     }
 
     // Closing new-argument heuristic (synchronous fallback)
@@ -95,9 +100,14 @@ export class ValidatorService {
     }
 
     // Question required check
-    if (stage.questionRequired && (!payload.question || payload.question.trim() === '')) {
+    if (
+      stage.questionRequired &&
+      (!payload.question || payload.question.trim() === '')
+    ) {
       violations.push('MISSING_FIELD');
-      details.push('Question is required for this stage but was empty or missing');
+      details.push(
+        'Question is required for this stage but was empty or missing',
+      );
     }
 
     // Closing new-argument: use LLM classifier if available
@@ -135,7 +145,9 @@ export class ValidatorService {
     }
 
     try {
-      const priorText = priorNarratives.map((l, i) => `[Prior ${i + 1}]: ${l}`).join('\n');
+      const priorText = priorNarratives
+        .map((l, i) => `[Prior ${i + 1}]: ${l}`)
+        .join('\n');
 
       const prompt = {
         system: `You are a debate rule classifier. Determine if a closing statement introduces genuinely NEW arguments that were not previously raised, or if it merely reframes, summarizes, or extends existing arguments.
@@ -298,15 +310,61 @@ Is this closing introducing genuinely new arguments?`,
    */
   extractSignificantWords(text: string): string[] {
     const stopWords = new Set([
-      'the', 'this', 'that', 'with', 'from', 'have', 'been',
-      'will', 'would', 'could', 'should', 'their', 'there',
-      'they', 'them', 'then', 'than', 'when', 'what', 'which',
-      'while', 'where', 'were', 'does', 'done', 'doing',
-      'being', 'also', 'more', 'most', 'much', 'many',
-      'very', 'just', 'only', 'such', 'some', 'same',
-      'other', 'each', 'every', 'both', 'about', 'into',
-      'over', 'after', 'before', 'between', 'under', 'again',
-      'further', 'once', 'here', 'because', 'against',
+      'the',
+      'this',
+      'that',
+      'with',
+      'from',
+      'have',
+      'been',
+      'will',
+      'would',
+      'could',
+      'should',
+      'their',
+      'there',
+      'they',
+      'them',
+      'then',
+      'than',
+      'when',
+      'what',
+      'which',
+      'while',
+      'where',
+      'were',
+      'does',
+      'done',
+      'doing',
+      'being',
+      'also',
+      'more',
+      'most',
+      'much',
+      'many',
+      'very',
+      'just',
+      'only',
+      'such',
+      'some',
+      'same',
+      'other',
+      'each',
+      'every',
+      'both',
+      'about',
+      'into',
+      'over',
+      'after',
+      'before',
+      'between',
+      'under',
+      'again',
+      'further',
+      'once',
+      'here',
+      'because',
+      'against',
     ]);
 
     const words = text

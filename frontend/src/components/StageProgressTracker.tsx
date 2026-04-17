@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { StageConfig, Speaker } from "@/lib/api";
+import { formatStageLabel } from "@/lib/format-stage-label";
 
 interface StageProgressTrackerProps {
   stages: StageConfig[];
@@ -33,13 +34,8 @@ export default function StageProgressTracker({
   personaAName = "Side A",
   personaBName = "Side B",
 }: StageProgressTrackerProps) {
-  function humanizeLabel(label: string): string {
-    return label
-      .replace(/\bSide A\b/g, personaAName)
-      .replace(/\bSide B\b/g, personaBName)
-      .replace(/\bGuest A\b/g, personaAName)
-      .replace(/\bGuest B\b/g, personaBName);
-  }
+  const humanizeLabel = (label: string) =>
+    formatStageLabel(label, personaAName, personaBName);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const totalStages = stages.length;
   const progressPercent = isCompleted
