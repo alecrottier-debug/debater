@@ -5,6 +5,7 @@ struct SpeechCard: View {
     let turn: Turn
     let personaA: Persona
     let personaB: Persona
+    let baseURL: URL
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
@@ -36,16 +37,42 @@ struct SpeechCard: View {
     }
 
     private var header: some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(label)
-                .font(Theme.Font.caption)
-                .foregroundStyle(tint)
-                .textCase(.uppercase)
+        HStack(alignment: .center, spacing: Theme.Spacing.sm) {
+            speakerAvatar
+            VStack(alignment: .leading, spacing: 0) {
+                Text(speakerName)
+                    .font(.system(.subheadline, design: .default, weight: .semibold))
+                    .foregroundStyle(tint)
+                Text(StageDisplay.shortLabel(for: turn.stageId))
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Color.textSecondary)
+            }
             Spacer()
-            Text("\(turn.wordCount) words")
+            Text("\(turn.wordCount)w")
                 .font(Theme.Font.caption)
-                .foregroundStyle(Theme.Color.textSecondary)
+                .foregroundStyle(Theme.Color.textSecondary.opacity(0.7))
         }
+    }
+
+    @ViewBuilder
+    private var speakerAvatar: some View {
+        switch turn.speaker {
+        case .sideA:
+            PersonaAvatar(persona: personaA, baseURL: baseURL, size: 28, tint: Theme.Color.sideA)
+        case .sideB:
+            PersonaAvatar(persona: personaB, baseURL: baseURL, size: 28, tint: Theme.Color.sideB)
+        case .moderator:
+            systemIconAvatar(systemName: "person.fill.checkmark")
+        case .judge:
+            systemIconAvatar(systemName: "scalemass.fill")
+        }
+    }
+
+    private func systemIconAvatar(systemName: String) -> some View {
+        Circle()
+            .fill(tint.opacity(0.15))
+            .frame(width: 28, height: 28)
+            .overlay(Image(systemName: systemName).font(.system(size: 13)).foregroundStyle(tint))
     }
 
     private var tint: Color {
@@ -57,30 +84,38 @@ struct SpeechCard: View {
         }
     }
 
-    private var label: String {
+    private var speakerName: String {
         switch turn.speaker {
-        case .sideA: "\(personaA.name) · \(turn.stageId.replacingOccurrences(of: "_", with: " "))"
-        case .sideB: "\(personaB.name) · \(turn.stageId.replacingOccurrences(of: "_", with: " "))"
-        case .moderator: "Moderator · \(turn.stageId.replacingOccurrences(of: "_", with: " "))"
+        case .sideA: personaA.name
+        case .sideB: personaB.name
+        case .moderator: "Moderator"
         case .judge: "Judge"
         }
     }
 }
 
 struct StreamingSpeechCard: View {
-    let stageLabel: String
+    let stageId: String
     let speaker: Speaker?
     let text: String
     let personaA: Persona
     let personaB: Persona
+    let baseURL: URL
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            HStack {
-                Text(headerLabel)
-                    .font(Theme.Font.caption)
-                    .foregroundStyle(tint)
-                    .textCase(.uppercase)
+            HStack(alignment: .center, spacing: Theme.Spacing.sm) {
+                speakerAvatar
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(speakerName)
+                        .font(.system(.subheadline, design: .default, weight: .semibold))
+                        .foregroundStyle(tint)
+                    if !stageId.isEmpty {
+                        Text(StageDisplay.shortLabel(for: stageId))
+                            .font(Theme.Font.caption)
+                            .foregroundStyle(Theme.Color.textSecondary)
+                    }
+                }
                 Spacer()
                 ProgressView().controlSize(.small)
             }
@@ -108,13 +143,32 @@ struct StreamingSpeechCard: View {
         }
     }
 
-    private var headerLabel: String {
+    private var speakerName: String {
         switch speaker {
-        case .sideA: "\(personaA.name) · \(stageLabel)"
-        case .sideB: "\(personaB.name) · \(stageLabel)"
-        case .moderator: "Moderator · \(stageLabel)"
+        case .sideA: personaA.name
+        case .sideB: personaB.name
+        case .moderator: "Moderator"
         case .judge: "Judge"
-        case nil: stageLabel
+        case nil: "Generating…"
+        }
+    }
+
+    @ViewBuilder
+    private var speakerAvatar: some View {
+        switch speaker {
+        case .sideA:
+            PersonaAvatar(persona: personaA, baseURL: baseURL, size: 28, tint: Theme.Color.sideA)
+        case .sideB:
+            PersonaAvatar(persona: personaB, baseURL: baseURL, size: 28, tint: Theme.Color.sideB)
+        case .moderator:
+            Circle().fill(tint.opacity(0.15)).frame(width: 28, height: 28)
+                .overlay(Image(systemName: "person.fill.checkmark").font(.system(size: 13)).foregroundStyle(tint))
+        case .judge:
+            Circle().fill(tint.opacity(0.15)).frame(width: 28, height: 28)
+                .overlay(Image(systemName: "scalemass.fill").font(.system(size: 13)).foregroundStyle(tint))
+        case nil:
+            Circle().fill(Theme.Color.accent.opacity(0.15)).frame(width: 28, height: 28)
+                .overlay(ProgressView().controlSize(.mini))
         }
     }
 }

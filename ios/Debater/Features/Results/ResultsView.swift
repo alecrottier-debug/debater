@@ -134,7 +134,7 @@ struct ResultsView: View {
             ForEach(Array(decision.ballot.enumerated()), id: \.offset) { _, entry in
                 VStack(alignment: .leading, spacing: 2) {
                     if !entry.refs.isEmpty {
-                        Text(entry.refs.joined(separator: ", "))
+                        Text(entry.refs.map { humanizedRef($0) }.joined(separator: " · "))
                             .font(Theme.Font.caption)
                             .foregroundStyle(Theme.Color.textSecondary)
                     }
@@ -170,5 +170,14 @@ struct ResultsView: View {
 
     private static func fmt(_ d: Double) -> String {
         String(format: "%.1f", d)
+    }
+
+    /// Turns a ballot ref like "A_OPEN" or "B_COUNTER" into a human string
+    /// using the side's persona name: "Sam Altman's Opening", "Elon Musk's Counter".
+    private func humanizedRef(_ ref: String) -> String {
+        let label = StageDisplay.shortLabel(for: ref)
+        if ref.hasPrefix("A_") { return "\(debate.personaA.name)'s \(label.lowercased())" }
+        if ref.hasPrefix("B_") { return "\(debate.personaB.name)'s \(label.lowercased())" }
+        return label
     }
 }

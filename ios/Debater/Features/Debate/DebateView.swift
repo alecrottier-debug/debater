@@ -26,6 +26,7 @@ struct DebateView: View {
 
 private struct DebateContent: View {
     @Bindable var viewModel: DebateViewModel
+    @Environment(AppEnvironment.self) private var env
 
     var body: some View {
         VStack(spacing: 0) {
@@ -97,17 +98,18 @@ private struct DebateContent: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                     ForEach(viewModel.debate.turns ?? []) { turn in
-                        SpeechCard(turn: turn, personaA: viewModel.debate.personaA, personaB: viewModel.debate.personaB)
+                        SpeechCard(turn: turn, personaA: viewModel.debate.personaA, personaB: viewModel.debate.personaB, baseURL: env.api.baseURL)
                             .id(turn.id)
                     }
 
                     if viewModel.isStreaming {
                         StreamingSpeechCard(
-                            stageLabel: viewModel.streamingStageLabel ?? "Generating…",
+                            stageId: viewModel.streamingStageId ?? "",
                             speaker: viewModel.streamingSpeaker,
                             text: viewModel.streamingText,
                             personaA: viewModel.debate.personaA,
-                            personaB: viewModel.debate.personaB
+                            personaB: viewModel.debate.personaB,
+                            baseURL: env.api.baseURL
                         )
                         .id("streaming")
                     }

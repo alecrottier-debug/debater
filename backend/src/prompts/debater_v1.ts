@@ -21,6 +21,14 @@ export interface DebaterPromptContext {
   persona: Record<string, unknown>;
   opponentPersona: Record<string, unknown>;
   transcript: TranscriptEntry[];
+  /**
+   * First ~200 chars of this persona's narratives from prior *other* debates
+   * at the same-type stage (e.g., openings). The LLM is instructed not to
+   * reuse their phrasing so repeated debates with the same persona feel
+   * fresh instead of recycling the same "Brothers and sisters…" or "Ecoutez,
+   * let me be very clear…" intro every time.
+   */
+  recentOpeningsByThisPersona?: string[];
 }
 
 export function buildDebaterPrompt(ctx: DebaterPromptContext): LlmPrompt {
@@ -59,6 +67,20 @@ export function buildDebaterPrompt(ctx: DebaterPromptContext): LlmPrompt {
 
   const motionStancesBlock = buildMotionStancesBlock(ctx.persona, ctx.motion);
 
+  const priorOpeningsBlock = buildPriorOpeningsBlock(
+    ctx.recentOpeningsByThisPersona ?? [],
+  );
+
+  // Rotation seed: a debate-specific, turn-specific nudge that pushes the LLM
+  // to open in a different register than the default. Same persona arguing
+  // the same kind of motion will otherwise converge on its safest opener.
+  const rotationCue = buildOpeningRotationCue(
+    ctx.motion,
+    ctx.speaker,
+    ctx.stage.id,
+    ctx.transcript.length,
+  );
+
   const identity = ctx.persona.identity as Record<string, unknown> | undefined;
   const personaName = (identity?.name ?? 'this persona') as string;
 
@@ -87,6 +109,8 @@ ${voiceBlock}
 ${authenticityBlock}
 
 ${opponentTargetsBlock}
+${priorOpeningsBlock}
+${rotationCue}
 
 CRITICAL — ZERO REPETITION OF LANGUAGE OR DEVICES:
 Read the ENTIRE transcript before writing. Track every rhetorical device, transition phrase, and argumentative move you have already used. You are STRICTLY FORBIDDEN from:
@@ -288,4 +312,67 @@ function buildOpponentTargetsBlock(opponentPersona: Record<string, unknown>): st
 ${lines.join('\n')}
 
 Use these when selecting what to challenge, what question to ask, and where to press. You don't have to hit all of them — pick the one most relevant to the current motion. But do not default to generic rebuttals when specific targets are available.`;
+}
+
+/**
+ * Feed the LLM a list of things this persona has already said in prior
+ * *other* debates at the same stage type. This is the cross-debate memory
+ * that prevents Macron from opening with "Écoutez, let me be very clear…"
+ * ten debates in a row, or the Pope from always leading with "Brothers
+ * and sisters…".
+ */
+function buildPriorOpeningsBlock(recentOpenings: string[]): string {
+  if (recentOpenings.length === 0) return '';
+  const trimmed = recentOpenings
+    .map((t) => t.trim())
+    .filter((t) => t.length > 0)
+    .slice(0, 5)
+    .map((t, i) => `  ${i + 1}. "${t.slice(0, 180)}${t.length > 180 ? '…' : ''}"`);
+  if (trimmed.length === 0) return '';
+  return `
+CROSS-DEBATE MEMORY — your recent openings in OTHER debates:
+${trimmed.join('\n')}
+
+You are forbidden from opening this turn with the same phrase, rhythm, or rhetorical move as any of the above. If you normally lead with an address ("Brothers and sisters", "Écoutez", "Look,"), you've used it recently — pick a DIFFERENT authentic opener from your persona's documented pool (a story, a date, a citation, a specific name, a direct substantive claim). Stay in your voice; change your ENTRANCE.`;
+}
+
+/**
+ * A lightweight deterministic nudge that pushes the LLM toward one of
+ * several opening archetypes based on a hash of (motion + speaker + stage).
+ * Same persona + same motion = same rotation (consistent), but across
+ * different motions the persona rotates naturally through registers.
+ */
+function buildOpeningRotationCue(
+  motion: string,
+  speaker: string,
+  stageId: string,
+  turnCount: number,
+): string {
+  // Only cue on the persona's FIRST turn of the debate — after that the
+  // in-debate transcript already provides sufficient variation signal.
+  if (turnCount > 1) return '';
+
+  const seed = hashString(`${motion}|${speaker}|${stageId}`);
+  const archetypes = [
+    'Open with a SPECIFIC STORY or ANECDOTE — a person, a place, a concrete moment. No generic preamble.',
+    'Open with a DIRECT CHALLENGE to a hidden assumption in the motion. Name the assumption, then dismantle it.',
+    'Open with a DATA POINT, CITATION, or historical reference delivered in your register. Ground the debate before flying higher.',
+    'Open with a PROVOCATIVE QUESTION that reframes the motion on your terms.',
+    'Open with a VIVID IMAGE or metaphor drawn from your persona\'s own domain — not your opponent\'s.',
+    'Open by CONCEDING ONE NARROW POINT, then pivoting hard to what the concession actually proves.',
+    'Open with a CONTRARIAN RESTATEMENT of the motion — put the real disagreement in your own words.',
+  ];
+  const choice = archetypes[seed % archetypes.length];
+  return `
+OPENING ARCHETYPE FOR THIS TURN (do not announce this — just DO it):
+${choice}`;
+}
+
+function hashString(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return Math.abs(h);
 }

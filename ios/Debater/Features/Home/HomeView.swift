@@ -81,6 +81,7 @@ final class HomeViewModel {
 
 private struct HomeContent: View {
     @Bindable var viewModel: HomeViewModel
+    @Environment(AppEnvironment.self) private var env
 
     var body: some View {
         switch viewModel.state {
@@ -169,8 +170,8 @@ private struct HomeContent: View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             Text("Participants").font(Theme.Font.heading)
             HStack(spacing: Theme.Spacing.md) {
-                PersonaSlot(title: "For", selectedId: $viewModel.personaAId, personas: personas, tint: Theme.Color.sideA)
-                PersonaSlot(title: "Against", selectedId: $viewModel.personaBId, personas: personas, tint: Theme.Color.sideB)
+                PersonaSlot(title: "For", selectedId: $viewModel.personaAId, personas: personas, tint: Theme.Color.sideA, baseURL: env.api.baseURL)
+                PersonaSlot(title: "Against", selectedId: $viewModel.personaBId, personas: personas, tint: Theme.Color.sideB, baseURL: env.api.baseURL)
             }
         }
     }
@@ -208,6 +209,7 @@ private struct PersonaSlot: View {
     @Binding var selectedId: String?
     let personas: [Persona]
     let tint: Color
+    let baseURL: URL
     @State private var isPickerPresented = false
 
     var body: some View {
@@ -215,25 +217,39 @@ private struct PersonaSlot: View {
         Button {
             isPickerPresented = true
         } label: {
-            VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+            VStack(alignment: .center, spacing: Theme.Spacing.xs) {
                 Text(title).font(Theme.Font.caption).foregroundStyle(tint)
-                Text(selected?.name ?? "Choose persona")
-                    .font(Theme.Font.heading)
-                    .foregroundStyle(Theme.Color.textPrimary)
-                    .lineLimit(1)
-                if let tagline = selected?.tagline {
-                    Text(tagline)
+                if let selected {
+                    PersonaAvatar(persona: selected, baseURL: baseURL, size: 56, tint: tint)
+                    Text(selected.name)
+                        .font(Theme.Font.heading)
+                        .foregroundStyle(Theme.Color.textPrimary)
+                        .lineLimit(1)
+                    Text(selected.tagline)
                         .font(Theme.Font.caption)
                         .foregroundStyle(Theme.Color.textSecondary)
+                        .multilineTextAlignment(.center)
                         .lineLimit(2)
+                } else {
+                    Circle()
+                        .fill(tint.opacity(0.1))
+                        .frame(width: 56, height: 56)
+                        .overlay(Image(systemName: "person.crop.circle.dashed").foregroundStyle(tint))
+                    Text("Choose persona")
+                        .font(Theme.Font.heading)
+                        .foregroundStyle(Theme.Color.textPrimary)
+                        .lineLimit(1)
+                    Text("Tap to pick")
+                        .font(Theme.Font.caption)
+                        .foregroundStyle(Theme.Color.textSecondary)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity)
             .cardBackground(padding: Theme.Spacing.md)
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $isPickerPresented) {
-            PersonaPickerSheet(personas: personas, selectedId: $selectedId)
+            PersonaPickerSheet(personas: personas, selectedId: $selectedId, baseURL: baseURL)
         }
     }
 }
@@ -241,6 +257,7 @@ private struct PersonaSlot: View {
 private struct PersonaPickerSheet: View {
     let personas: [Persona]
     @Binding var selectedId: String?
+    let baseURL: URL
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -250,9 +267,12 @@ private struct PersonaPickerSheet: View {
                     selectedId = persona.id
                     dismiss()
                 } label: {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(persona.name).font(Theme.Font.heading).foregroundStyle(Theme.Color.textPrimary)
-                        Text(persona.tagline).font(Theme.Font.caption).foregroundStyle(Theme.Color.textSecondary)
+                    HStack(spacing: Theme.Spacing.md) {
+                        PersonaAvatar(persona: persona, baseURL: baseURL, size: 40, tint: Theme.Color.accent)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(persona.name).font(Theme.Font.heading).foregroundStyle(Theme.Color.textPrimary)
+                            Text(persona.tagline).font(Theme.Font.caption).foregroundStyle(Theme.Color.textSecondary).lineLimit(2)
+                        }
                     }
                 }
             }

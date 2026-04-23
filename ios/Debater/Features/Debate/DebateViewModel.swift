@@ -6,7 +6,7 @@ import Observation
 final class DebateViewModel {
     var debate: Debate
     var isStreaming = false
-    var streamingStageLabel: String?
+    var streamingStageId: String?
     var streamingSpeaker: Speaker?
     var streamingText: String = ""
     var errorMessage: String?
@@ -45,7 +45,7 @@ final class DebateViewModel {
         isStreaming = true
         streamingText = ""
         streamingSpeaker = nil
-        streamingStageLabel = nil
+        streamingStageId = nil
         errorMessage = nil
 
         streamTask = Task { [weak self, debateId = debate.id] in
@@ -55,9 +55,9 @@ final class DebateViewModel {
                 for try await event in stream {
                     if Task.isCancelled { break }
                     switch event {
-                    case let .stage(_, speaker, label):
+                    case let .stage(stageId, speaker, _):
                         self.streamingSpeaker = Speaker(rawValue: speaker)
-                        self.streamingStageLabel = label
+                        self.streamingStageId = stageId
                     case let .narrative(text):
                         self.streamingText = text
                     case let .done(debate):
@@ -65,7 +65,7 @@ final class DebateViewModel {
                         self.isStreaming = false
                         self.streamingText = ""
                         self.streamingSpeaker = nil
-                        self.streamingStageLabel = nil
+                        self.streamingStageId = nil
                     case let .error(message):
                         self.errorMessage = message
                         self.isStreaming = false

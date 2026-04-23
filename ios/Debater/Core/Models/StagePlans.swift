@@ -43,3 +43,34 @@ extension Speaker {
         }
     }
 }
+
+/// Short action words for stage IDs — used in speech-card headers to keep
+/// them tight. "A_CHALLENGE" → "Challenge", "B_COUNTER" → "Counter", etc.
+/// We drop the side prefix ("A"/"B") because the persona's name already
+/// signals which side they're on.
+enum StageDisplay {
+    static func shortLabel(for stageId: String) -> String {
+        switch stageId {
+        case "MOD_SETUP", "MOD_INTRO": return "Intro"
+        case "MOD_Q1", "MOD_Q2": return "Question"
+        case "MOD_SYNTHESIS": return "Synthesis"
+        case "MOD_WRAP": return "Wrap"
+        case "A_OPEN", "B_OPEN": return "Opening"
+        case "A_CHALLENGE": return "Challenge"
+        case "A_COUNTER", "B_COUNTER": return "Counter"
+        case "A_CLOSE", "B_CLOSE": return "Closing"
+        case "A_RESPOND_1", "B_RESPOND_1": return "Response"
+        case "A_RESPOND_2", "B_RESPOND_2": return "Follow-up"
+        case "A_FINAL": return "Final thought"
+        case "JUDGE": return "Verdict"
+        default:
+            // Fallback: humanize by stripping side prefix and replacing underscores.
+            let withoutSide = stageId
+                .replacingOccurrences(of: "A_", with: "")
+                .replacingOccurrences(of: "B_", with: "")
+                .replacingOccurrences(of: "MOD_", with: "")
+                .replacingOccurrences(of: "_", with: " ")
+            return withoutSide.capitalized
+        }
+    }
+}
