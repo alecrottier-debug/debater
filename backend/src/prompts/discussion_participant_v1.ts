@@ -5,6 +5,7 @@ import {
   buildVoiceAuthenticityBlock,
   classifyDiscussionStage,
 } from './voice-instructions.js';
+import { extractPersonaName, speakerHeader } from './transcript-format.js';
 
 export const DISCUSSION_PARTICIPANT_PROMPT_VERSION =
   'discussion_participant_v1';
@@ -23,10 +24,18 @@ export function buildDiscussionParticipantPrompt(
 ): LlmPrompt {
   const isFinal = ctx.stage.id.endsWith('_FINAL');
 
+  const nameA = extractPersonaName(ctx.persona, 'A');
+  const nameB = extractPersonaName(ctx.otherPersona, 'B');
+  const absA = ctx.speaker === 'A' ? nameA : nameB;
+  const absB = ctx.speaker === 'A' ? nameB : nameA;
+
   const transcriptText =
     ctx.transcript.length > 0
       ? ctx.transcript
-          .map((t) => `[${t.stageId}] (${t.speaker}): ${t.renderedText}`)
+          .map(
+            (t) =>
+              `${speakerHeader(t.speaker, t.stageId, absA, absB)}:\n${t.renderedText}`,
+          )
           .join('\n\n')
       : '(No prior turns yet)';
 

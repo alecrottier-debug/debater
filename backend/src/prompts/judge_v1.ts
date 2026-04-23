@@ -1,5 +1,6 @@
 import { LlmPrompt } from '../llm/llm-adapter.interface.js';
 import { StageConfig } from '../stages/stage-plan.types.js';
+import { extractPersonaName, speakerHeader } from './transcript-format.js';
 
 export const JUDGE_PROMPT_VERSION = 'judge_v2';
 
@@ -19,13 +20,17 @@ export interface JudgePromptContext {
 }
 
 export function buildJudgePrompt(ctx: JudgePromptContext): LlmPrompt {
+  const nameA = extractPersonaName(ctx.personaA, 'For');
+  const nameB = extractPersonaName(ctx.personaB, 'Against');
+
   const transcriptText = ctx.transcript
     .map((t) => {
       const violationNote =
         t.violations.length > 0
           ? `\n  [VIOLATIONS: ${t.violations.join(', ')}]`
           : '';
-      return `[${t.stageId}] (${t.speaker}): ${t.renderedText}${violationNote}`;
+      const header = speakerHeader(t.speaker, t.stageId, nameA, nameB);
+      return `${header}:\n${t.renderedText}${violationNote}`;
     })
     .join('\n\n');
 
@@ -52,8 +57,8 @@ You must output valid JSON matching this exact schema:
       "adaptability": number
     }
   },
-  "verdict": "string - 3-5 sentences. An authoritative narrative judgment explaining the decision. Written like a real debate judge's ballot — engaging, specific, referencing actual moments. Explain WHY the winner won, not just that they did. Acknowledge the losing side's strongest contribution.",
-  "ballot": [{ "reason": "string - a specific evaluative point", "refs": ["string - stage IDs cited"] }],
+  "verdict": "string - 3-5 sentences. An authoritative narrative judgment explaining the decision. Written like a real debate judge's ballot — engaging, specific, referencing actual moments. Explain WHY the winner won, not just that they did. Acknowledge the losing side's strongest contribution. When you reference a specific turn in prose, use the speaker's NAME and the action (e.g. 'in her opening', 'in his counter'), NOT stage codes like A_OPEN or B_COUNTER.",
+  "ballot": [{ "reason": "string - a specific evaluative point, referring to turns by name+action in the prose (not by stage code)", "refs": ["string - stage IDs cited (these are structured references for the UI; keep the prose clean)"] }],
   "analysis": {
     "A": {
       "strengths": ["string - specific things Side A did well, citing moments"],
@@ -161,7 +166,7 @@ VIOLATION HANDLING:
 - Rule violations (marked as [VIOLATIONS: ...] in the transcript) should be penalized proportionally.
 - A minor violation (e.g., slightly over word count) is worth -0.5 to the relevant score.
 - A major violation (e.g., introducing new arguments in closing, repeated rule breaks) is worth -1 to -2.
-- Note violations in your ballot reasons with the relevant stage IDs.
+- Note violations in your ballot reasons by referring to the speaker's name and the stage's action (e.g. "In Sam Altman's counter, he introduced a new argument..."). Put the stage code in the structured refs field, never in the prose.
 
 CLOSENESS CALIBRATION:
 - "blowout": Total score difference >= 8 points. One side clearly outclassed the other.
@@ -176,7 +181,8 @@ MOMENTUM:
 - "EVEN": No clear momentum shift.
 
 BALLOT REQUIREMENTS:
-- Provide 4-6 ballot reasons, each citing specific stage IDs.
+- Provide 4-6 ballot reasons. In each reason's PROSE, reference turns by the speaker's name and the stage's action (e.g. "Elon Musk's challenge exposed a flaw in the framework set up in Sam Altman's opening"). In the structured refs array, list the stage codes (A_OPEN, B_CHALLENGE, etc.) for UI linking.
+- Never use raw stage codes in the reason prose. The UI surfaces them separately via refs.
 - At least one ballot reason should acknowledge a strength of the losing side.
 - At least one ballot reason should identify the single most decisive moment or argument in the debate.
 - Reasons should be specific: cite what was said, not just "Side A was more persuasive."

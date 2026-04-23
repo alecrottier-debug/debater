@@ -48,7 +48,7 @@ struct ResultsView: View {
                     .clipShape(Capsule())
             }
             if let verdict = decision.verdict {
-                Text(verdict)
+                Text(humanize(verdict))
                     .font(Theme.Font.serifBody)
                     .foregroundStyle(Theme.Color.textPrimary)
                     .multilineTextAlignment(.center)
@@ -111,7 +111,7 @@ struct ResultsView: View {
             }
             if !analysis.keyMoment.isEmpty {
                 Text("Key moment").font(Theme.Font.caption).foregroundStyle(Theme.Color.textSecondary)
-                Text(analysis.keyMoment).font(Theme.Font.body).foregroundStyle(Theme.Color.textPrimary)
+                Text(humanize(analysis.keyMoment)).font(Theme.Font.body).foregroundStyle(Theme.Color.textPrimary)
             }
         }
     }
@@ -122,7 +122,7 @@ struct ResultsView: View {
             ForEach(items, id: \.self) { item in
                 HStack(alignment: .top, spacing: 6) {
                     Text("•").foregroundStyle(Theme.Color.textSecondary)
-                    Text(item).font(Theme.Font.body).foregroundStyle(Theme.Color.textPrimary)
+                    Text(humanize(item)).font(Theme.Font.body).foregroundStyle(Theme.Color.textPrimary)
                 }
             }
         }
@@ -138,7 +138,7 @@ struct ResultsView: View {
                             .font(Theme.Font.caption)
                             .foregroundStyle(Theme.Color.textSecondary)
                     }
-                    Text(entry.reason)
+                    Text(humanize(entry.reason))
                         .font(Theme.Font.body)
                         .foregroundStyle(Theme.Color.textPrimary)
                 }
@@ -170,6 +170,12 @@ struct ResultsView: View {
 
     private static func fmt(_ d: Double) -> String {
         String(format: "%.1f", d)
+    }
+
+    /// Scrub any raw stage codes the LLM may have leaked into prose.
+    /// New debates don't have this problem (prompt updated); old ones do.
+    private func humanize(_ text: String) -> String {
+        StageReferenceHumanizer.humanize(text, personaA: debate.personaA, personaB: debate.personaB)
     }
 
     /// Turns a ballot ref like "A_OPEN" or "B_COUNTER" into a human string
