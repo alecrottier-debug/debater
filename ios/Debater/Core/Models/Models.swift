@@ -69,6 +69,11 @@ struct TurnPayload: Codable, Sendable, Hashable {
     let bullets: [String]?
     let question: String?
     let questionAnswered: String?
+    // Discussion wrap (MOD_WRAP stage in discussion mode) carries summary fields.
+    let keyTakeaways: [String]?
+    let areasOfAgreement: [String]?
+    let areasOfDisagreement: [String]?
+    let openQuestions: [String]?
 }
 
 struct Turn: Codable, Sendable, Identifiable, Hashable {

@@ -187,14 +187,14 @@ private struct HomeContent: View {
                     title: viewModel.isDiscussion ? "Guest A" : "For",
                     selectedId: $viewModel.personaAId,
                     personas: debaters,
-                    tint: Theme.Color.sideA,
+                    tint: viewModel.isDiscussion ? Theme.Color.guestA : Theme.Color.sideA,
                     baseURL: env.api.baseURL
                 )
                 PersonaSlot(
                     title: viewModel.isDiscussion ? "Guest B" : "Against",
                     selectedId: $viewModel.personaBId,
                     personas: debaters,
-                    tint: Theme.Color.sideB,
+                    tint: viewModel.isDiscussion ? Theme.Color.guestB : Theme.Color.sideB,
                     baseURL: env.api.baseURL
                 )
             }
