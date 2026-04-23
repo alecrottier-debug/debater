@@ -6,6 +6,7 @@ struct SpeechCard: View {
     let personaA: Persona
     let personaB: Persona
     let baseURL: URL
+    var isDiscussion: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
@@ -58,9 +59,9 @@ struct SpeechCard: View {
     private var speakerAvatar: some View {
         switch turn.speaker {
         case .sideA:
-            PersonaAvatar(persona: personaA, baseURL: baseURL, size: 28, tint: Theme.Color.sideA)
+            PersonaAvatar(persona: personaA, baseURL: baseURL, size: 28, tint: tint)
         case .sideB:
-            PersonaAvatar(persona: personaB, baseURL: baseURL, size: 28, tint: Theme.Color.sideB)
+            PersonaAvatar(persona: personaB, baseURL: baseURL, size: 28, tint: tint)
         case .moderator:
             systemIconAvatar(systemName: "person.fill.checkmark")
         case .judge:
@@ -77,8 +78,8 @@ struct SpeechCard: View {
 
     private var tint: Color {
         switch turn.speaker {
-        case .sideA: Theme.Color.sideA
-        case .sideB: Theme.Color.sideB
+        case .sideA: isDiscussion ? Theme.Color.guestA : Theme.Color.sideA
+        case .sideB: isDiscussion ? Theme.Color.guestB : Theme.Color.sideB
         case .moderator: Theme.Color.moderator
         case .judge: Theme.Color.judge
         }
@@ -101,6 +102,7 @@ struct StreamingSpeechCard: View {
     let personaA: Persona
     let personaB: Persona
     let baseURL: URL
+    var isDiscussion: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
@@ -135,8 +137,8 @@ struct StreamingSpeechCard: View {
 
     private var tint: Color {
         switch speaker {
-        case .sideA: Theme.Color.sideA
-        case .sideB: Theme.Color.sideB
+        case .sideA: isDiscussion ? Theme.Color.guestA : Theme.Color.sideA
+        case .sideB: isDiscussion ? Theme.Color.guestB : Theme.Color.sideB
         case .moderator: Theme.Color.moderator
         case .judge: Theme.Color.judge
         case nil: Theme.Color.accent
@@ -157,9 +159,9 @@ struct StreamingSpeechCard: View {
     private var speakerAvatar: some View {
         switch speaker {
         case .sideA:
-            PersonaAvatar(persona: personaA, baseURL: baseURL, size: 28, tint: Theme.Color.sideA)
+            PersonaAvatar(persona: personaA, baseURL: baseURL, size: 28, tint: tint)
         case .sideB:
-            PersonaAvatar(persona: personaB, baseURL: baseURL, size: 28, tint: Theme.Color.sideB)
+            PersonaAvatar(persona: personaB, baseURL: baseURL, size: 28, tint: tint)
         case .moderator:
             Circle().fill(tint.opacity(0.15)).frame(width: 28, height: 28)
                 .overlay(Image(systemName: "person.fill.checkmark").font(.system(size: 13)).foregroundStyle(tint))

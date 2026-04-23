@@ -10,8 +10,13 @@ enum Theme {
         static let textPrimary = SwiftUI.Color(red: 0.09, green: 0.12, blue: 0.18)
         static let textSecondary = SwiftUI.Color(red: 0.35, green: 0.38, blue: 0.44)
         static let accent = SwiftUI.Color(red: 0.13, green: 0.67, blue: 0.90)
-        static let sideA = SwiftUI.Color(red: 0.16, green: 0.52, blue: 0.80) // For
-        static let sideB = SwiftUI.Color(red: 0.82, green: 0.26, blue: 0.29) // Against
+        static let sideA = SwiftUI.Color(red: 0.16, green: 0.52, blue: 0.80) // For (debate)
+        static let sideB = SwiftUI.Color(red: 0.82, green: 0.26, blue: 0.29) // Against (debate)
+        // Discussion mode: neutral conversational tints — both guests are
+        // peers, not opponents. Colors distinguish speakers without implying
+        // opposition.
+        static let guestA = SwiftUI.Color(red: 0.28, green: 0.40, blue: 0.60) // soft indigo
+        static let guestB = SwiftUI.Color(red: 0.20, green: 0.50, blue: 0.48) // muted teal
         static let moderator = SwiftUI.Color(red: 0.55, green: 0.40, blue: 0.20)
         static let judge = SwiftUI.Color(red: 0.36, green: 0.20, blue: 0.52)
         static let divider = SwiftUI.Color.black.opacity(0.08)

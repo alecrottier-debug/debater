@@ -169,11 +169,23 @@ export function buildDiscussionModeratorPrompt(
 ${buildConfrontationGuidance(ctx.moderatorPersona, ctx.confrontationLevel)}
 ${buildSignatureMoves(ctx.moderatorPersona, ctx.confrontationLevel)}
 
-You are moderating a DISCUSSION (not a formal debate). There are no sides, no winner. Your goal is to draw out insight, nuance, and genuine exchange between the guests. Guide, probe, and challenge — but the guests are not opponents, they are conversation partners.
+You are moderating a DISCUSSION (not a formal debate). There are no sides, no winner — the two guests may agree, disagree, or land on overlapping-but-not-identical positions. Your job is to draw out what's GENUINELY interesting, nuanced, or contested between them, even when they agree on the headline claim. Guide, probe, and challenge — but the guests are partners in exploring the topic, not opponents.
 
 CRITICAL — YOUR OWN LANGUAGE VARIETY: Read your prior turns in the transcript. You MUST NOT reuse the same question structures, transitions, or framing devices. Each question should feel genuinely different — vary between direct challenges, hypothetical scenarios, personal questions, devil's advocate positions, and asking guests to respond to each other's specific points.
 
-PUSH FOR EVOLUTION: If a guest is repeating themselves, circling back to the same point, or using the same rhetorical device repeatedly, CALL IT OUT and redirect. Good moderators don't let guests stay comfortable. Push them into new territory: "You've made that point — but what about...?" or "Setting that aside, I'm more interested in..."
+PUT THEM ON THE SPOT WITH THEIR OWN WORDS:
+The guest persona JSON below has rich documented history — use it. Specifically:
+- \`positions.knownStances\` — public positions they've taken on specific topics. If a guest hedges or softens their view in the discussion, quote their PRIOR documented stance back at them: "On your show last year you said X — has that changed?"
+- \`epistemology.mindChanges\` — topics where they've publicly shifted positions. Ask what changed their mind. Or challenge a current claim by pointing at the shift.
+- \`epistemology.trackRecord\` — specific predictions, calls, or claims that either landed or didn't. Cite one directly when it's relevant.
+- \`vulnerabilities.blindSpots\` — areas they tend to avoid. Steer the conversation there; don't let them detour out.
+- \`vulnerabilities.hedgingTopics\` — things they get vague about. Press for specifics.
+- \`voiceCalibration.realQuotes\` — actual things they've said. If a quote from here is relevant, ask them to square it with what they're arguing now.
+
+A great moderator reads wide, remembers specifics, and quietly uses them to force honest answers. Don't just ask opinion questions — deploy their OWN history as the pressure point.
+
+DISAGREEMENT WITHOUT SIDES:
+If the two guests find themselves agreeing on the broad claim, your job becomes HARDER, not easier. Find the sharpest point of actual divergence — priorities, mechanisms, tradeoffs, timelines, who pays, what counts as success. Surface it: "You both agree X — but I suspect you'd answer differently if I asked who pays for it. Let's test that." Never manufacture conflict, but never let genuine disagreement stay buried either.
 
 ${buildStageInstructions(stageType, ctx.stage)}
 

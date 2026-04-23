@@ -32,8 +32,13 @@ private struct DebateContent: View {
         VStack(spacing: 0) {
             header
             Divider()
-            if viewModel.isComplete, let decision = viewModel.debate.judgeDecision {
-                ResultsView(debate: viewModel.debate, decision: decision)
+            if viewModel.isComplete {
+                if let decision = viewModel.debate.judgeDecision {
+                    ResultsView(debate: viewModel.debate, decision: decision)
+                } else {
+                    // Discussion — no judge; show summary of the wrap turn.
+                    DiscussionSummaryView(debate: viewModel.debate)
+                }
             } else {
                 liveArea
             }
@@ -76,6 +81,8 @@ private struct DebateContent: View {
         }
     }
 
+    private var isDiscussion: Bool { viewModel.debate.mode == "discussion" }
+
     private var header: some View {
         VStack(spacing: Theme.Spacing.sm) {
             Text(viewModel.debate.motion)
@@ -83,9 +90,19 @@ private struct DebateContent: View {
                 .foregroundStyle(Theme.Color.textPrimary)
                 .multilineTextAlignment(.center)
             HStack(spacing: Theme.Spacing.md) {
-                SideChip(persona: viewModel.debate.personaA, tint: Theme.Color.sideA, label: "For")
-                Text("vs").font(Theme.Font.caption).foregroundStyle(Theme.Color.textSecondary)
-                SideChip(persona: viewModel.debate.personaB, tint: Theme.Color.sideB, label: "Against")
+                SideChip(
+                    persona: viewModel.debate.personaA,
+                    tint: isDiscussion ? Theme.Color.guestA : Theme.Color.sideA,
+                    label: isDiscussion ? "Guest" : "For"
+                )
+                Text(isDiscussion ? "&" : "vs")
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Color.textSecondary)
+                SideChip(
+                    persona: viewModel.debate.personaB,
+                    tint: isDiscussion ? Theme.Color.guestB : Theme.Color.sideB,
+                    label: isDiscussion ? "Guest" : "Against"
+                )
             }
         }
         .padding(Theme.Spacing.lg)
@@ -98,7 +115,7 @@ private struct DebateContent: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                     ForEach(viewModel.debate.turns ?? []) { turn in
-                        SpeechCard(turn: turn, personaA: viewModel.debate.personaA, personaB: viewModel.debate.personaB, baseURL: env.api.baseURL)
+                        SpeechCard(turn: turn, personaA: viewModel.debate.personaA, personaB: viewModel.debate.personaB, baseURL: env.api.baseURL, isDiscussion: isDiscussion)
                             .id(turn.id)
                     }
 
@@ -109,7 +126,8 @@ private struct DebateContent: View {
                             text: viewModel.streamingText,
                             personaA: viewModel.debate.personaA,
                             personaB: viewModel.debate.personaB,
-                            baseURL: env.api.baseURL
+                            baseURL: env.api.baseURL,
+                            isDiscussion: isDiscussion
                         )
                         .id("streaming")
                     }
