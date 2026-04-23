@@ -920,7 +920,12 @@ Which debater should argue FOR and which AGAINST?`,
   }
 
   private async handleDebaterStage(
-    debate: { id: string; motion: string },
+    debate: {
+      id: string;
+      motion: string;
+      personaAId: string;
+      personaBId: string;
+    },
     stage: StageConfig,
     personaAJson: Record<string, unknown>,
     personaBJson: Record<string, unknown>,
@@ -936,12 +941,19 @@ Which debater should argue FOR and which AGAINST?`,
     const speaker = stage.speaker as 'A' | 'B';
     const persona = speaker === 'A' ? personaAJson : personaBJson;
     const opponentPersona = speaker === 'A' ? personaBJson : personaAJson;
+    const thisPersonaId =
+      speaker === 'A' ? debate.personaAId : debate.personaBId;
 
     const transcript: TranscriptEntry[] = existingTurns.map((t) => ({
       stageId: t.stageId,
       speaker: t.speaker,
       renderedText: t.renderedText,
     }));
+
+    const recentOpenings = await this.fetchRecentOpenings(
+      thisPersonaId,
+      debate.id,
+    );
 
     const prompt = buildDebaterPrompt({
       motion: debate.motion,
@@ -950,6 +962,7 @@ Which debater should argue FOR and which AGAINST?`,
       persona,
       opponentPersona,
       transcript,
+      recentOpeningsByThisPersona: recentOpenings,
     });
 
     const output: DebaterOutput = await this.llm.generateDebaterTurn(
@@ -1330,5 +1343,49 @@ Which debater should argue FOR and which AGAINST?`,
       .trim()
       .split(/\s+/)
       .filter((w) => w.length > 0).length;
+  }
+
+  /**
+   * Pull this persona's opening narratives from prior *other* debates so the
+   * prompt can tell the LLM not to reuse the same opener. We look at stages
+   * where speakers typically set their voice: openings, challenges, and
+   * counters. Excludes the current debate so mid-debate turns don't leak
+   * into the avoid-list.
+   */
+  private async fetchRecentOpenings(
+    personaId: string,
+    currentDebateId: string,
+  ): Promise<string[]> {
+    const rows = await this.prisma.turn.findMany({
+      where: {
+        debateId: { not: currentDebateId },
+        stageId: {
+          in: [
+            'A_OPEN',
+            'B_OPEN',
+            'A_CHALLENGE',
+            'B_COUNTER',
+            'A_COUNTER',
+            'A_RESPOND_1',
+            'B_RESPOND_1',
+          ],
+        },
+        OR: [
+          { speaker: 'A', debate: { personaAId: personaId } },
+          { speaker: 'B', debate: { personaBId: personaId } },
+        ],
+      },
+      select: { renderedText: true, stageId: true, createdAt: true },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    });
+    return rows.map((r) => this.firstSentence(r.renderedText));
+  }
+
+  private firstSentence(text: string): string {
+    const trimmed = text.trim();
+    // Grab up to the first sentence terminator or ~180 chars, whichever comes first.
+    const match = trimmed.match(/^.{20,180}?[.!?…](?=\s|$)/s);
+    return (match?.[0] ?? trimmed.slice(0, 180)).trim();
   }
 }

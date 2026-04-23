@@ -1,0 +1,96 @@
+name: iOS TestFlight
+
+# Upload a build to TestFlight when a tag like `ios-v0.1.0` is pushed.
+# Build number is taken from the GitHub run number so every upload is unique.
+#
+# Required GitHub secrets:
+#   APPLE_DEVELOPMENT_TEAM         — 10-char team ID
+#   APP_STORE_CONNECT_API_KEY_ID   — the key ID from App Store Connect
+#   APP_STORE_CONNECT_API_ISSUER_ID — the issuer UUID
+#   APP_STORE_CONNECT_API_KEY_P8   — the full contents of the .p8 private key
+#   IOS_RELEASE_API_URL            — production backend URL, e.g. https://api.example.com/api
+#
+# Optional:
+#   APPLE_CERTIFICATE_P12_BASE64   — distribution cert exported as .p12, base64-encoded
+#   APPLE_CERTIFICATE_P12_PASSWORD — password for the .p12
+#   APPLE_PROVISIONING_PROFILE_BASE64 — the provisioning profile, base64-encoded
+#   (if omitted, you must rely on Xcode Cloud or a pre-provisioned runner)
+
+on:
+  push:
+    tags:
+      - "ios-v*"
+  workflow_dispatch:
+
+jobs:
+  testflight:
+    runs-on: macos-15
+    defaults:
+      run:
+        working-directory: ios
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app || true
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Write release xcconfig
+        run: |
+          cat > Config/Release.xcconfig <<EOF
+          DEBATER_API_URL = ${{ secrets.IOS_RELEASE_API_URL }}
+          EOF
+          # The ":" in URL collides with xcconfig comments; escape as $()/
+          sed -i '' 's|://|:/$()/|g' Config/Release.xcconfig
+
+      - name: Bump build number
+        run: |
+          # Use the GitHub run number so build numbers monotonically increase.
+          sed -i '' "s/CURRENT_PROJECT_VERSION: \"1\"/CURRENT_PROJECT_VERSION: \"${GITHUB_RUN_NUMBER}\"/" project.yml
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Import signing assets
+        if: env.APPLE_CERTIFICATE_P12_BASE64 != ''
+        env:
+          APPLE_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          APPLE_CERTIFICATE_P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+          APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          echo "$APPLE_CERTIFICATE_P12_BASE64" | base64 --decode > /tmp/cert.p12
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security set-keychain-settings -lut 21600 build.keychain
+          security import /tmp/cert.p12 -k build.keychain -P "$APPLE_CERTIFICATE_P12_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          echo "$APPLE_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$HOME/Library/MobileDevice/Provisioning Profiles/profile.mobileprovision"
+
+      - name: Archive
+        env:
+          DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
+        run: ./scripts/archive.sh
+
+      - name: Write API key
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}" > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}.p8
+
+      - name: Upload to TestFlight
+        run: |
+          xcrun altool --upload-app \
+            --type ios \
+            --file build/Debater.ipa \
+            --apiKey "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}" \
+            --apiIssuer "${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}"
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debater-ipa
+          path: ios/build/Debater.ipa
