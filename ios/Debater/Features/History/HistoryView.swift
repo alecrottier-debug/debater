@@ -61,28 +61,62 @@ final class HistoryViewModel {
     struct Stats {
         var totalDebates: Int
         var totalDiscussions: Int
-        var forWins: Int       // FOR side won
-        var againstWins: Int   // AGAINST side won
-        var ties: Int
+    }
+
+    struct DebaterStanding: Identifiable, Hashable {
+        let persona: Persona
+        let wins: Int
+        let losses: Int
+        var id: String { persona.id }
+        var totalMatches: Int { wins + losses }
     }
 
     var stats: Stats {
-        var s = Stats(totalDebates: 0, totalDiscussions: 0, forWins: 0, againstWins: 0, ties: 0)
+        var s = Stats(totalDebates: 0, totalDiscussions: 0)
         for d in debates {
-            if d.mode == "discussion" {
-                s.totalDiscussions += 1
-            } else {
-                s.totalDebates += 1
-                if let winner = d.judgeDecision?.winner {
-                    switch winner {
-                    case "A": s.forWins += 1
-                    case "B": s.againstWins += 1
-                    default: s.ties += 1
-                    }
-                }
-            }
+            if d.mode == "discussion" { s.totalDiscussions += 1 }
+            else { s.totalDebates += 1 }
         }
         return s
+    }
+
+    /// Top 3 debaters by wins across all completed debates. Ties broken by
+    /// win rate, then by total matches.
+    var topDebaters: [DebaterStanding] {
+        struct Record { var persona: Persona; var wins: Int; var losses: Int }
+        var byId: [String: Record] = [:]
+
+        for d in debates where d.mode != "discussion" {
+            guard let winner = d.judgeDecision?.winner else { continue }
+            let aWon = winner == "A"
+            let bWon = winner == "B"
+            if byId[d.personaAId] == nil { byId[d.personaAId] = Record(persona: d.personaA, wins: 0, losses: 0) }
+            if byId[d.personaBId] == nil { byId[d.personaBId] = Record(persona: d.personaB, wins: 0, losses: 0) }
+            if aWon {
+                byId[d.personaAId]?.wins += 1
+                byId[d.personaBId]?.losses += 1
+            } else if bWon {
+                byId[d.personaBId]?.wins += 1
+                byId[d.personaAId]?.losses += 1
+            }
+            // Ties count as neither; intentional.
+        }
+
+        return byId.values
+            .filter { $0.wins > 0 }
+            .sorted {
+                if $0.wins != $1.wins { return $0.wins > $1.wins }
+                let lhsRate = Double($0.wins) / Double(max($0.wins + $0.losses, 1))
+                let rhsRate = Double($1.wins) / Double(max($1.wins + $1.losses, 1))
+                if lhsRate != rhsRate { return lhsRate > rhsRate }
+                return ($0.wins + $0.losses) > ($1.wins + $1.losses)
+            }
+            .prefix(3)
+            .map { DebaterStanding(persona: $0.persona, wins: $0.wins, losses: $0.losses) }
+    }
+
+    func debatesInvolving(personaId: String) -> [Debate] {
+        debates.filter { $0.personaAId == personaId || $0.personaBId == personaId }
     }
 
     func load() async {
@@ -122,8 +156,12 @@ private struct HistoryContent: View {
             } else {
                 ScrollView {
                     VStack(spacing: Theme.Spacing.md) {
-                        StatsCard(stats: viewModel.stats)
-                            .padding(.horizontal, Theme.Spacing.lg)
+                        StatsCard(
+                            stats: viewModel.stats,
+                            topDebaters: viewModel.topDebaters,
+                            baseURL: env.api.baseURL
+                        )
+                        .padding(.horizontal, Theme.Spacing.lg)
                         if viewModel.filtered.isEmpty {
                             Text("No \(viewModel.filter.title.lowercased()) yet.")
                                 .font(Theme.Font.caption)
@@ -149,11 +187,20 @@ private struct HistoryContent: View {
         .navigationDestination(for: Debate.self) { debate in
             DebateView(debate: debate)
         }
+        .navigationDestination(for: HistoryViewModel.DebaterStanding.self) { standing in
+            PersonaDebatesView(
+                persona: standing.persona,
+                debates: viewModel.debatesInvolving(personaId: standing.persona.id),
+                baseURL: env.api.baseURL
+            )
+        }
     }
 }
 
 private struct StatsCard: View {
     let stats: HistoryViewModel.Stats
+    let topDebaters: [HistoryViewModel.DebaterStanding]
+    let baseURL: URL
 
     var body: some View {
         VStack(spacing: Theme.Spacing.md) {
@@ -163,12 +210,24 @@ private struct StatsCard: View {
                 stat(value: stats.totalDiscussions, label: "Discussions", tint: Theme.Color.guestA)
             }
 
-            if stats.totalDebates > 0 {
+            if !topDebaters.isEmpty {
                 Divider()
-                HStack(spacing: Theme.Spacing.md) {
-                    winShare(count: stats.forWins, label: "For", tint: Theme.Color.sideA, total: stats.totalDebates)
-                    winShare(count: stats.againstWins, label: "Against", tint: Theme.Color.sideB, total: stats.totalDebates)
-                    winShare(count: stats.ties, label: "Tie", tint: Theme.Color.textSecondary, total: stats.totalDebates)
+                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "trophy.fill").foregroundStyle(Theme.Color.sideA).font(.caption)
+                        Text("Top debaters")
+                            .font(Theme.Font.caption)
+                            .foregroundStyle(Theme.Color.textSecondary)
+                            .textCase(.uppercase)
+                    }
+                    VStack(spacing: Theme.Spacing.sm) {
+                        ForEach(Array(topDebaters.enumerated()), id: \.element.id) { index, standing in
+                            NavigationLink(value: standing) {
+                                TopDebaterRow(rank: index + 1, standing: standing, baseURL: baseURL)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
                 }
             }
         }
@@ -193,18 +252,108 @@ private struct StatsCard: View {
             .fill(Theme.Color.divider)
             .frame(width: 1, height: 36)
     }
+}
 
-    private func winShare(count: Int, label: String, tint: Color, total: Int) -> some View {
-        let pct = total > 0 ? Int(round(Double(count) / Double(total) * 100)) : 0
-        return VStack(spacing: 2) {
-            Text("\(pct)%")
-                .font(.system(.title3, design: .serif, weight: .semibold))
-                .foregroundStyle(tint)
-            Text("\(label) \(count > 0 ? "(\(count))" : "")")
-                .font(Theme.Font.caption)
-                .foregroundStyle(Theme.Color.textSecondary)
+private struct TopDebaterRow: View {
+    let rank: Int
+    let standing: HistoryViewModel.DebaterStanding
+    let baseURL: URL
+
+    var body: some View {
+        HStack(spacing: Theme.Spacing.md) {
+            Text("\(rank)")
+                .font(.system(.subheadline, design: .serif, weight: .bold))
+                .foregroundStyle(rankColor)
+                .frame(width: 20)
+            PersonaAvatar(persona: standing.persona, baseURL: baseURL, size: 32, tint: rankColor)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(standing.persona.name)
+                    .font(Theme.Font.heading)
+                    .foregroundStyle(Theme.Color.textPrimary)
+                    .lineLimit(1)
+                Text(recordText)
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Color.textSecondary)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundStyle(Theme.Color.textSecondary.opacity(0.6))
         }
-        .frame(maxWidth: .infinity)
+        .contentShape(Rectangle())
+    }
+
+    private var recordText: String {
+        let total = standing.totalMatches
+        let pct = total > 0 ? Int(round(Double(standing.wins) / Double(total) * 100)) : 0
+        return "\(standing.wins)–\(standing.losses) · \(pct)% win rate"
+    }
+
+    private var rankColor: Color {
+        switch rank {
+        case 1: Color(red: 0.85, green: 0.65, blue: 0.13) // gold
+        case 2: Color(red: 0.60, green: 0.60, blue: 0.62) // silver
+        case 3: Color(red: 0.72, green: 0.45, blue: 0.20) // bronze
+        default: Theme.Color.textSecondary
+        }
+    }
+}
+
+/// Filtered history view for a single persona — tapped from TopDebaterRow.
+private struct PersonaDebatesView: View {
+    let persona: Persona
+    let debates: [Debate]
+    let baseURL: URL
+
+    private var wins: Int {
+        debates.filter { d in
+            guard let w = d.judgeDecision?.winner else { return false }
+            return (w == "A" && d.personaAId == persona.id) || (w == "B" && d.personaBId == persona.id)
+        }.count
+    }
+    private var losses: Int {
+        debates.filter { d in
+            guard let w = d.judgeDecision?.winner else { return false }
+            return (w == "A" && d.personaBId == persona.id) || (w == "B" && d.personaAId == persona.id)
+        }.count
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: Theme.Spacing.md) {
+                header
+                    .padding(.horizontal, Theme.Spacing.lg)
+                VStack(spacing: Theme.Spacing.sm) {
+                    ForEach(debates) { debate in
+                        NavigationLink(value: debate) {
+                            DebateRow(debate: debate, baseURL: baseURL)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, Theme.Spacing.lg)
+            }
+            .padding(.vertical, Theme.Spacing.lg)
+        }
+        .background(Theme.Color.background.ignoresSafeArea())
+        .navigationTitle(persona.name)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var header: some View {
+        HStack(spacing: Theme.Spacing.md) {
+            PersonaAvatar(persona: persona, baseURL: baseURL, size: 72, tint: Theme.Color.accent)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(persona.name).font(Theme.Font.title).foregroundStyle(Theme.Color.textPrimary)
+                Text(persona.tagline).font(Theme.Font.caption).foregroundStyle(Theme.Color.textSecondary).lineLimit(2)
+                Text("\(wins)–\(losses) across \(debates.count) \(debates.count == 1 ? "match" : "matches")")
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Color.textSecondary)
+                    .padding(.top, 2)
+            }
+            Spacer()
+        }
+        .cardBackground()
     }
 }
 
