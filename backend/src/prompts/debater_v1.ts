@@ -5,6 +5,7 @@ import {
   buildVoiceAuthenticityBlock,
   classifyDebateStage,
 } from './voice-instructions.js';
+import { extractPersonaName, speakerHeader } from './transcript-format.js';
 
 export const DEBATER_PROMPT_VERSION = 'debater_v1';
 
@@ -35,10 +36,20 @@ export function buildDebaterPrompt(ctx: DebaterPromptContext): LlmPrompt {
   const side =
     ctx.speaker === 'A' ? 'proposition (FOR)' : 'opposition (AGAINST)';
 
+  const nameA = extractPersonaName(ctx.persona, 'For');
+  const nameB = extractPersonaName(ctx.opponentPersona, 'Against');
+  // From the perspective of the LLM playing side A, "you" = nameA, opponent = nameB.
+  // But the helper takes absolute A/B names, so swap when the speaker is B.
+  const absA = ctx.speaker === 'A' ? nameA : nameB;
+  const absB = ctx.speaker === 'A' ? nameB : nameA;
+
   const transcriptText =
     ctx.transcript.length > 0
       ? ctx.transcript
-          .map((t) => `[${t.stageId}] (${t.speaker}): ${t.renderedText}`)
+          .map(
+            (t) =>
+              `${speakerHeader(t.speaker, t.stageId, absA, absB)}:\n${t.renderedText}`,
+          )
           .join('\n\n')
       : '(No prior turns yet)';
 
@@ -95,6 +106,8 @@ Never begin a turn with: "Look,", "Here's the thing,", "Let me tell you,", "I th
 Open instead with your persona's ACTUAL patterns from the voice instructions below — their documented response openers, or a direct substantive claim in their register (a question, an image, a citation, a date, a specific name). When in doubt, open with content, not filler.
 
 LANGUAGE — All output MUST be in English. Even if the persona normally speaks another language (Hindi, German, Mandarin, etc.), this debate is conducted entirely in English. You may sprinkle in an occasional foreign phrase for flavor (1-2 per turn max), but the argument itself must be fully in English and understandable without translation.
+
+NEVER USE STAGE CODES IN PROSE — The transcript above labels turns with "Name · Action" (e.g. "Sam Altman · Opening"). When you reference what your opponent said, use their NAME or the ACTION ("as you argued in your opening", "your counter relied on…"). Never write raw stage codes like A_OPEN, B_CHALLENGE, B_COUNTER in your narrative or question. Those are internal identifiers, not debate language.
 
 SPOKEN REGISTER — This is a LIVE DEBATE, not a written essay. Your output must sound like someone SPEAKING at a podium or panel:
 - Use natural speech rhythms — contractions, punchy fragments, rhetorical questions

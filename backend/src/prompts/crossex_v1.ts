@@ -1,6 +1,7 @@
 import { LlmPrompt } from '../llm/llm-adapter.interface.js';
 import { StageConfig } from '../stages/stage-plan.types.js';
 import { TranscriptEntry } from './debater_v1.js';
+import { extractPersonaName, speakerHeader } from './transcript-format.js';
 
 export const CROSSEX_PROMPT_VERSION = 'crossex_v1';
 
@@ -17,10 +18,18 @@ export function buildCrossExPrompt(ctx: CrossExPromptContext): LlmPrompt {
   const side =
     ctx.speaker === 'A' ? 'proposition (FOR)' : 'opposition (AGAINST)';
 
+  const nameA = extractPersonaName(ctx.persona, 'For');
+  const nameB = extractPersonaName(ctx.opponentPersona, 'Against');
+  const absA = ctx.speaker === 'A' ? nameA : nameB;
+  const absB = ctx.speaker === 'A' ? nameB : nameA;
+
   const transcriptText =
     ctx.transcript.length > 0
       ? ctx.transcript
-          .map((t) => `[${t.stageId}] (${t.speaker}): ${t.renderedText}`)
+          .map(
+            (t) =>
+              `${speakerHeader(t.speaker, t.stageId, absA, absB)}:\n${t.renderedText}`,
+          )
           .join('\n\n')
       : '(No prior turns yet)';
 

@@ -11,16 +11,16 @@ struct SpeechCard: View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             header
             if let narrative = turn.payload.narrative, !narrative.isEmpty {
-                Text(narrative)
+                Text(StageReferenceHumanizer.humanize(narrative, personaA: personaA, personaB: personaB))
                     .font(Theme.Font.serifBody)
                     .foregroundStyle(Theme.Color.textPrimary)
             } else {
-                Text(turn.renderedText)
+                Text(StageReferenceHumanizer.humanize(turn.renderedText, personaA: personaA, personaB: personaB))
                     .font(Theme.Font.serifBody)
                     .foregroundStyle(Theme.Color.textPrimary)
             }
             if let question = turn.payload.question, !question.isEmpty {
-                Text("Q: \(question)")
+                Text("Q: \(StageReferenceHumanizer.humanize(question, personaA: personaA, personaB: personaB))")
                     .font(Theme.Font.caption)
                     .italic()
                     .foregroundStyle(Theme.Color.textSecondary)

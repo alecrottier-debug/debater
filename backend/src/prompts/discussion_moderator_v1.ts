@@ -1,5 +1,6 @@
 import { LlmPrompt } from '../llm/llm-adapter.interface.js';
 import { StageConfig } from '../stages/stage-plan.types.js';
+import { speakerHeader } from './transcript-format.js';
 
 export const DISCUSSION_MODERATOR_PROMPT_VERSION = 'discussion_moderator_v1';
 
@@ -144,17 +145,22 @@ export function buildDiscussionModeratorPrompt(
   ctx: DiscussionModeratorPromptContext,
 ): LlmPrompt {
   const stageType = getStageType(ctx.stage.id);
-  const guestAName =
+  const guestAName = String(
     (ctx.personaA.identity as Record<string, unknown> | undefined)?.name ??
-    'Guest A';
-  const guestBName =
+      'Guest A',
+  );
+  const guestBName = String(
     (ctx.personaB.identity as Record<string, unknown> | undefined)?.name ??
-    'Guest B';
+      'Guest B',
+  );
 
   const transcriptText =
     ctx.transcript.length > 0
       ? ctx.transcript
-          .map((t) => `[${t.stageId}] (${t.speaker}): ${t.renderedText}`)
+          .map(
+            (t) =>
+              `${speakerHeader(t.speaker, t.stageId, guestAName, guestBName)}:\n${t.renderedText}`,
+          )
           .join('\n\n')
       : '(No prior turns yet)';
 
