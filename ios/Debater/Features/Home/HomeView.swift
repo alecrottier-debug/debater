@@ -39,6 +39,7 @@ final class HomeViewModel {
     var mode: String = "quick"
     var personaAId: String?
     var personaBId: String?
+    var moderatorPersonaId: String?
     var confrontation: Double = 3
     var isStarting = false
     var startedDebate: Debate?
@@ -46,6 +47,8 @@ final class HomeViewModel {
     private let api: APIClient
 
     init(api: APIClient) { self.api = api }
+
+    var isDiscussion: Bool { mode == "discussion" }
 
     func load() async {
         state = .loading
@@ -61,6 +64,10 @@ final class HomeViewModel {
         guard let a = personaAId, let b = personaBId,
               !motion.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         else { return }
+        // Discussion requires a moderator to drive the stages; enforce here
+        // so we don't silently send a null moderator and end up with empty
+        // moderator prompts on the backend.
+        if isDiscussion && moderatorPersonaId == nil { return }
         isStarting = true
         defer { isStarting = false }
         do {
@@ -69,7 +76,7 @@ final class HomeViewModel {
                 mode: mode,
                 personaAId: a,
                 personaBId: b,
-                moderatorPersonaId: nil,
+                moderatorPersonaId: isDiscussion ? moderatorPersonaId : nil,
                 confrontationLevel: Int(confrontation)
             )
             startedDebate = debate
@@ -90,13 +97,19 @@ private struct HomeContent: View {
         case .error(let message):
             ContentUnavailableView("Couldn't load", systemImage: "exclamationmark.triangle", description: Text(message))
         case .ready(let personas):
+            let debaters = personas.filter { $0.role != "moderator" }
+            let moderators = personas.filter { $0.role == "moderator" }
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
                     heroSection
                     motionSection
                     modeSection
-                    personaSection(personas: personas)
-                    confrontationSection
+                    personaSection(debaters: debaters)
+                    if viewModel.isDiscussion {
+                        moderatorSection(moderators: moderators)
+                    } else {
+                        confrontationSection
+                    }
                     startButton
                 }
                 .padding(Theme.Spacing.lg)
@@ -166,13 +179,38 @@ private struct HomeContent: View {
         }
     }
 
-    private func personaSection(personas: [Persona]) -> some View {
+    private func personaSection(debaters: [Persona]) -> some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            Text("Participants").font(Theme.Font.heading)
+            Text(viewModel.isDiscussion ? "Guests" : "Participants").font(Theme.Font.heading)
             HStack(spacing: Theme.Spacing.md) {
-                PersonaSlot(title: "For", selectedId: $viewModel.personaAId, personas: personas, tint: Theme.Color.sideA, baseURL: env.api.baseURL)
-                PersonaSlot(title: "Against", selectedId: $viewModel.personaBId, personas: personas, tint: Theme.Color.sideB, baseURL: env.api.baseURL)
+                PersonaSlot(
+                    title: viewModel.isDiscussion ? "Guest A" : "For",
+                    selectedId: $viewModel.personaAId,
+                    personas: debaters,
+                    tint: Theme.Color.sideA,
+                    baseURL: env.api.baseURL
+                )
+                PersonaSlot(
+                    title: viewModel.isDiscussion ? "Guest B" : "Against",
+                    selectedId: $viewModel.personaBId,
+                    personas: debaters,
+                    tint: Theme.Color.sideB,
+                    baseURL: env.api.baseURL
+                )
             }
+        }
+    }
+
+    private func moderatorSection(moderators: [Persona]) -> some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            Text("Moderator").font(Theme.Font.heading)
+            PersonaSlot(
+                title: "Moderator",
+                selectedId: $viewModel.moderatorPersonaId,
+                personas: moderators,
+                tint: Theme.Color.moderator,
+                baseURL: env.api.baseURL
+            )
         }
     }
 
@@ -195,12 +233,24 @@ private struct HomeContent: View {
             if viewModel.isStarting {
                 ProgressView().frame(maxWidth: .infinity).padding(.vertical, 4)
             } else {
-                Text("Start debate").fontWeight(.semibold).frame(maxWidth: .infinity)
+                Text(viewModel.isDiscussion ? "Start discussion" : "Start debate")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity)
             }
         }
         .buttonStyle(.borderedProminent)
         .controlSize(.large)
-        .disabled(viewModel.personaAId == nil || viewModel.personaBId == nil || viewModel.motion.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isStarting)
+        .disabled(!canStart)
+    }
+
+    private var canStart: Bool {
+        guard viewModel.personaAId != nil,
+              viewModel.personaBId != nil,
+              !viewModel.motion.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              !viewModel.isStarting
+        else { return false }
+        if viewModel.isDiscussion && viewModel.moderatorPersonaId == nil { return false }
+        return true
     }
 }
 
