@@ -1,0 +1,4 @@
+// Release build — points at the deployed Azure Container Apps backend.
+// xcconfig quirk: "//" is parsed as a comment, so the literal "://" needs escaping
+// via an empty variable reference: "$()". This expands to the correct URL at build.
+DEBATER_API_URL = https:/$()/debater-api.yellowdune-bd79f5eb.centralus.azurecontainerapps.io/api

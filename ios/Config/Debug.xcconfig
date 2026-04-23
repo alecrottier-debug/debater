@@ -1,0 +1,4 @@
+// Debug build: default to the simulator's localhost backend.
+// Override by editing this file or passing a value on the xcodebuild cli
+// (e.g. -xcconfig ../PerUser.xcconfig).
+DEBATER_API_URL = http:/$()/localhost:3001/api
