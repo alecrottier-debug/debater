@@ -40,12 +40,18 @@ struct PersonasView: View {
         ScrollView {
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: Theme.Spacing.md) {
                 ForEach(personas) { persona in
-                    PersonaCard(persona: persona, baseURL: env.api.baseURL)
+                    NavigationLink(value: persona) {
+                        PersonaCard(persona: persona, baseURL: env.api.baseURL)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(Theme.Spacing.lg)
         }
         .refreshable { await load() }
+        .navigationDestination(for: Persona.self) { persona in
+            PersonaDetailView(persona: persona, baseURL: env.api.baseURL)
+        }
     }
 
     private func load() async {

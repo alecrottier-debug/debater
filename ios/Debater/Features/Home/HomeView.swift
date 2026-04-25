@@ -128,7 +128,7 @@ private struct HomeContent: View {
             .aspectRatio(contentMode: .fit)
             .frame(maxWidth: .infinity)
             .overlay(alignment: .top) {
-                Text("AI Debate Simulator")
+                Text("AI Debater")
                     .font(.system(size: 20, weight: .bold, design: .serif))
                     .foregroundStyle(Theme.Color.textPrimary)
                     .padding(.horizontal, Theme.Spacing.lg)
