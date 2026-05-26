@@ -45,7 +45,7 @@ jobs:
         run: |
           DB_URL=$(az containerapp secret show \
             --name debater-api \
-            --resource-group debater-rg \
+            --resource-group debater-prod-rg \
             --secret-name database-url \
             --query value -o tsv)
           echo "::add-mask::$DB_URL"
@@ -65,5 +65,5 @@ jobs:
         run: |
           az containerapp update \
             --name debater-api \
-            --resource-group debater-rg \
+            --resource-group debater-prod-rg \
             --image debateracr.azurecr.io/debater-api:${{ github.sha }}
