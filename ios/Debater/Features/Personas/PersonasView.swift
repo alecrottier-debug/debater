@@ -18,7 +18,7 @@ struct PersonasView: View {
                     grid
                 }
             }
-            .background(Theme.Color.background.ignoresSafeArea())
+            .background(AmbientBackground())
             .navigationTitle("Personas")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

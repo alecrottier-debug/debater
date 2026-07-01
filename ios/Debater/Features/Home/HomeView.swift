@@ -13,7 +13,7 @@ struct HomeView: View {
                     ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .background(Theme.Color.background.ignoresSafeArea())
+            .background(AmbientBackground())
             .toolbar(.hidden, for: .navigationBar)
         }
         .task {
@@ -133,11 +133,9 @@ private struct HomeContent: View {
                     .foregroundStyle(Theme.Color.textPrimary)
                     .padding(.horizontal, Theme.Spacing.lg)
                     .padding(.vertical, Theme.Spacing.sm)
-                    .background(
-                        Capsule()
-                            .fill(.white)
-                            .shadow(color: .black.opacity(0.12), radius: 8, y: 2)
-                    )
+                    .glassEffect(.regular, in: Capsule())
+                    .overlay(Capsule().stroke(.white.opacity(0.5), lineWidth: 0.5))
+                    .shadow(color: .black.opacity(0.12), radius: 10, y: 3)
                     .padding(.top, Theme.Spacing.md)
             }
             .overlay(alignment: .bottom) {
@@ -148,11 +146,15 @@ private struct HomeContent: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, Theme.Spacing.md)
                     .padding(.vertical, Theme.Spacing.sm)
-                    .background(
-                        RoundedRectangle(cornerRadius: Theme.Radius.md, style: .continuous)
-                            .fill(.white.opacity(0.92))
-                            .shadow(color: .black.opacity(0.1), radius: 6, y: 2)
+                    .glassEffect(
+                        .regular,
+                        in: RoundedRectangle(cornerRadius: Theme.Radius.md, style: .continuous)
                     )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Theme.Radius.md, style: .continuous)
+                            .stroke(.white.opacity(0.45), lineWidth: 0.5)
+                    )
+                    .shadow(color: .black.opacity(0.1), radius: 8, y: 3)
                     .padding(.horizontal, Theme.Spacing.md)
                     .padding(.bottom, Theme.Spacing.md)
             }
@@ -182,21 +184,23 @@ private struct HomeContent: View {
     private func personaSection(debaters: [Persona]) -> some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             Text(viewModel.isDiscussion ? "Guests" : "Participants").font(Theme.Font.heading)
-            HStack(spacing: Theme.Spacing.md) {
-                PersonaSlot(
-                    title: viewModel.isDiscussion ? "Guest A" : "For",
-                    selectedId: $viewModel.personaAId,
-                    personas: debaters,
-                    tint: viewModel.isDiscussion ? Theme.Color.guestA : Theme.Color.sideA,
-                    baseURL: env.api.baseURL
-                )
-                PersonaSlot(
-                    title: viewModel.isDiscussion ? "Guest B" : "Against",
-                    selectedId: $viewModel.personaBId,
-                    personas: debaters,
-                    tint: viewModel.isDiscussion ? Theme.Color.guestB : Theme.Color.sideB,
-                    baseURL: env.api.baseURL
-                )
+            GlassEffectContainer(spacing: Theme.Spacing.md) {
+                HStack(spacing: Theme.Spacing.md) {
+                    PersonaSlot(
+                        title: viewModel.isDiscussion ? "Guest A" : "For",
+                        selectedId: $viewModel.personaAId,
+                        personas: debaters,
+                        tint: viewModel.isDiscussion ? Theme.Color.guestA : Theme.Color.sideA,
+                        baseURL: env.api.baseURL
+                    )
+                    PersonaSlot(
+                        title: viewModel.isDiscussion ? "Guest B" : "Against",
+                        selectedId: $viewModel.personaBId,
+                        personas: debaters,
+                        tint: viewModel.isDiscussion ? Theme.Color.guestB : Theme.Color.sideB,
+                        baseURL: env.api.baseURL
+                    )
+                }
             }
         }
     }
@@ -233,13 +237,17 @@ private struct HomeContent: View {
             if viewModel.isStarting {
                 ProgressView().frame(maxWidth: .infinity).padding(.vertical, 4)
             } else {
-                Text(viewModel.isDiscussion ? "Start discussion" : "Start debate")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
+                HStack(spacing: 6) {
+                    Image(systemName: "sparkles")
+                    Text(viewModel.isDiscussion ? "Start discussion" : "Start debate")
+                }
+                .fontWeight(.semibold)
+                .frame(maxWidth: .infinity)
             }
         }
-        .buttonStyle(.borderedProminent)
-        .controlSize(.large)
+        .buttonStyle(.glassProminent)
+        .tint(viewModel.isDiscussion ? Theme.Color.guestA : Theme.Color.accent)
+        .controlSize(.extraLarge)
         .disabled(!canStart)
     }
 
@@ -295,7 +303,7 @@ private struct PersonaSlot: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .cardBackground(padding: Theme.Spacing.md)
+            .glassCard(padding: Theme.Spacing.md, tint: tint)
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $isPickerPresented) {

@@ -13,7 +13,7 @@ struct HistoryView: View {
                     ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .background(Theme.Color.background.ignoresSafeArea())
+            .background(AmbientBackground())
             .navigationTitle("History")
         }
         .task {
@@ -335,7 +335,7 @@ private struct PersonaDebatesView: View {
             }
             .padding(.vertical, Theme.Spacing.lg)
         }
-        .background(Theme.Color.background.ignoresSafeArea())
+        .background(AmbientBackground())
         .navigationTitle(persona.name)
         .navigationBarTitleDisplayMode(.inline)
     }

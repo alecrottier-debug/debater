@@ -115,7 +115,7 @@ struct PersonaDetailView: View {
             }
             .padding(Theme.Spacing.lg)
         }
-        .background(Theme.Color.background.ignoresSafeArea())
+        .background(AmbientBackground())
         .navigationTitle(persona.name)
         .navigationBarTitleDisplayMode(.inline)
     }

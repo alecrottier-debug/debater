@@ -13,7 +13,7 @@ struct DebateView: View {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .background(Theme.Color.background.ignoresSafeArea())
+        .background(AmbientBackground())
         .navigationTitle(debate.mode == "discussion" ? "Discussion" : "Debate")
         .navigationBarTitleDisplayMode(.inline)
         .task {
@@ -107,7 +107,11 @@ private struct DebateContent: View {
         }
         .padding(Theme.Spacing.lg)
         .frame(maxWidth: .infinity)
-        .background(Theme.Color.surface)
+        .background(Theme.Color.surface.opacity(0.45))
+        .glassEffect(.regular, in: Rectangle())
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(Theme.Color.divider).frame(height: 0.5)
+        }
     }
 
     private var liveArea: some View {
@@ -183,8 +187,9 @@ private struct DebateContent: View {
             .fontWeight(.semibold)
             .frame(maxWidth: .infinity)
         }
-        .buttonStyle(.borderedProminent)
-        .controlSize(.large)
+        .buttonStyle(.glassProminent)
+        .tint(isDiscussion ? Theme.Color.guestA : Theme.Color.accent)
+        .controlSize(.extraLarge)
         .disabled(!viewModel.canAdvance)
     }
 }

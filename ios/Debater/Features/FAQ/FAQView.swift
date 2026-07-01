@@ -5,23 +5,54 @@ struct FAQView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(entries) { entry in
-                    DisclosureGroup {
-                        Text(entry.answer)
-                            .font(Theme.Font.body)
-                            .foregroundStyle(Theme.Color.textSecondary)
-                            .padding(.vertical, Theme.Spacing.sm)
-                    } label: {
-                        Text(entry.question)
-                            .font(Theme.Font.heading)
-                            .foregroundStyle(Theme.Color.textPrimary)
+            ScrollView {
+                VStack(spacing: Theme.Spacing.md) {
+                    ForEach(entries) { entry in
+                        FAQCard(entry: entry)
                     }
                 }
+                .padding(Theme.Spacing.lg)
             }
-            .listStyle(.insetGrouped)
+            .background(AmbientBackground())
             .navigationTitle("FAQ")
         }
+    }
+}
+
+private struct FAQCard: View {
+    let entry: FAQEntry
+    @State private var expanded = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            Button {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    expanded.toggle()
+                }
+            } label: {
+                HStack(alignment: .top, spacing: Theme.Spacing.md) {
+                    Text(entry.question)
+                        .font(Theme.Font.heading)
+                        .foregroundStyle(Theme.Color.textPrimary)
+                        .multilineTextAlignment(.leading)
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Theme.Color.accent)
+                        .rotationEffect(.degrees(expanded ? 180 : 0))
+                }
+            }
+            .buttonStyle(.plain)
+            if expanded {
+                Text(entry.answer)
+                    .font(Theme.Font.serifBody)
+                    .foregroundStyle(Theme.Color.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .glassCard()
     }
 }
 

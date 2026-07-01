@@ -28,12 +28,13 @@ struct SpeechCard: View {
                     .padding(.top, Theme.Spacing.xs)
             }
         }
-        .cardBackground()
+        .glassCard(tint: tint)
         .overlay(alignment: .leading) {
             RoundedRectangle(cornerRadius: 2)
                 .fill(tint)
                 .frame(width: 4)
                 .padding(.vertical, Theme.Spacing.sm)
+                .padding(.leading, 2)
         }
     }
 
@@ -126,12 +127,13 @@ struct StreamingSpeechCard: View {
                 .foregroundStyle(Theme.Color.textPrimary)
                 .animation(.default, value: text)
         }
-        .cardBackground()
+        .glassCard(tint: tint)
         .overlay(alignment: .leading) {
             RoundedRectangle(cornerRadius: 2)
                 .fill(tint)
                 .frame(width: 4)
                 .padding(.vertical, Theme.Spacing.sm)
+                .padding(.leading, 2)
         }
     }
 

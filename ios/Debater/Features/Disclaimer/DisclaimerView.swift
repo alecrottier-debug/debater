@@ -36,12 +36,13 @@ struct DisclaimerView: View {
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            .buttonStyle(.glassProminent)
+            .tint(Theme.Color.accent)
+            .controlSize(.extraLarge)
             .padding(.horizontal, Theme.Spacing.lg)
         }
         .padding(.vertical, Theme.Spacing.xl)
-        .background(Theme.Color.background.ignoresSafeArea())
+        .background(AmbientBackground())
         .interactiveDismissDisabled()
     }
 

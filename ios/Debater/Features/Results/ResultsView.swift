@@ -38,14 +38,18 @@ struct ResultsView: View {
             }
         }()
         return VStack(spacing: Theme.Spacing.sm) {
-            Text("Winner").font(Theme.Font.caption).foregroundStyle(Theme.Color.textSecondary)
-            Text(winnerName).font(Theme.Font.display).foregroundStyle(tint)
+            Text("Winner")
+                .font(Theme.Font.caption)
+                .foregroundStyle(Theme.Color.textSecondary)
+                .textCase(.uppercase)
+            Text(winnerName)
+                .font(Theme.Font.display)
+                .foregroundStyle(tint)
             if let closeness = decision.closeness {
                 Text(closeness.capitalized)
                     .font(Theme.Font.caption)
-                    .padding(.horizontal, 10).padding(.vertical, 4)
-                    .background(tint.opacity(0.15))
-                    .clipShape(Capsule())
+                    .foregroundStyle(tint)
+                    .glassChip(tint: tint)
             }
             if let verdict = decision.verdict {
                 Text(humanize(verdict))
@@ -56,7 +60,7 @@ struct ResultsView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .cardBackground()
+        .glassCard(tint: tint)
     }
 
     private var scoresCard: some View {
