@@ -6,6 +6,18 @@ on:
     paths: [backend/**]
   workflow_dispatch:
 
+# Pushing to GitHub's container registry uses the workflow's own GITHUB_TOKEN, so it
+# needs package write access. Declaring permissions sets every unlisted one to none,
+# which is the point: nothing else here writes to the repo.
+permissions:
+  contents: read
+  packages: write
+
+env:
+  # Lowercase is required by ghcr.io. The repo is public, so the package is public too
+  # and the Container App pulls it with no stored credential.
+  GHCR_IMAGE: ghcr.io/alecrottier-debug/debater-api
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,11 +32,23 @@ jobs:
       - name: Log in to ACR
         run: az acr login --name debateracr
 
+      # MIGRATION STEP 1 of 2 (2026-09-21): push to BOTH registries, still deploy from
+      # ACR. This run creates the ghcr.io package from this repo's own Actions, which is
+      # what lets later runs push to it. Step 2 drops ACR and deploys from ghcr.io.
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
       - name: Build and push Docker image
         run: |
-          docker build -t debateracr.azurecr.io/debater-api:${{ github.sha }} -t debateracr.azurecr.io/debater-api:latest ./backend
+          docker build \
+            --label org.opencontainers.image.source=https://github.com/${{ github.repository }} \
+            -t debateracr.azurecr.io/debater-api:${{ github.sha }} -t debateracr.azurecr.io/debater-api:latest \
+            -t $GHCR_IMAGE:${{ github.sha }} -t $GHCR_IMAGE:latest \
+            ./backend
           docker push debateracr.azurecr.io/debater-api:${{ github.sha }}
           docker push debateracr.azurecr.io/debater-api:latest
+          docker push $GHCR_IMAGE:${{ github.sha }}
+          docker push $GHCR_IMAGE:latest
 
       # Migrations run here (once, pre-deploy) instead of on every container start.
       # DATABASE_URL is pulled from the Container App's existing `database-url` secret
