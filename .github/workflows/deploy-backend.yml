@@ -29,12 +29,11 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Log in to ACR
-        run: az acr login --name debateracr
-
-      # MIGRATION STEP 1 of 2 (2026-09-21): push to BOTH registries, still deploy from
-      # ACR. This run creates the ghcr.io package from this repo's own Actions, which is
-      # what lets later runs push to it. Step 2 drops ACR and deploys from ghcr.io.
+      # The image lives in GitHub's container registry (moved from Azure Container
+      # Registry on 2026-09-21 to drop a $5.16/month line; ACR is deleted). The package
+      # is public because the repo is, so the Container App pulls it with no credential.
+      # It carries no secrets: .dockerignore excludes .env, this builds from a fresh
+      # checkout, and DATABASE_URL is a Container App secret injected at runtime.
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
@@ -42,11 +41,8 @@ jobs:
         run: |
           docker build \
             --label org.opencontainers.image.source=https://github.com/${{ github.repository }} \
-            -t debateracr.azurecr.io/debater-api:${{ github.sha }} -t debateracr.azurecr.io/debater-api:latest \
             -t $GHCR_IMAGE:${{ github.sha }} -t $GHCR_IMAGE:latest \
             ./backend
-          docker push debateracr.azurecr.io/debater-api:${{ github.sha }}
-          docker push debateracr.azurecr.io/debater-api:latest
           docker push $GHCR_IMAGE:${{ github.sha }}
           docker push $GHCR_IMAGE:latest
 
@@ -90,4 +86,4 @@ jobs:
           az containerapp update \
             --name debater-api \
             --resource-group debater-prod-rg \
-            --image debateracr.azurecr.io/debater-api:${{ github.sha }}
+            --image $GHCR_IMAGE:${{ github.sha }}
